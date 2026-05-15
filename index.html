@@ -104,7 +104,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .unmatch-box h4{margin-bottom:6px;font-size:12px}
 .uitem{padding:3px 8px;font-size:11px;background:var(--sf);border-left:2px solid var(--r300);margin-bottom:2px;border-radius:0 3px 3px 0}
 .tc-barcode{background:#FBF0DC18;flex-direction:column;align-items:flex-start;gap:2px}
-.barcode-val{font-size:11px;font-family:"Courier New",monospace;color:var(--amber);letter-spacing:.3px;word-break:break-all;line-height:1.3}
+.barcode-val{font-size:11px;font-family:"Courier New",monospace;color:var(--amber);letter-spacing:0;word-break:break-all;line-height:1.4;font-size:10.5px}
 .barcode-empty{font-size:10px;color:var(--tx3);font-style:italic}
 /* Input grid tables */
 .inp-wrap{border:0.5px solid var(--bd2);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
@@ -1345,6 +1345,14 @@ function renderTable(){
         <div class="pname">${esc(p.out)}</div>
         <div class="pmeta">${(p.diffs||[]).map((d,i)=>`<span class="dtag" style="background:${tagBg(dts[i]||'')}">${esc(d)}</span>`).join('')}</div>
       </div>
+      <div class="tc tc-price" style="justify-content:flex-end">
+        ${p.donGiaNhap
+          ? `<div class="price-val price-out">${fmtPrice(p.donGiaNhap)}</div>`
+          : (!p.unmatched ? `<input class="price-input" type="text" placeholder="Nhập giá..."
+              onblur="setPriceNhap(${p.id},this.value)" onkeydown="if(event.key==='Enter')this.blur()"
+              onclick="event.stopPropagation()"
+              style="color:#0C447C;width:76px">` : `<span style="color:var(--tx3);font-size:10px">—</span>`)}
+      </div>
       <div class="tc tc-mid">
         <div style="font-size:17px;color:var(--tx3)">⇌</div>
         <span class="sc-pill" style="${sc(p)}">${p.score>0?p.score+'%':'—'}</span>
@@ -1880,6 +1888,10 @@ function fmtPrice(v){
   return n.toLocaleString('vi-VN')+'đ';
 }
 
+function setPriceNhap(id, val){
+  const p=pairs.find(x=>x.id===id);
+  if(p && val.trim()){ p.donGiaNhap=val.trim(); renderTable(); }
+}
 function setPriceOut(id, val){
   const p=pairs.find(x=>x.id===id);
   if(p && val.trim()){ p.donGiaNhap=val.trim(); renderTable(); }
