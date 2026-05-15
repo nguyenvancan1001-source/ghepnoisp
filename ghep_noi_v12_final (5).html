@@ -1,0 +1,1691 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Ghép Nối Sản Phẩm v9 – AI + Thuật Toán</title>
+<style>
+:root{
+  --bg:#f5f4f1;--sf:#fff;--sf2:#f0efe9;--sf3:#e4e3dc;
+  --bd:rgba(0,0,0,0.08);--bd2:rgba(0,0,0,0.15);
+  --tx:#18170f;--tx2:#65645e;--tx3:#9a9890;
+  --blue:#185FA5;--b50:#E6F1FB;--b800:#0C447C;
+  --green:#0F6E56;--g50:#E1F5EE;--g800:#085041;
+  --amber:#7A4608;--a50:#FBF0DC;--a400:#E9A43A;
+  --red:#962828;--r50:#FDF0F0;--r300:#F4ABAB;
+  --r2:6px;--r3:10px;--r4:14px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;font-size:13px;line-height:1.5}
+.hdr{background:var(--sf);border-bottom:1px solid var(--bd2);padding:0 20px;position:sticky;top:0;z-index:200;box-shadow:0 1px 4px rgba(0,0,0,0.06)}
+.hdr-in{max-width:1360px;margin:0 auto;height:52px;display:flex;align-items:center;gap:12px}
+.logo-ic{width:34px;height:34px;background:var(--blue);border-radius:var(--r2);display:flex;align-items:center;justify-content:center;color:#fff;font-size:11px;font-weight:800;flex-shrink:0}
+.logo-name{font-size:14px;font-weight:700}
+.logo-sub{font-size:10px;color:var(--tx2)}
+.ai-badge{background:linear-gradient(135deg,#7C3AED,#2563EB);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
+.offline-badge{background:var(--a50);color:var(--amber);font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;border:1px solid var(--a400)}
+.hdr-right{margin-left:auto;display:flex;gap:6px;align-items:center}
+.main{max-width:1360px;margin:0 auto;padding:14px}
+.alert{border-radius:var(--r3);padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;display:none;gap:10px;align-items:flex-start}
+.alert.show{display:flex}
+.alert.warn{background:var(--a50);border:1px solid var(--a400);color:var(--amber)}
+.alert.info{background:var(--b50);border:1px solid #B5D4F4;color:var(--b800)}
+.icard{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden;margin-bottom:14px}
+.icard-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--sf2);border-bottom:1px solid var(--bd);cursor:pointer;user-select:none}
+.icard-hd h2{font-size:12px;font-weight:600;display:flex;align-items:center;gap:6px}
+.icard-body{display:none;padding:12px;gap:12px}
+.icard-body.open{display:grid;grid-template-columns:1fr 1fr}
+.icard-body.open.three{grid-template-columns:1fr 120px 1fr}
+.pcol{border:1px solid var(--bd2);border-radius:var(--r3);overflow:hidden}
+.pchd{padding:7px 11px;font-size:11px;font-weight:600;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px}
+.pchd.out{background:#E1F5EE33;color:var(--g800)}
+.pchd.in{background:#E6F1FB33;color:var(--b800)}
+.pcol textarea{width:100%;min-height:130px;padding:9px;font-size:12px;font-family:"Courier New",monospace;border:none;resize:vertical;background:var(--sf);color:var(--tx);line-height:1.7;display:block}
+.pcol textarea:focus{outline:none;background:#fffdf5}
+.icard-ft{display:none;padding:10px 12px 12px;gap:8px;flex-wrap:wrap;align-items:center;border-top:1px solid var(--bd)}
+.icard-ft.open{display:flex}
+.btn{padding:6px 13px;height:32px;border:1px solid var(--bd2);border-radius:var(--r2);background:var(--sf);font-size:12px;cursor:pointer;font-family:inherit;color:var(--tx);display:inline-flex;align-items:center;gap:5px;font-weight:500;white-space:nowrap;transition:background .1s}
+.btn:hover{background:var(--sf2)}
+.btn:active{transform:scale(.98)}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:var(--b800)}
+.btn.primary:disabled{background:#9BBCE0;border-color:#9BBCE0;cursor:not-allowed;transform:none}
+.btn.success{background:var(--green);border-color:var(--green);color:#fff}
+.btn.success:hover{background:var(--g800)}
+.btn.danger{color:var(--red);border-color:var(--r300)}
+.btn.danger:hover{background:var(--r50)}
+.btn.sm{padding:3px 9px;height:26px;font-size:11px}
+.btn.xs{padding:2px 6px;height:21px;font-size:10px}
+.ai-prog{background:#EDE9FE;border:1px solid #C4B5FD;border-radius:var(--r3);padding:10px 14px;margin-bottom:12px;display:none}
+.ai-prog.show{display:block}
+.ai-prog h4{font-size:12px;font-weight:600;color:#5B21B6;margin-bottom:5px}
+.ai-bar-bg{height:4px;background:#C4B5FD;border-radius:2px;overflow:hidden;margin-bottom:5px}
+.ai-bar{height:4px;background:#7C3AED;border-radius:2px;transition:width .3s}
+.ai-msg{font-size:11px;color:#5B21B6}
+.ctrl-pill{display:flex;align-items:center;gap:6px;background:var(--sf);border:1px solid var(--bd);border-radius:var(--r2);padding:4px 9px;height:32px;font-size:11px;color:var(--tx2)}
+.ctrl-pill b{color:var(--blue);min-width:28px;text-align:right}
+.pills{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;align-items:center}
+.pill{padding:5px 11px;border-radius:var(--r3);font-size:11px;font-weight:500;cursor:pointer;border:2px solid transparent;display:inline-flex;align-items:center;gap:4px;transition:border-color .1s}
+.pill.active{border-color:currentColor}
+.toolbar{display:flex;gap:8px;margin-bottom:8px;align-items:center;flex-wrap:wrap}
+.toolbar input[type=text]{flex:1;min-width:180px;max-width:280px;padding:6px 9px;height:32px;font-size:12px;border:1px solid var(--bd2);border-radius:var(--r2);background:var(--sf);color:var(--tx);font-family:inherit}
+.toolbar input:focus{outline:none;border-color:var(--blue)}
+.toolbar select{padding:6px 9px;height:32px;font-size:12px;border:1px solid var(--bd2);border-radius:var(--r2);background:var(--sf);color:var(--tx);font-family:inherit}
+.legend{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)}
+.dtag-ex{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.tbl-wrap{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden}
+.tbl-hd{display:grid;grid-template-columns:38px 100px minmax(0,1fr) 68px minmax(0,1fr) 110px;border-bottom:1px solid var(--bd2)}
+.th{padding:8px 11px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--tx2);background:var(--sf2);border-right:1px solid var(--bd)}
+.th:last-child{border-right:none}
+.th.out{background:#E1F5EE22;color:var(--g800)}
+.th.in{background:#E6F1FB22;color:var(--b800)}
+.trow{display:grid;grid-template-columns:38px 100px minmax(0,1fr) 68px minmax(0,1fr) 110px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
+.trow:last-child{border-bottom:none}
+.trow:hover{background:#faf9f5}
+.tc{padding:9px 11px;border-right:1px solid var(--bd);display:flex;align-items:center;min-height:50px}
+.tc:last-child{border-right:none}
+.tc-num{justify-content:center;color:var(--tx3);font-size:11px}
+.tc-out{background:#E1F5EE08;flex-direction:column;align-items:flex-start;gap:2px}
+.tc-in{background:#E6F1FB08;flex-direction:column;align-items:flex-start;gap:2px}
+.tc-mid{background:var(--sf2);flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:5px 3px}
+.tc-acts{gap:3px;flex-wrap:wrap;padding:7px 8px;align-items:center;justify-content:center}
+.pname{font-size:12.5px;font-weight:600;line-height:1.3}
+.pmeta{display:flex;gap:3px;flex-wrap:wrap;margin-top:3px}
+.dtag{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
+.pnote{font-size:10px;color:var(--tx2);line-height:1.3;margin-top:2px}
+.ai-note{font-size:10px;color:#5B21B6;background:#EDE9FE;border-radius:3px;padding:1px 5px;margin-top:2px;display:inline-block}
+.r2-note{font-size:10px;color:#0C447C;background:#E6F1FB;border-radius:3px;padding:1px 5px;margin-top:2px;display:inline-block}
+.bar-bg{width:50px;height:3px;background:var(--bd);border-radius:2px}
+.bar-fill{height:3px;border-radius:2px}
+.sc-pill{font-size:10px;padding:2px 6px;border-radius:3px;font-weight:700}
+.empty{padding:3rem 2rem;text-align:center;color:var(--tx2)}
+.empty-ic{font-size:36px;color:var(--tx3);margin-bottom:8px}
+.unmatch-box{margin-top:10px;background:var(--r50);border:1px solid var(--r300);border-radius:var(--r3);padding:10px 14px;font-size:12px;color:var(--red)}
+.unmatch-box h4{margin-bottom:6px;font-size:12px}
+.uitem{padding:3px 8px;font-size:11px;background:var(--sf);border-left:2px solid var(--r300);margin-bottom:2px;border-radius:0 3px 3px 0}
+.tc-barcode{background:#FBF0DC18;flex-direction:column;align-items:flex-start;gap:2px}
+.barcode-val{font-size:11px;font-family:"Courier New",monospace;color:var(--amber);letter-spacing:.3px;word-break:break-all;line-height:1.3}
+.barcode-empty{font-size:10px;color:var(--tx3);font-style:italic}
+/* Input grid tables */
+.inp-wrap{border:0.5px solid var(--bd2);border-radius:var(--r3);overflow:hidden;display:flex;flex-direction:column}
+.inp-hd{padding:7px 10px;font-size:11px;font-weight:600;border-bottom:0.5px solid var(--bd);display:flex;align-items:center;justify-content:space-between;gap:6px}
+.inp-hd.out{background:#E1F5EE33;color:var(--g800)}
+.inp-hd.in{background:#E6F1FB33;color:var(--b800)}
+.inp-hd.mv{background:#FBF0DC33;color:var(--amber)}
+.inp-count{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.06)}
+.inp-grid{display:flex;flex:1;overflow:hidden}
+.inp-stt{width:34px;background:var(--sf2);border-right:0.5px solid var(--bd);font-size:10px;color:var(--tx3);font-family:"Courier New",monospace;overflow:hidden;flex-shrink:0;user-select:none;pointer-events:none}
+.inp-stt-inner{padding:0}
+.stt-line{height:22px;line-height:22px;text-align:center;border-bottom:0.5px solid var(--bd)}
+.stt-line:last-child{border-bottom:none}
+.inp-ta{flex:1;border:none;resize:none;padding:0 8px;font-size:12px;font-family:"Courier New",monospace;line-height:22px;background:var(--sf);color:var(--tx);min-height:176px;overflow-y:auto}
+.inp-ta:focus{outline:none;background:#fffdf8}
+.inp-footer{padding:5px 10px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd)}
+@media(max-width:900px){.tbl-hd,.trow{grid-template-columns:30px 70px minmax(0,1fr) 54px minmax(0,1fr) 90px}}
+@media(max-width:650px){.tbl-hd,.trow{grid-template-columns:30px minmax(0,1fr) 54px minmax(0,1fr) 80px}}
+@media print{.hdr,.icard,.ai-prog,.pills,.toolbar,.legend,.tc-acts,.btn{display:none!important}.tbl-wrap{border:1px solid #ccc}}
+
+/* ── BẢNG GHÉP THỦ CÔNG ── */
+.manual-section{margin-top:16px}
+.manual-card{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden}
+.manual-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--sf2);border-bottom:1px solid var(--bd)}
+.manual-hd h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
+.manual-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.manual-col{display:flex;flex-direction:column}
+.manual-col-hd{padding:8px 12px;font-size:11px;font-weight:600;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.manual-col-hd.out{background:#E1F5EE22;color:var(--g800)}
+.manual-col-hd.in{background:#E6F1FB22;color:var(--b800);border-left:1px solid var(--bd)}
+.manual-list{overflow-y:auto;max-height:320px}
+.manual-list.in{border-left:1px solid var(--bd)}
+.mrow{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:0.5px solid var(--bd);cursor:pointer;transition:background .1s;user-select:none}
+.mrow:last-child{border-bottom:none}
+.mrow:hover{background:var(--sf2)}
+.mrow.sel-out{background:#E1F5EE44;border-left:3px solid var(--green)}
+.mrow.sel-in{background:#E6F1FB44;border-left:3px solid var(--blue)}
+.mrow.sel-out:hover{background:#E1F5EE66}
+.mrow.sel-in:hover{background:#E6F1FB66}
+.mrow.already-paired{opacity:.45;cursor:not-allowed}
+.mchk{width:16px;height:16px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;background:var(--sf);transition:all .1s}
+.mchk.checked-out{background:var(--green);border-color:var(--green);color:#fff}
+.mchk.checked-in{background:var(--blue);border-color:var(--blue);color:#fff}
+.mname{font-size:12px;line-height:1.3;flex:1;min-width:0}
+.mbc{font-size:10px;font-family:"Courier New",monospace;color:var(--amber);flex-shrink:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mstt{font-size:10px;color:var(--tx3);width:22px;text-align:right;flex-shrink:0}
+.manual-action-bar{padding:10px 14px;background:var(--sf2);border-top:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sel-info{font-size:12px;flex:1}
+.sel-info .out-sel{color:var(--green);font-weight:600}
+.sel-info .in-sel{color:var(--blue);font-weight:600}
+.paired-result{margin-top:8px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r3);overflow:hidden}
+.paired-hd{padding:7px 12px;background:var(--g50);border-bottom:1px solid var(--bd);font-size:11px;font-weight:600;color:var(--g800);display:flex;align-items:center;justify-content:space-between}
+.paired-row{display:grid;grid-template-columns:30px 80px minmax(0,1fr) 50px minmax(0,1fr) 70px;border-bottom:0.5px solid var(--bd);font-size:11px}
+.paired-row:last-child{border-bottom:none}
+.paired-row.header{background:var(--sf2);font-weight:600;font-size:10px;color:var(--tx2)}
+.pc{padding:6px 9px;border-right:0.5px solid var(--bd)}
+.pc:last-child{border-right:none}
+.run2-bar{padding:10px 14px;background:var(--b50);border:1px solid #B5D4F4;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
+.run2-bar.show{display:flex}
+@media(max-width:750px){.manual-body{grid-template-columns:1fr}.manual-list.in{border-left:none;border-top:1px solid var(--bd)}}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-in">
+    <div class="logo-ic">1:N</div>
+    <div>
+      <div class="logo-name">Ghép Nối Sản Phẩm <span class="ai-badge">v10 – Mã Vạch + AI</span></div>
+      <div class="logo-sub">AI chạy từ đầu · Bánh↔Bánh · CSCT↔CSCT · Thương hiệu · Đầu vào tái sử dụng</div>
+    </div>
+    <span class="offline-badge" id="aiStatusBadge">&#9679; Offline</span>
+    <div class="hdr-right">
+      <button class="btn sm" id="btnApiKey" onclick="toggleApiPanel()" style="border-color:#7C3AED;color:#5B21B6">&#128273; API Key</button>
+      <button class="btn sm" onclick="exportCSV()">&#8659; Xuất CSV</button>
+      <button class="btn sm" onclick="exportUnmatched()">&#9888; Xuất chưa ghép</button>
+      <button class="btn sm" onclick="window.print()">&#9113; In</button>
+    </div>
+  </div>
+</div>
+
+<div class="main">
+
+<!-- API KEY PANEL -->
+<div id="apiPanel" style="display:none;background:#EDE9FE;border:1px solid #C4B5FD;border-radius:var(--r3);padding:12px 16px;margin-bottom:12px">
+  <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap">
+    <span style="font-size:13px;font-weight:600;color:#5B21B6">&#128273; Anthropic API Key</span>
+    <div style="flex:1;min-width:260px;display:flex;gap:6px">
+      <input type="password" id="apiKeyInput" placeholder="sk-ant-api03-..." 
+        style="flex:1;padding:6px 10px;height:32px;font-size:12px;font-family:'Courier New',monospace;
+        border:1px solid #C4B5FD;border-radius:var(--r2);background:#fff;color:var(--tx)"
+        oninput="checkApiKey()">
+      <button onclick="saveApiKey()" class="btn primary sm">&#10003; Lưu</button>
+      <button onclick="clearApiKey()" class="btn sm danger">&#10005;</button>
+    </div>
+    <span id="apiKeyStatus" style="font-size:11px;color:#5B21B6"></span>
+  </div>
+  <div style="margin-top:8px;font-size:11px;color:#6D28D9;line-height:1.6">
+    &#128712; Lấy API Key tại <a href="https://console.anthropic.com" target="_blank" style="color:#5B21B6;font-weight:600">console.anthropic.com</a>
+    &nbsp;→&nbsp; API Keys &nbsp;→&nbsp; Create Key &nbsp;|&nbsp;
+    Key được lưu trong trình duyệt (localStorage), không gửi đi đâu ngoài Anthropic API.
+    &nbsp;|&nbsp; Chi phí: ~$0.003/lần ghép 184 SP
+  </div>
+</div>
+
+<div class="alert warn" id="alertWarn"></div>
+<div class="alert info" id="alertInfo"></div>
+
+<div class="icard">
+  <div class="icard-hd" onclick="toggleInput()">
+    <h2 id="inputHd">&#9654; Nhập danh sách sản phẩm</h2>
+    <span style="font-size:11px;color:var(--tx2)">Nhấn để mở / đóng</span>
+  </div>
+  <div class="icard-body open" id="inputBody" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+
+    <!-- ĐẦU RA + MÃ VẠCH ghép chung 1 lưới 2 cột -->
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:8px;min-width:0">
+
+      <!-- ĐẦU RA -->
+      <div class="inp-wrap">
+        <div class="inp-hd out">
+          <span>&#8599; Sản phẩm Đầu Ra</span>
+          <span class="inp-count" id="cntOut">0 SP</span>
+        </div>
+        <div class="inp-grid">
+          <div class="inp-stt" id="sttOut"><div class="inp-stt-inner" id="sttOutInner"></div></div>
+          <textarea class="inp-ta" id="taOut"
+            placeholder="Mỗi dòng 1 sản phẩm&#10;Snack Lay's Stax Phô Mai 100g&#10;Sữa TH True Milk 1L&#10;Nước mắm Thuận Phát 490ml&#10;..."
+            oninput="syncStt('Out');syncStt('In')"></textarea>
+        </div>
+        <div class="inp-footer">&#128712; Mỗi dòng = 1 sản phẩm · Tương ứng theo thứ tự dòng mã vạch</div>
+      </div>
+
+      <!-- MÃ VẠCH -->
+      <div class="inp-wrap">
+        <div class="inp-hd mv">
+          <span>&#128278; Mã Vạch</span>
+          <span class="inp-count" id="cntMv" style="background:rgba(122,70,8,0.12);color:var(--amber)">0</span>
+        </div>
+        <div class="inp-grid">
+          <div class="inp-stt" id="sttMv"><div class="inp-stt-inner" id="sttMvInner"></div></div>
+          <textarea class="inp-ta" id="taMaVach"
+            placeholder="8934563142018&#10;8934563120016&#10;8934563111001&#10;..."
+            style="font-size:11px;letter-spacing:0.5px"
+            oninput="syncStt('Mv')"></textarea>
+        </div>
+        <div class="inp-footer">&#128272; Dán 1 mã/dòng · Để trống dòng nếu không có</div>
+      </div>
+    </div>
+
+    <!-- ĐẦU VÀO -->
+    <div class="inp-wrap">
+      <div class="inp-hd in">
+        <span>&#8601; Sản phẩm Đầu Vào</span>
+        <span class="inp-count" id="cntIn">0 SP</span>
+      </div>
+      <div class="inp-grid">
+        <div class="inp-stt" id="sttIn"><div class="inp-stt-inner" id="sttInInner"></div></div>
+        <textarea class="inp-ta" id="taIn"
+          placeholder="Mỗi dòng 1 sản phẩm&#10;LAY'S STAX BBQ 100G 1X16_VN&#10;STTT it duong TH True Milk 1Lx12T&#10;NPC 10M - Bo Luc Lac 60g&#10;..."
+          oninput="syncStt('In')"></textarea>
+      </div>
+      <div class="inp-footer">&#128712; Dán từ phần mềm kho · Đầu vào nhiều hơn đầu ra là bình thường</div>
+    </div>
+
+  </div>
+  <div class="icard-ft open" id="inputFt">
+    <div class="ctrl-pill">
+      <label>Sai số KL</label>
+      <input type="range" min="5" max="50" step="5" value="20" id="slWt" oninput="document.getElementById('vWt').textContent=this.value+'%'" style="width:70px;accent-color:var(--blue)">
+      <b id="vWt">20%</b>
+    </div>
+    <div class="ctrl-pill">
+      <label>Ngưỡng tối thiểu</label>
+      <input type="range" min="20" max="80" step="5" value="30" id="slMin" oninput="document.getElementById('vMin').textContent=this.value+'%'" style="width:70px;accent-color:var(--blue)">
+      <b id="vMin">30%</b>
+    </div>
+    <label class="ctrl-pill" style="cursor:pointer">
+      <input type="checkbox" id="chkStrict" checked> Khớp vị/hương
+    </label>
+    <label class="ctrl-pill" style="cursor:pointer;color:#5B21B6;font-weight:600">
+      <input type="checkbox" id="chkAI" checked> &#9889; Dùng AI Claude
+    </label>
+    <button class="btn" onclick="loadDemo()">&#9881; Mẫu thử</button>
+    <button class="btn primary" id="runBtn" onclick="runMatch()">&#9889; Ghép nối + AI</button>
+  </div>
+</div>
+
+<div class="ai-prog" id="aiProg">
+  <h4>&#9889; AI đang phân tích toàn bộ danh sách...</h4>
+  <div class="ai-bar-bg"><div class="ai-bar" id="aiBar" style="width:0%"></div></div>
+  <div class="ai-msg" id="aiMsg">Chuẩn bị...</div>
+</div>
+
+<div id="summaryArea"></div>
+
+<div class="toolbar" id="toolbarArea" style="display:none">
+  <input type="text" id="srch" placeholder="&#128269; Tìm sản phẩm..." oninput="renderTable()">
+  <select id="flt" onchange="renderTable()">
+    <option value="">Tất cả</option>
+    <option value="h">Cao &#8805;80%</option>
+    <option value="m">Trung bình 60&#8211;79%</option>
+    <option value="l">Thấp &lt;60%</option>
+    <option value="x">&#9888; Xung đột vị</option>
+    <option value="ai">&#9889; AI ghép</option>
+    <option value="r2">&#9660; Lần 2</option>
+    <option value="c">Đã xác nhận</option>
+    <option value="p">Chưa xét</option>
+    <option value="u">Chưa ghép</option>
+  </select>
+  <span id="rowCount" style="font-size:11px;color:var(--tx2)"></span>
+</div>
+
+<div class="legend" id="legendArea" style="display:none">
+  Chênh lệch:
+  <span class="dtag-ex" style="background:#FAECE7;color:#712B13">Tên khác</span>
+  <span class="dtag-ex" style="background:#EEEDFE;color:#3C3489">Mã nội bộ</span>
+  <span class="dtag-ex" style="background:#FBF0DC;color:#7A4608">Trọng lượng</span>
+  <span class="dtag-ex" style="background:#E1F5EE;color:#085041">Đơn vị</span>
+  <span style="margin-left:auto;display:flex;gap:4px">
+    <span class="sc-pill" style="background:var(--g50);color:var(--g800)">&#8805;80% Cao</span>
+    <span class="sc-pill" style="background:var(--a50);color:var(--amber)">60% TB</span>
+    <span class="sc-pill" style="background:var(--r50);color:var(--red)">&lt;60% Thấp</span>
+    <span class="sc-pill" style="background:#EDE9FE;color:#5B21B6">&#9889; AI</span>
+  </span>
+</div>
+
+<div class="tbl-wrap">
+  <div class="tbl-hd">
+    <div class="th">#</div>
+    <div class="th" style="background:#FBF0DC33;color:var(--amber)">&#128278; Mã Vạch</div>
+    <div class="th out">&#8599; Đầu Ra (Bán ra)</div>
+    <div class="th" style="text-align:center">Khớp</div>
+    <div class="th in">&#8601; Đầu Vào (Mua vào)</div>
+    <div class="th" style="text-align:center">Thao tác</div>
+  </div>
+  <div id="tblBody">
+    <div class="empty">
+      <div class="empty-ic">&#8652;</div>
+      <div style="font-weight:500;margin-bottom:5px">Nhập danh sách và nhấn "&#9889; Ghép nối + AI"</div>
+      <div style="font-size:11px;color:var(--tx3)">Hoặc nhấn "&#9881; Mẫu thử" để xem demo</div>
+      <div style="margin-top:12px"><button class="btn primary" onclick="loadDemoRun()">&#9881; Chạy mẫu thử ngay</button></div>
+    </div>
+  </div>
+</div>
+
+<div id="unmatchedBox"></div>
+
+<!-- RUN LẦN 2 -->
+<div class="run2-bar" id="run2Bar">
+  <span style="font-size:13px">&#9650; <strong id="run2Msg">Còn sản phẩm chưa ghép</strong> — Nhấn để chạy AI lần 2 với ngưỡng thấp hơn hoặc ghép thủ công bên dưới</span>
+  <button class="btn primary sm" onclick="runRound2()">&#9889; Chạy AI lần 2</button>
+  <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">&#8595; Ghép thủ công</button>
+</div>
+
+<!-- BẢNG GHÉP THỦ CÔNG -->
+<div class="manual-section" id="manualSection" style="display:none">
+  <div class="manual-card">
+    <div class="manual-hd">
+      <h3>&#9998; Ghép Nối Thủ Công — Chọn 1 Đầu Ra + 1 hoặc nhiều Đầu Vào</h3>
+      <div style="display:flex;gap:6px;align-items:center">
+        <input type="text" id="manSrch" placeholder="&#128269; Lọc nhanh..." oninput="renderManual()"
+          style="padding:4px 8px;height:26px;font-size:11px;border:0.5px solid var(--bd2);border-radius:5px;background:var(--sf);color:var(--tx);font-family:inherit;width:160px">
+        <button class="btn sm" onclick="clearManualSel()">&#10005; Bỏ chọn</button>
+      </div>
+    </div>
+
+    <div class="manual-body">
+      <!-- CỘT ĐẦU RA CHƯA GHÉP -->
+      <div class="manual-col">
+        <div class="manual-col-hd out">
+          <span>&#8599; Đầu Ra chưa ghép (<span id="manOutCount">0</span> SP) · <span style="color:var(--amber)">&#128278; kèm mã vạch</span></span>
+          <span style="font-size:10px;color:var(--tx3)">Click để chọn 1 dòng</span>
+        </div>
+        <div class="manual-list" id="manOutList"></div>
+      </div>
+      <!-- CỘT ĐẦU VÀO CHƯA ĐƯỢC CHỌN -->
+      <div class="manual-col">
+        <div class="manual-col-hd in">
+          <span>&#8601; Đầu Vào để ghép (<span id="manInCount">0</span> SP)</span>
+          <span style="font-size:10px;color:var(--tx3)">Chọn 1 hoặc nhiều</span>
+        </div>
+        <div class="manual-list in" id="manInList"></div>
+      </div>
+    </div>
+
+    <div class="manual-action-bar">
+      <div class="sel-info">
+        Đã chọn: <span class="out-sel" id="selOutLabel">— (chưa chọn đầu ra)</span>
+        &nbsp;⇌&nbsp;
+        <span class="in-sel" id="selInLabel">— (chưa chọn đầu vào)</span>
+      </div>
+      <button class="btn success" id="btnManualPair" onclick="doManualPair()" disabled
+        style="padding:6px 16px;font-size:12px">&#10003; Ghép cặp này</button>
+    </div>
+
+    <!-- KẾT QUẢ GHÉP THỦ CÔNG -->
+    <div id="manualPairedSection" style="display:none;padding:10px 14px">
+      <div class="paired-result">
+        <div class="paired-hd">
+          <span>&#10003; Đã ghép thủ công (<span id="manPairedCount">0</span> cặp)</span>
+          <button class="btn xs success" onclick="exportManualCSV()">&#8659; Xuất CSV thủ công</button>
+        </div>
+        <div class="paired-row header">
+          <div class="pc">#</div>
+          <div class="pc">Mã Vạch</div>
+          <div class="pc">Đầu Ra</div>
+          <div class="pc" style="text-align:center">Loại</div>
+          <div class="pc">Đầu Vào</div>
+          <div class="pc" style="text-align:center">Thao tác</div>
+        </div>
+        <div id="manPairedRows"></div>
+      </div>
+    </div>
+  </div>
+</div>
+</div>
+
+<script>
+/* ═══════════════════════════════════════════
+   DEMO DATA
+═══════════════════════════════════════════ */
+const DEMO_OUT=`Snack Lay's Stax Vị Phô Mai Cheddar 100g
+Snack khoai tây Ống Lay's Stax Vị tự nhiên 150g
+Khoai Tây Chiên Hộp Lays Stax Sườn Nướng BBQ 150g
+Snack Khoai Tây Lay'S Vị Tảo Biển Nori 29g
+Sữa Tươi Tiệt Trùng Ít Đường TH true MILK 1L
+Lốc 3 Hộp Sữa yến mạch nguyên chất Oatta 180ml
+Snack vị bò lúc lắc Poca Gói 60g
+Kẹo thiên thạch Mix vị PoPit 100g
+Tương Cà Cholimex 270g
+Sốt Lẩu Chua Hải Sản Cholimex Hũ 200g
+Bánh Quy Danisa Hộp thiếc 200g
+Tắm gội nước hoa Xmen For Boss Legend 650G
+Xà Bông Cục Xmen for Boss Intense 75g
+Cà phê Trung Nguyên Legend Classic 204g
+Băng vệ sinh Kotex hàng ngày 8M`;
+const DEMO_IN=`LAY'S STAX BBQ 100G 1X16_VN
+LAY'S STAX TU NHIEN 100G 1X16_VN
+SNACK LAY'S STAX VỊ PHÔ MAI CHEDDAR 42G 4X6
+STAX 150g - Tự Nhiên
+LAY'S STAX THIT NUONG BBQ 150G 1X18_VN
+Lay's vi Tao Bien Nori 31G 16x10
+STTT ít đường TH True Milk 1Lx12T
+OATTA Drink Sữa yến mạch nguyên chất 100% 180ml
+NPC 10M - Bò Lúc Lắc 60g
+Kẹo Dẻo Thiên Thạch Mix Vị Trái Cây - Popit 100g
+Tương cà Pet 270g
+Lẩu chua HS TT 200g (6 Hũ/Block)
+Bánh Danisa hộp 200G
+BVS KOTEX Hàng Ngày Kháng Khuẩn Tự Nhiên 8X48
+Xốt ướp Xá Xíu gói 70g (Hộp 20 gói)
+STTT ít đường TH True Milk 180mlx48C`;
+
+/* ═══════════════════════════════════════════
+   NORMALIZE + TỪ ĐIỂN
+═══════════════════════════════════════════ */
+function nv(s){return s.toLowerCase().replace(/[áàảãạăắặằẳẵâấầẩẫậ]/g,'a').replace(/[éèẻẽẹêếềểễệ]/g,'e').replace(/[íìỉĩị]/g,'i').replace(/[óòỏõọôốồổỗộơớờởỡợ]/g,'o').replace(/[úùủũụưứừửữự]/g,'u').replace(/[ýỳỷỹỵ]/g,'y').replace(/đ/g,'d').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
+const DICT={
+  // Mã kho phổ biến
+  'nmcc':'nuoc mam ca com','npc':'poca','sttt':'sua tuoi tiet trung',
+  'stax':'lay stax','lays':'lay','bvs':'bang ve sinh',
+  'sca ':'sua chua an ','stc ':'sua trai cay ',
+  'hs ':'hai san ','tt ':'thuy tinh ','40n':'40 do dam',
+  // Sản phẩm
+  'moonfils':'moonfils bauli','popit':'popit keo deo',
+  'tao bien':'tao bien nori','kem hanh':'kem hanh',
+  'thit nuong':'thit nuong bbq','muc sot cay':'muc sot cay',
+  'tom hum':'tom hum','truyen thong':'truyen thong','bo wagyu':'bo wagyu',
+  // Viết tắt CSCT & gia dụng
+  'nsm ':'nuoc suc mieng ','nsm':'nuoc suc mieng',
+  'srm nm ':'sua rua mat nam ','srm nm':'sua rua mat nam',
+  'srm nu ':'sua rua mat nu ','srm nu':'sua rua mat nu',
+  'srm ':'sua rua mat ','nrc ':'nuoc tang luc nrc ',
+  'kdr ':'kem danh rang ','kdr':'kem danh rang',
+  'vs gp+':'vang sua grow plus','vs gp ':'vang sua grow plus ',
+  'sp bag':'goi','tp ':'thuan phat ','nm ':'nuoc mam ',
+  // Nivea mã nội bộ
+  '88521':'sua rua mat nivea anti acne',
+  '81273':'sua rua mat nivea set',
+  '85083':'son duong tay nivea',
+  // Ajinomoto
+  'aji-q':'aji quick','aji q':'aji quick',
+  // Kem lạnh
+  'kem mer':'kem merino','kem cel':'kem celano',
+  // Thực phẩm
+  'hv thi bam':'hv thit bam gau do chao',
+  'gau do':'gau do mi chao',
+};
+function expand(s){let n=nv(s);Object.entries(DICT).sort((a,b)=>b[0].length-a[0].length).forEach(([k,v])=>{n=n.replace(new RegExp('\\b'+k.trim()+'\\b','g'),v);});return n;}
+function tok(s){return expand(s).split(/\s+/).filter(Boolean);}
+
+/* ═══════════════════════════════════════════
+   VỊ / HƯƠNG
+═══════════════════════════════════════════ */
+const FLAVORS=[['tao bien','nori'],['suon nuong','bbq','thit nuong'],['tu nhien','truyen thong','classic'],['pho mai','cheese','cheddar'],['kem hanh','sour cream'],['tom hum','lobster'],['muc sot cay'],['bo wagyu','wagyu'],['truffle'],['bap ngot'],['ga quay'],['bo luc lac'],['phong tom'],['hinh cua'],['sua chua dau'],['mu phap su'],['nuoc cot dua'],['nhan dau','strawberry'],['nhan pho mai'],['vanilla'],['cola'],['sting dau'],['viet quat'],['dao peach'],['xoai mango'],['me chua'],['oi guava'],['thien thach'],['nhan nuoc siro'],['khong duong','unsweetened'],['it duong','low sugar'],['co duong'],['nguyen chat'],['gao luc','huyet rong'],['ngu coc yen mach'],['xmen fire'],['xmen wood'],['xmen intense'],['for boss luxury'],['for boss legend'],['for boss motion'],['xmen metal'],['hoa anh dao'],['hoa hong'],['hoa mau don'],['warrior nho'],['warrior dau']];
+const FMAP=new Map();FLAVORS.forEach((g,i)=>g.forEach(w=>FMAP.set(nv(w),i)));
+function getFlavors(s){const n=nv(s),e=expand(s),f=new Set();FMAP.forEach((i,w)=>{if(n.includes(w)||e.includes(w))f.add(i);});return f;}
+function flavorConflict(a,b){const fa=getFlavors(a),fb=getFlavors(b);if(!fa.size||!fb.size)return false;let sh=false;fa.forEach(i=>{if(fb.has(i))sh=true;});return!sh;}
+
+/* ═══════════════════════════════════════════
+   DANH MỤC + CROSS-CATEGORY
+═══════════════════════════════════════════ */
+const CATS=[
+  {id:'NUOC_MAM',kw:['nuoc mam','nm ca','nmcc','huong ca thu','tp nuoc mam']},
+  {id:'GIA_VI',kw:['cholimex','tuong ca','tuong den','dau hao','sa te','nuoc tuong dau nanh','lau chua','lau thai','sot lau','xot bo','xot bun bo','sauce uop','xot ga chien','xot suon','xot mi y','gia vi xot','gia vi kho','sate tom','sate nuong','hs tt','lau hs','lau hai san','tuong ot','tong ot','xa xiu','uop xa xiu','uop thit nuong','nuoc tuong hao vi','hao vi','nuoc tuong','nuoc mam huong viet']},
+  {id:'DO_HOP',kw:['ca ngu ngam dau','ca hop','seaspimex','ca thu hop','ca moi']},
+  {id:'VIEN',kw:['ca vien','muc vien','tom vien','bo vien','vien ngon','vien kitkool']},
+  {id:'XUC_XICH',kw:['xuc xich','lap xuong']},
+  {id:'DONG_LANH',kw:['lacusina','kitkool','dui ga ran','muc vong','pho mai que','pizza']},
+  {id:'BANH_SNACK',kw:['lay ','lays','stax','khoai tay chien','poca','npc ','snack khoai','snack poca','snack lay']},
+  {id:'BANH_BAO',kw:['banh bao','bao khong nhan','bao nhan thit']},
+  {id:'BANH_BAULI',kw:['bauli','moonfils','croissant','sung bo nhan']},
+  {id:'BANH_DANISA',kw:['danisa']},
+  {id:'BANH_XOP',kw:['kalpa','wafer','banh xop kem']},
+  {id:'BANH_QUY',kw:['d-maxx','d maxx','roma','cal cheese','banh quy sua','banh quy bo','superstar chocolate']},
+  {id:'KEO',kw:['keo deo','popit','pop it','thien thach','keo fres','fres bac ha','kopiko','keo socola','keo trung','tube popit','keo tube']},
+  {id:'SUA_TUOI',kw:['sttt','sua tuoi tiet trung','th true milk','th milk','dalatmilk','da lat milk','th hilo','hilo','uht th']},
+  {id:'SUA_CHUA',kw:['sca ','th true yogurt','yogurt','sua chua an','sua chua uong','scutt topkid','scutt']},
+  {id:'SUA_TC',kw:['stc ','truejuicemilk','sua trai cay']},
+  {id:'SUA_HAT',kw:['sua hat oc cho','th true nut','sua hat']},
+  {id:'YEN_MACH',kw:['oatta','yen mach nguyen chat','yen mach trai cay']},
+  {id:'NGU_COC',kw:['ngu coc','viet dai','vietngucoc','bot ngu coc','thuc uong ngu coc','gao luc huyet rong','ngu coc sua bap']},
+  {id:'NUOC_TANG',kw:['redbull','red bull','nuoc tang luc','warrior','nang luong']},
+  {id:'QUAT_TANG',kw:['ly nuoc vong xoay','topkid ye','qua tang km','hang km topkid','bo qua tang']},
+  {id:'NUOC_KHOANG',kw:['th true water','nuoc khoang','lavie','nuoc tk']},
+  {id:'CSCT_GOI_TAM',kw:['dau goi','goi nuoc hoa','oliv by provence','purte serum','tam goi','goi xmen','goi oliv','goi purite','goi oliu','goi ooliv','dau tam oliv','dau tam xmen','sua tam','tam x men','tam xmen','tam oliv','tam purite','tam nuoc hoa','xa bong','xabong']},
+  {id:'CSCT_TOC',kw:['gel vuot toc','sap vuot','wax tao kieu','freestyle wax','for boss gold','for boss spiky','salon hard wax','sap vuot toc','tao kieu toc']},
+  {id:'CSCT_SRM',kw:['sua rua mat','mat na','kem duong','tay trang','bringhtening','go refresh','anti acne','brightening xmen','xmen sua rua mat']},
+  {id:'CSCT_LAN',kw:['lan khu mui','xit khu mui','xit nuoc hoa','roll on','deodorant','lan xmen','lan purite','lan x men','xit xmen','xit x men']},
+  {id:'BVS_SMC',kw:['bao ve toan dien','bang ve sinh smc','smc 8x48','bvs smc','bvs toan dien']},
+  {id:'BVS',kw:['bang ve sinh','bvs kotex','kotex']},
+  {id:'KHAN_TA',kw:['khan uot','huggies','quan hug','hug skin','ta giay']},
+  {id:'CA_PHE',kw:['ca phe','trung nguyen','legend classic','passiona','cafe']},
+  {id:'GAO',kw:['gao luc canxi','gao st25','gao thom','lua nguyen']},
+
+  // ══ BỔ SUNG THIẾU ══
+
+  // Nước rửa chén (KHÁC nước tẩy Javel)
+  {id:'NUOC_RUA_CHEN',kw:['nuoc rua chen','rua chen','my hao nuoc rua',
+    'sunlight rua chen','gift rua chen','vim rua chen','nuoc rua bat',
+    'nuoc rua chen tra','rua chen tra 5x','tra 5x','nuoc rua chen 5x',
+    'nuoc rua chen chanh gung']},
+
+  // Váng sữa (KHÁC sữa tươi)
+  {id:'VANG_SUA',kw:['vang sua','vs gp','grow plus','immunel','vang sua grow',
+    'vs vinamilk','vang sua vinamilk','vang sua ba vi','yomost vang']},
+
+  // Chăm sóc em bé – Johnson's, Bübchen...
+  {id:'CSCT_BABY',kw:['johnson baby','johnsons baby','phan rom','dau massage baby',
+    'sua tam baby','dau tam baby','khang chi baby','bubchen','nuoc giat em be',
+    'sua duong the baby','kem em be','dau massa johnson','massa johnson',
+    'phan rom johnson','blossom baby','bedtime baby']},
+
+  // Đồ gia dụng nhựa / dụng cụ nhà bếp
+  {id:'DO_GIA_DUNG',kw:['thau nhua','ro nhua','thung nhua','rao nhua',
+    'chao nhua','noi nhua','hop nhua','khay nhua','do nhua','gia dung nhua',
+    'thau nhua sau','hang gia dung','dung cu nha bep','chen dia','bat dia']},
+
+  // SRM Nivea Men (sub-loại nam)
+  {id:'NIVEA_SRM_NAM',kw:['srm nam nivea','sua rua mat nam nivea',
+    'nivea men srm','nivea men foam','nivea men facial',
+    'bot min sach nhon','giam nhon mun','bun khoang','than hoat tinh',
+    'sang da kiem soat','88521','srm nm deep hima','srm nm']},
+
+  // SRM Nivea Women / chung (sub-loại nữ)
+  {id:'NIVEA_SRM_NU',kw:['srm nu nivea','sua rua mat nu nivea',
+    'nivea women foam','dat set nivea nu','ngoc trai lam sang',
+    'tinh chat ngoc trai','dat set ngoc trai','81273','srm s da dat']},
+
+  // ── NHÓM MỚI THIẾU ──
+
+  // Nước súc miệng (KHÁC kem đánh răng/bàn chải)
+  {id:'NUOC_SUC_MIENG',kw:['nuoc suc mieng','listerine','colgate suc mieng',
+    'scope suc mieng','sensodyne suc mieng','nước súc miệng','suc mieng']},
+
+  // Mì ăn liền (tách riêng khỏi cháo)
+  {id:'MI_AN_LIEN',kw:['mi cay tom','mi gau do','mi an lien','mi hao hao',
+    'mi kokomi','mi 3 mien','mi tien vua','mi kho','mi nuoc','goi mi',
+    'bun an lien','pho an lien','hu tieu an lien']},
+
+  // Cháo ăn liền (tách riêng khỏi mì)
+  {id:'CHAO_AN_LIEN',kw:['chao gau do','chao an lien','chao tu an',
+    'chao thi bam','hv thi bam','chao vi','goi chao']},
+
+  // Bánh mì tươi / bakery (KHÁC bánh quy/snack)
+  {id:'BANH_MI_TUOI',kw:['banh mi tron','banh mi tuoi','banh mi nhan',
+    'kido bakery','castella','dorayaki','dora yaki','banh ran doremon',
+    'banh mi 6 mui','banh mi kem','banh mi bo sua']},
+
+  // Bột giặt / nước giặt (gia dụng)
+  {id:'BOT_GIAT',kw:['bot giat','nuoc giat','tide','omo','ariel','downy','comfort',
+    'nước giặt','bot giat my hao','giat xa']},
+
+  // Pin / đèn pin (hàng tiêu dùng đặc biệt)
+  {id:'PIN',kw:['pin dai','pin eveready','pin energizer','pin aa','pin aaa',
+    'pin 1.5v','pin heavy duty','pin alkaline','den pin']},
+
+  // Bật lửa
+  {id:'BAT_LUA',kw:['bat lua bic','bat lua','lighter','bic j3','bic j23','bic j26']},
+
+  // Đường ăn kiêng / đường chức năng (KHÁC đường thường)
+  {id:'DUONG_KIEN',kw:['duong an kien','isomalt','duong stevia','duong mia an kien',
+    'duong chuc nang']},
+
+  // Nước hoa / xịt thơm cơ thể (KHÁC nước hoa phòng)
+  {id:'NUOC_HOA_CO_THE',kw:['nuoc hoa em be','johnsons baby nuoc hoa',
+    'nuoc hoa huong ban mai','ban mai 50ml','nuoc hoa co the',
+    'body mist','nuoc hoa xa phong']},
+
+  // Bánh quy Tatawa (thương hiệu riêng)
+  {id:'BANH_TATAWA',kw:['tatawa','banh quy tatawa','tatawa goi',
+    'tatawa socola','tatawa viet quat','tatawa cappuccino','tatawa hat phi']},
+
+  // Kem Celano / kem đóng gói lớn
+  {id:'KEM_CELANO',kw:['celano','kem celano','kem hop celano','kem cone celano',
+    'kem dau tay celano','kem passion celano','celano cone vani',
+    'kem merino','merino hop','kem mer']},
+
+  // Sữa chua dẻo Merino (KHÁC kem Merino)
+  {id:'SUA_CHUA_DEO_MERINO',kw:['sua chua deo merino','merino 50g','pho mai merino',
+    'sua chua deo pho mai','merino pho mai duong den']},
+
+  // Listerine / Nước súc miệng thương hiệu
+  {id:'LISTERINE',kw:['listerine','nuoc suc mieng listerine','listerine bac ha',
+    'listerine mat lanh']},
+  {id:'KEM_LANH',kw:['kem hop cao cap','celano','kem tuoi','nuoc kem','kem trai cay',
+    'kem sua','kem chocolate','kem vanila','ice cream','kem lanh','kem pista']},
+  {id:'SOCOLA',kw:['socola hershey','hershey','kitkat','snickers','m&m','toblerone',
+    'bounty','twix','ferrero','socola sua','keo socola hop']},
+  {id:'NUOC_EP',kw:['nuoc dua','cocoxim','nuoc dua dong hop','nong lam','nuoc trai cay ep',
+    'naked juice','c2','nuoc ep cam','nuoc ep trai cay']},
+  {id:'CSCT_NUOC_HOA',kw:['nuoc hoa','perfume','cologne','eau de','ban mai',
+    'nuoc hoa em be','johnsons baby','johnson baby','nuoc hoa baby',
+    'nuoc hoa huong','nuoc hoa nu','nuoc hoa nam',
+    'nuoc hoa huong ban mai','ban mai 50ml','huong ban mai']},
+  {id:'CSCT_DUONG_DA',kw:['kem duong da','duong the','body butter','duong am',
+    'duong da mat','kem mat','eye cream','serum duong da']},
+
+  // ── NHÓM MỚI BỔ SUNG ──
+  // Ajinomoto – tách sub-loại
+  {id:'AJI_BOT_NGOT', kw:['bot ngot ajinomoto','bot ngot aji','bột ngọt ajinomoto',
+    'ajinomoto hat lon','ajinomoto hat min','bot ngot hat','mononatri glutamat']},
+  {id:'AJI_BOT_CANH', kw:['bot canh ajinomoto','bot canh aji','bột canh aji']},
+  {id:'AJI_CHIEN',    kw:['aji-quick','aji quick','bot chien gion aji',
+    'bot tam kho chien gion','bot chien don']},
+  {id:'AJI_MAYO',     kw:['aji-mayo','ajimayo','xot mayonnaise aji','mayonnaise aji',
+    'aji mayo']},
+  {id:'AJI_GIAM',     kw:['giam gao len men','giam gao ajinomoto','lisa giam',
+    'giam ajinomoto']},
+  // Nước tẩy / vệ sinh gia dụng
+  {id:'NUOC_TAY',kw:['javel','nuoc tay','my hao','nước rửa chén','nuoc rua chen',
+    'vim','sunlight','gift','lau san','tay bong','nước vệ sinh','nuoc ve sinh','cif']},
+  // Xịt phòng / khử mùi phòng
+  {id:'XIT_PHONG',kw:['glade','xit phong','khu mui phong','air freshener',
+    'cai giam mui','febreeze','raid','baygon','xa phong phong']},
+  // Chăm sóc răng miệng
+  {id:'CSCT_RANG',kw:['ban chai','kem danh rang','sensodyne','colgate','oral b','oral-b',
+    'close up','closeup','ps trinh','ps tre em','sensodyne paste',
+    'kdr sensodyne','kem danh rang sensodyne']},
+  // Nivea – tách sub-loại để không ghép nhầm
+  {id:'NIVEA_XIT',  kw:['xit khu mui nivea','xịt ngăn mùi nivea','xit ngan mui nivea',
+    'xit khu mui niv','niv men xit','xit nivea','nivea xit','dry comfort nivea',
+    'black white invisible','fresh flower nivea','protect care nivea xit']},
+  {id:'NIVEA_LAN',  kw:['lan nivea','lan khu mui nivea','lan ngan mui nivea','roll on nivea',
+    'nivea roll','nivea lan','deodorant roll nivea','serum trang min','serum trang min nivea',
+    'serum trang','lan serum nivea','nivea serum lan',
+    'lan ngan mui','ngan mui nivea','lan nivea serum','serum hoa nivea','lan serum',
+    'lan nivea','nivea serum hoa','sakura nivea','espresso nivea','darkwood nivea',
+    'cool kick nivea','black white nivea lan','ngoc trai nivea','lan deep']},
+  {id:'NIVEA_KEM',  kw:['kem duong nivea','kem chong nang nivea','kem tay nivea',
+    'body lotion nivea','nivea body','soft nivea','creme nivea','nivea creme',
+    'kem nivea','body cream nivea','kem sang hong']},
+  {id:'NIVEA_SRM',  kw:['sua rua mat nivea','srm nivea','srm s da dat','s da dat nivea',
+    'sda dat','srm s.da','set nivea 100g','cleansing nivea','tay trang nivea','foam nivea',
+    'nivea foam','nivea cleansing','81273','85083 son duong']},
+  {id:'NIVEA_SON',  kw:['son duong nivea','lip care nivea','nivea lip','son moi nivea',
+    'duong moi nivea']},
+  // Sữa chua dẻo / phô mai ăn
+  {id:'SUA_PHOMAI',kw:['sua chua deo','merino','pho mai merino','phomai merino',
+    'la vache qui rit','laughing cow','babybel','con bo cuoi','kraft']},
+  // Nước tăng lực NRC / đồ uống đóng chai lớn
+  {id:'NUOC_DONG_CHAI',kw:['nrc chanh','nrc 5x','nrc tang luc','nuoc tang luc nrc']},
+  // Ovaltine / sữa bột / thức uống bột
+  {id:'BOT_UONG',kw:['ovaltine','milo','nestle milo','nesquik','horlicks',
+    'bot uong','sua bot pha san','bot ca cao']},
+  // Cháo / mì / bún / phở ăn liền
+  {id:'AN_LIEN',kw:['chao gau do','chao an lien','mi an lien','bun an lien',
+    'pho an lien','mi hao hao','mi tien vua','mi 3 mien','mi kokomi',
+    'chao tu an','hv thi bam','gau do']},
+  // Đường / đường kính
+  {id:'DUONG',kw:['duong mia','bien hoa','duong kinh','duong trang','duong nau',
+    'duong phen','bien hoa 500g','duong thanh']},
+  // Dầu ăn (tách riêng khỏi cholimex)
+  {id:'DAU_AN',kw:['dau an tuong an','cooking oil','simply dau an',
+    'dau nuong','dau me','dau oliu an']},
+];
+const PARENT=[
+  // Bánh các loại
+  ['BANH_SNACK','BANH_BAO','BANH_BAULI','BANH_DANISA','BANH_XOP','BANH_QUY','BANH_KHAC'],
+  // Kẹo
+  ['KEO'],
+  // Sữa / đồ uống sữa
+  ['SUA_TUOI','SUA_CHUA','SUA_TC','SUA_HAT','YEN_MACH','NGU_COC','SUA_PHOMAI'],
+  // Thức uống bột (Ovaltine, Milo...)
+  ['BOT_UONG'],
+  // Nước tăng lực / đồ uống có gas
+  ['NUOC_TANG','NUOC_DONG_CHAI'],
+  // Nước khoáng
+  ['NUOC_KHOANG'],
+  // CSCT: gội tắm (không bao gồm Nivea sub-cat)
+  ['CSCT_GOI_TAM','CSCT_TOC'],
+  // Lăn/xịt khử mùi chung (non-Nivea)
+  ['CSCT_LAN'],
+  // SRM chung (non-Nivea)
+  ['CSCT_SRM'],
+  // CSCT: răng miệng
+  ['CSCT_RANG'],
+  // Nivea sub-cat: MỖI LOẠI RIÊNG BIỆT – không ghép lẫn
+  ['NIVEA_XIT'],   // chỉ xịt Nivea với xịt Nivea
+  ['NIVEA_LAN'],   // chỉ lăn Nivea với lăn Nivea
+  ['NIVEA_KEM'],   // chỉ kem Nivea với kem Nivea
+  ['NIVEA_SRM'],   // chỉ SRM Nivea với SRM Nivea
+  ['NIVEA_SON'],   // chỉ son Nivea với son Nivea
+  // Đông lạnh / viên / xúc xích
+  ['VIEN','XUC_XICH','DONG_LANH'],
+  // Gia vị chung
+  ['GIA_VI','NUOC_MAM','DO_HOP','DUONG','DAU_AN'],
+  // Ajinomoto sub-cat: bột ngọt ↔ bột ngọt, bột canh ↔ bột canh (KHÔNG mix)
+  ['AJI_BOT_NGOT'],   // bột ngọt riêng
+  ['AJI_BOT_CANH'],   // bột canh riêng
+  ['AJI_CHIEN'],      // bột chiên riêng
+  ['AJI_MAYO','GIA_VI'], // mayonnaise ghép được với gia vị chung
+  ['AJI_GIAM'],       // giấm riêng
+  // Mì ăn liền (riêng)
+  ['MI_AN_LIEN'],
+  // Cháo ăn liền (riêng)
+  ['CHAO_AN_LIEN'],
+  // Bánh mì tươi/bakery (riêng, KHÔNG ghép với bánh snack/quy)
+  ['BANH_MI_TUOI'],
+  // Bánh Tatawa (riêng)
+  ['BANH_TATAWA'],
+  // Kem Celano/Merino (cùng nhóm kem lạnh)
+  ['KEM_CELANO','KEM_LANH'],
+  // Sữa chua dẻo (KHÁC kem Merino)
+  ['SUA_CHUA_DEO_MERINO','SUA_PHOMAI'],
+  // Bột giặt (riêng)
+  ['BOT_GIAT'],
+  // Nước rửa chén (riêng, KHÔNG với nước tẩy)
+  ['NUOC_RUA_CHEN'],
+  // Váng sữa (riêng)
+  ['VANG_SUA'],
+  // Baby care (riêng)
+  ['CSCT_BABY'],
+  // Đồ gia dụng (riêng tuyệt đối)
+  ['DO_GIA_DUNG'],
+  // SRM Nivea Nam (riêng)
+  ['NIVEA_SRM_NAM'],
+  // SRM Nivea Nữ (riêng)
+  ['NIVEA_SRM_NU'],
+  // Pin
+  ['PIN'],
+  // Bật lửa
+  ['BAT_LUA'],
+  // Đường ăn kiêng
+  ['DUONG_KIEN','DUONG'],
+  // Nước hoa cơ thể
+  ['NUOC_HOA_CO_THE','CSCT_NUOC_HOA'],
+  // Nước súc miệng (KHÁC kem đánh răng/bàn chải)
+  ['NUOC_SUC_MIENG','LISTERINE'],
+  // BVS
+  ['BVS','BVS_SMC'],
+  // Khăn ướt / tã
+  ['KHAN_TA'],
+  // Cà phê
+  ['CA_PHE'],
+  // Gạo
+  ['GAO'],
+  // Quà tặng KM
+  ['QUAT_TANG'],
+  // Kem lạnh / đồ ăn lạnh
+  ['KEM_LANH'],
+  // Socola
+  ['SOCOLA','KEO'],
+  // Nước ép / nước dừa
+  ['NUOC_EP','NUOC_DONG_CHAI','NUOC_KHOANG'],
+  // Nước hoa
+  ['CSCT_NUOC_HOA'],
+  // Dưỡng da
+  ['CSCT_DUONG_DA','NIVEA_KEM'],
+  // Nước tẩy / vệ sinh gia dụng (RIÊNG)
+  ['NUOC_TAY'],
+  // Xịt phòng (RIÊNG)
+  ['XIT_PHONG'],
+];
+const STRICT=new Set([
+  // CSCT chăm sóc cá nhân – không ghép với thực phẩm hay gia dụng
+  'CSCT_GOI_TAM','CSCT_TOC','CSCT_SRM','CSCT_LAN','CSCT_RANG',
+  // Nivea sub-cat – mỗi sub riêng, chặn cross
+  'NIVEA_XIT','NIVEA_LAN','NIVEA_KEM','NIVEA_SRM','NIVEA_SON',
+  // Ajinomoto sub-cat – mỗi sub riêng
+  'AJI_BOT_NGOT','AJI_BOT_CANH','AJI_CHIEN','AJI_MAYO','AJI_GIAM',
+  // Gia dụng
+  'NUOC_TAY','XIT_PHONG',
+  // Đặc thù khác
+  'CA_PHE','BVS','BVS_SMC','QUAT_TANG','KHAN_TA','GAO','NUOC_KHOANG',
+  'DUONG','AN_LIEN','BOT_UONG',
+  // Kem lạnh các loại
+  'KEM_LANH','KEM_CELANO',
+  // Sữa chua dẻo
+  'SUA_CHUA_DEO_MERINO',
+  // Gia dụng
+  'BOT_GIAT','PIN','BAT_LUA',
+  // Thực phẩm đặc thù
+  'MI_AN_LIEN','CHAO_AN_LIEN','BANH_MI_TUOI','BANH_TATAWA',
+  'DUONG_KIEN','NUOC_SUC_MIENG','LISTERINE',
+  // CSCT
+  'CSCT_NUOC_HOA','CSCT_DUONG_DA','NUOC_HOA_CO_THE',
+]);
+function detCat(s){const n=nv(s);for(const c of CATS)for(const k of c.kw)if(n.includes(nv(k)))return c.id;return null;}
+/* Sub-cat cùng brand nhưng khác loại → chặn */
+const SUBCATS_SAME_BRAND = [
+  // Nivea: xịt ≠ lăn ≠ kem ≠ srm ≠ son
+  new Set(['NIVEA_XIT','NIVEA_LAN','NIVEA_KEM','NIVEA_SRM','NIVEA_SON']),
+  // Ajinomoto: bột ngọt ≠ bột canh ≠ chiên ≠ mayo ≠ giấm
+  new Set(['AJI_BOT_NGOT','AJI_BOT_CANH','AJI_CHIEN','AJI_MAYO','AJI_GIAM']),
+  // Gấu Đỏ: mì ≠ cháo (cùng brand nhưng khác sản phẩm)
+  new Set(['MI_AN_LIEN','CHAO_AN_LIEN']),
+  // Mỹ Hảo: nước rửa chén ≠ bột giặt ≠ nước tẩy
+  new Set(['NUOC_TAY','BOT_GIAT']),
+  // Kido: bánh mì tươi ≠ snack ≠ bánh quy
+  new Set(['BANH_MI_TUOI','BANH_SNACK','BANH_QUY','BANH_TATAWA']),
+  // Merino: kem lạnh ≠ sữa chua dẻo
+  new Set(['KEM_CELANO','KEM_LANH','SUA_CHUA_DEO_MERINO']),
+  // Sensodyne/Listerine: bàn chải/kem ≠ nước súc miệng
+  new Set(['CSCT_RANG','NUOC_SUC_MIENG','LISTERINE']),
+  // Kem lạnh ≠ sữa chua dẻo ≠ bánh mì tươi ≠ socola
+  new Set(['BANH_MI_TUOI','SOCOLA','KEM_CELANO','BANH_TATAWA']),
+  // Celano: các loại kem khác nhau (cone ≠ hộp ≠ passion...) → cho phép ghép chung
+  // Nước hoa: cơ thể ≠ xịt phòng
+  new Set(['NUOC_HOA_CO_THE','XIT_PHONG']),
+  // Nước tẩy Javel ≠ nước rửa chén (cùng Mỹ Hảo nhưng khác sản phẩm)
+  new Set(['NUOC_TAY','NUOC_RUA_CHEN']),
+  // Đường thường ≠ đường ăn kiêng
+  new Set(['DUONG','DUONG_KIEN']),
+  // SRM Nivea Nam ≠ SRM Nivea Nữ
+  new Set(['NIVEA_SRM_NAM','NIVEA_SRM_NU','NIVEA_SRM']),
+  // Váng sữa ≠ sữa tươi ≠ sữa chua
+  new Set(['VANG_SUA','SUA_TUOI','SUA_CHUA','SUA_TC']),
+  // Baby care ≠ nước hoa ≠ đồ gia dụng
+  new Set(['CSCT_BABY','NUOC_HOA_CO_THE','DO_GIA_DUNG','XIT_PHONG']),
+  // Kem lạnh ≠ socola
+  new Set(['KEM_LANH','KEM_CELANO','SOCOLA']),
+];
+function isSameBrandDiffSubcat(ca, cb){
+  if(!ca||!cb) return false;
+  for(const grp of SUBCATS_SAME_BRAND){
+    if(grp.has(ca) && grp.has(cb) && ca!==cb) return true;
+  }
+  return false;
+}
+function isCross(a,b){
+  const ca=detCat(a),cb=detCat(b);
+  // Cả 2 không rõ category → CHẶN (tránh ghép lung tung như thau nhựa với váng sữa)
+  // Chỉ cho phép nếu text similarity đã đủ cao (masterScore sẽ xử lý)
+  if(!ca&&!cb)return false; // Vẫn cho phép nhưng score sẽ thấp → không qua ngưỡng
+  // Cùng brand nhưng khác sub-loại → CHẶN (Lăn Nivea ≠ SRM Nivea)
+  if(isSameBrandDiffSubcat(ca,cb))return true;
+  // 1 bên None
+  if(!ca||!cb){
+    const known=ca||cb;
+    if(STRICT.has(known))return true;
+    const FOOD_SPECIFIC=new Set([
+      'DO_HOP','VIEN','XUC_XICH','DONG_LANH','NUOC_MAM','GIA_VI',
+      'AJI_BOT_NGOT','AJI_BOT_CANH','AJI_CHIEN','AJI_MAYO','AJI_GIAM',
+      'SUA_TUOI','SUA_CHUA','SUA_TC','SUA_HAT','YEN_MACH','NGU_COC','SUA_PHOMAI',
+      'NUOC_TANG','NUOC_DONG_CHAI','NUOC_KHOANG','BOT_UONG',
+      'CA_PHE','GAO','KEO','DUONG','AN_LIEN','DAU_AN',
+      'BANH_SNACK','BANH_BAO','BANH_BAULI','BANH_DANISA','BANH_XOP','BANH_QUY',
+      'CSCT_GOI_TAM','CSCT_TOC','CSCT_SRM','CSCT_LAN','CSCT_RANG',
+      'NIVEA_XIT','NIVEA_LAN','NIVEA_KEM','NIVEA_SRM','NIVEA_SON',
+      'NUOC_TAY','XIT_PHONG','BOT_GIAT','PIN','BAT_LUA',
+      'MI_AN_LIEN','CHAO_AN_LIEN','BANH_MI_TUOI','BANH_TATAWA',
+      'DUONG_KIEN','KEM_CELANO','SUA_CHUA_DEO_MERINO',
+      'NUOC_SUC_MIENG','LISTERINE','NUOC_HOA_CO_THE',
+      // Mới
+      'NUOC_RUA_CHEN','VANG_SUA','CSCT_BABY','DO_GIA_DUNG',
+      'NIVEA_SRM_NAM','NIVEA_SRM_NU','SOCOLA',
+    ]);
+    if(FOOD_SPECIFIC.has(known))return true;
+    return false;
+  }
+  if(ca===cb)return false;
+  for(const g of PARENT){const s=new Set(g);if(s.has(ca)&&s.has(cb))return false;}
+  return true;
+}
+
+/* ═══════════════════════════════════════════
+   SCORE ENGINE
+═══════════════════════════════════════════ */
+const UNITS={kg:1000,kilo:1000,g:1,gram:1,gr:1,mg:.001,l:1000,lit:1000,lít:1000,ml:1,cc:1,cl:10};
+function parseQty(s){const re=/(\d+(?:[.,]\d+)?)\s*(kg|kilo|g|gram|gr|mg|l|lít|lit|ml|cc|cl)/gi;const r=[];let m;while((m=re.exec(s))!==null){const num=parseFloat(m[1].replace(',','.'));const u=m[2].toLowerCase();r.push({base:num*(UNITS[u]||1),type:(u==='g'||u==='kg'||u==='kilo'||u==='gram'||u==='gr'||u==='mg')?'mass':'vol'});}return r;}
+function qtyScore(a,b,wt){const qa=parseQty(a),qb=parseQty(b);if(!qa.length&&!qb.length)return{s:.5,note:''};if(!qa.length||!qb.length)return{s:.35,note:'1 bên thiếu KL'};let best=0,note='';for(const o of qa)for(const i of qb){if(o.type!==i.type)continue;const r=Math.abs(o.base-i.base)/Math.max(o.base,i.base,1),p=Math.round(r*100);const s=r===0?1:r<=wt/100?.87:r<=.35?.65:.2;if(s>best){best=s;note=p>0?'KL chênh '+p+'%':''}}return best===0?{s:.2,note:'KL khác loại'}:{s:best,note};}
+function jaccard(a,b){const sa=new Set(a),sb=new Set(b);let i=0;sa.forEach(t=>{if(sb.has(t))i++;});const u=sa.size+sb.size-i;return u===0?0:i/u;}
+function strSim(a,b){const ta=tok(a),tb=tok(b);if(!ta.length||!tb.length)return 0;return jaccard(ta,tb);}
+const CTNS=[['chai','binh','lo','hu'],['goi','tui','bao','pe'],['hop','box'],['thung','kien'],['lon'],['loc']];
+function getCtn(s){const n=nv(s);for(const g of CTNS)for(const c of g)if(n.includes(c))return g[0];return null;}
+const BRANDS=['lay','poca','npc','danisa','bauli','moonfils','kalpa','d maxx','kopiko','popit','fres','th true','th milk','oatta','vietngucoc','viet dai','dalatmilk','cholimex','redbull','red bull','warrior','lavie','xmen','x-men','oliv','ooliv','purite','kotex','huggies','lacusina','kitkool','trung nguyen','ajinomoto','aji','nivea','sensodyne','colgate','oral b','glade','my hao','milo','ovaltine','bien hoa','merino','nrc'];
+function masterScore(outS,inS,wt,strict){
+  if(isCross(outS,inS))return{score:0,diffs:['Khác loại'],types:['name'],note:'Khác loại',blocked:true};
+  const fc=strict?flavorConflict(outS,inS):false;
+  const txt=strSim(outS,inS);const qs=qtyScore(outS,inS,wt);
+  const co=getCtn(outS),ci=getCtn(inS);const cs=(!co&&!ci)?.5:(!co||!ci)?.4:co===ci?1:.2;
+  const ei=expand(inS);const tExp=strSim(outS,ei);const abbrB=tExp>txt+.1?.12:0;
+  const no=nv(outS),niExp=nv(inS)+' '+ei;
+  let brandB=0;for(const b of BRANDS){const nb=nv(b);if(no.includes(nb)&&niExp.includes(nb)){brandB=.15;break;}}
+  let diffBP=0;if(!brandB){let hO=false,hI=false;for(const b of BRANDS){const nb=nv(b);if(no.includes(nb))hO=true;if(niExp.includes(nb))hI=true;}if(hO&&hI)diffBP=.08;}
+  let raw=txt*.40+qs.s*.28+cs*.10+abbrB+brandB-diffBP+(txt>.65?.08:0);
+  if(fc)raw=Math.min(raw,.20);
+  if(txt<.10&&abbrB<.08&&brandB<.08)raw=Math.min(raw,.22);
+  if(qs.note==='KL khác loại')raw=Math.min(raw,.30);
+  const score=Math.round(raw*100);
+  const diffs=[],types=[];
+  if(fc){diffs.push('Xung đột vị');types.push('flavor');}else if(abbrB>.05){diffs.push('Mã nội bộ');types.push('abbr');}else if(txt<.4){diffs.push('Tên khác');types.push('name');}
+  if(qs.note){diffs.push(qs.note);types.push('weight');}
+  if(co&&ci&&co!==ci){diffs.push('QC:'+co+'!='+ci);types.push('unit');}
+  if(!diffs.length&&score>=60){diffs.push('Tương đồng tốt');types.push('name');}
+  const note=fc?'Xung đột vị':score>=85?'Khớp rất cao':score>=70?'Khớp tốt':score>=50?'Có thể tương đồng':'Cần kiểm tra';
+  return{score,diffs,types,note,flavorConflict:fc,blocked:false};
+}
+function isPlaceholder(s){
+  const n=nv(s);
+  const PLACEHOLDERS=['ten mat hang dau vao','ten san pham','nhap ten','chua co ten','placeholder','n/a'];
+  return PLACEHOLDERS.some(p=>n.includes(p))||s.trim().length<3;
+}
+function greedyMatch(outList,inList,wt,minScore,strict){
+  // Lọc bỏ placeholder/giá trị rỗng trong đầu vào
+  inList=inList.filter(s=>!isPlaceholder(s));
+  const flat=[];
+  outList.forEach((o,oi)=>inList.forEach((inp,ii)=>{const r=masterScore(o,inp,wt,strict);if(!r.blocked&&r.score>=minScore)flat.push({oi,ii,out:o,in:inp,...r});}));
+  flat.sort((a,b)=>b.score-a.score);
+  const usedOut=new Set(),result=[];
+  for(const c of flat){if(usedOut.has(c.oi))continue;result.push({id:result.length,out:c.out,barcode:maVachMap[c.out]||'',in:c.in,score:c.score,diffs:c.diffs,types:c.types,note:c.note,flavorConflict:c.flavorConflict,isAI:false,improved:false});usedOut.add(c.oi);}
+  const unmOut=outList.filter((_,i)=>!usedOut.has(i));
+  const usedInNames=new Set(result.map(r=>r.in));
+  const unmIn=inList.filter(s=>!usedInNames.has(s));
+  return{result,unmOut,unmIn};
+}
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let pairs=[],confirmed=new Set(),rejected=new Set(),unmOut=[],unmIn=[];
+
+/* ── API KEY MANAGEMENT ── */
+let _apiKey = localStorage.getItem('anthropic_api_key') || '';
+
+function toggleApiPanel(){
+  const p=document.getElementById('apiPanel');
+  const isOpen = p.style.display!=='none';
+  p.style.display = isOpen?'none':'block';
+  if(!isOpen && _apiKey){
+    document.getElementById('apiKeyInput').value = _apiKey;
+    checkApiKey();
+  }
+}
+function checkApiKey(){
+  const val = document.getElementById('apiKeyInput').value.trim();
+  const ok = val.startsWith('sk-ant-');
+  document.getElementById('apiKeyStatus').textContent = ok ? '✓ Định dạng hợp lệ' : val ? '⚠ Key phải bắt đầu bằng sk-ant-' : '';
+  document.getElementById('apiKeyStatus').style.color = ok ? 'var(--green)' : 'var(--amber)';
+}
+function saveApiKey(){
+  const val = document.getElementById('apiKeyInput').value.trim();
+  if(!val.startsWith('sk-ant-')){alert('API Key không hợp lệ. Phải bắt đầu bằng sk-ant-');return;}
+  _apiKey = val;
+  localStorage.setItem('anthropic_api_key', val);
+  document.getElementById('apiPanel').style.display = 'none';
+  document.getElementById('btnApiKey').style.background = 'var(--g50)';
+  document.getElementById('btnApiKey').style.borderColor = 'var(--green)';
+  document.getElementById('btnApiKey').style.color = 'var(--g800)';
+  document.getElementById('btnApiKey').textContent = '✓ API Key';
+  document.getElementById('aiStatusBadge').textContent = '⚡ AI sẵn sàng';
+  document.getElementById('aiStatusBadge').style.background = '#EDE9FE';
+  document.getElementById('aiStatusBadge').style.color = '#5B21B6';
+  document.getElementById('aiStatusBadge').style.borderColor = '#C4B5FD';
+}
+function clearApiKey(){
+  _apiKey = '';
+  localStorage.removeItem('anthropic_api_key');
+  document.getElementById('apiKeyInput').value = '';
+  document.getElementById('apiKeyStatus').textContent = '';
+  document.getElementById('btnApiKey').style.background = '';
+  document.getElementById('btnApiKey').style.borderColor = '#7C3AED';
+  document.getElementById('btnApiKey').style.color = '#5B21B6';
+  document.getElementById('btnApiKey').textContent = '🔑 API Key';
+  document.getElementById('aiStatusBadge').textContent = '⚙ Offline';
+}
+// Restore key on load
+function initApiKey(){
+  if(_apiKey){
+    document.getElementById('btnApiKey').textContent = '✓ API Key';
+    document.getElementById('btnApiKey').style.background = 'var(--g50)';
+    document.getElementById('btnApiKey').style.borderColor = 'var(--green)';
+    document.getElementById('btnApiKey').style.color = 'var(--g800)';
+    document.getElementById('aiStatusBadge').textContent = '⚡ AI sẵn sàng';
+    document.getElementById('aiStatusBadge').style.background = '#EDE9FE';
+    document.getElementById('aiStatusBadge').style.color = '#5B21B6';
+  }
+}
+let maVachMap={};
+
+/* ── STT + đếm dòng realtime ── */
+function syncStt(key) {
+  const taId = key==='Out'?'taOut':key==='In'?'taIn':'taMaVach';
+  const sttId = 'stt'+key+'Inner';
+  const cntId = 'cnt'+(key==='Mv'?'Mv':key);
+  const ta = document.getElementById(taId);
+  const lines = ta.value.split('\n');
+  const filled = lines.filter(l=>l.trim()).length;
+  // Update count badge
+  const cntEl = document.getElementById(cntId);
+  if(cntEl) cntEl.textContent = filled + (key==='Mv'?' mã':' SP');
+  // Render STT numbers (sync scroll)
+  const inner = document.getElementById(sttId);
+  if(!inner) return;
+  inner.innerHTML = lines.map((_,i)=>`<div class="stt-line">${i+1}</div>`).join('');
+  // Sync scroll
+  const sttWrap = document.getElementById('stt'+key);
+  if(sttWrap) {
+    ta.onscroll = ()=>{ sttWrap.scrollTop = ta.scrollTop; };
+  }
+}
+// Init on load
+function initStt(){['Out','In','Mv'].forEach(k=>syncStt(k));}
+let inputOpen=true;
+
+/* ═══════════════════════════════════════════
+   UI HELPERS
+═══════════════════════════════════════════ */
+function toggleInput(){inputOpen=!inputOpen;document.getElementById('inputBody').classList.toggle('open',inputOpen);document.getElementById('inputFt').classList.toggle('open',inputOpen);document.getElementById('inputHd').innerHTML=(inputOpen?'&#9660;':'&#9654;')+' Nhập danh sách sản phẩm';}
+function loadDemo(){
+  document.getElementById('taOut').value=DEMO_OUT;
+  document.getElementById('taIn').value=DEMO_IN;
+  document.getElementById('taMaVach').value='';
+  syncStt('Out');syncStt('In');syncStt('Mv');
+}
+function loadDemoRun(){if(!inputOpen)toggleInput();loadDemo();setTimeout(runMatch,100);}
+function showAlert(type,msg){const el=document.getElementById('alert'+type);el.innerHTML=msg;el.classList.add('show');}
+function hideAlerts(){['Warn','Info'].forEach(t=>document.getElementById('alert'+t).classList.remove('show'));}
+
+/* ═══════════════════════════════════════════
+   MAIN RUN – Thuật toán + AI song song
+═══════════════════════════════════════════ */
+async function runMatch(){
+  const outListRaw=document.getElementById('taOut').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const maVachRaw=document.getElementById('taMaVach').value.trim().split('\n').map(s=>s.trim());
+  const inList=document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  if(!outListRaw.length||!inList.length){alert('Vui lòng nhập cả hai danh sách');return;}
+  // Build map: tên đầu ra → mã vạch (theo thứ tự dòng) — gán vào global
+  maVachMap={};
+  outListRaw.forEach((sp,i)=>{ if(maVachRaw[i]&&maVachRaw[i].trim()) maVachMap[sp]=maVachRaw[i].trim(); });
+  const outList=outListRaw;
+  const wt=+document.getElementById('slWt').value||20;
+  const minS=+document.getElementById('slMin').value||40;
+  const strict=document.getElementById('chkStrict').checked;
+  const useAI=document.getElementById('chkAI').checked;
+  if(useAI && !_apiKey){
+    const go=confirm('Chưa có API Key.\nNhấn OK để nhập API Key.\nNhấn Cancel để chạy thuật toán thôi (không dùng AI).');
+    if(go){toggleApiPanel();document.getElementById('mainRunBtn').disabled=false;return;}
+  }
+  const btn=document.getElementById('runBtn');
+  btn.disabled=true;btn.textContent='⏳ Đang phân tích...';
+  confirmed=new Set();rejected=new Set();pairs=[];
+  hideAlerts();
+  document.getElementById('aiProg').classList.remove('show');
+  document.getElementById('unmatchedBox').innerHTML='';
+
+  await new Promise(r=>setTimeout(r,20));
+  const res=greedyMatch(outList,inList,wt,minS,strict);
+  pairs=res.result;unmOut=res.unmOut;unmIn=res.unmIn;
+  document.getElementById('toolbarArea').style.display='flex';
+  document.getElementById('legendArea').style.display='flex';
+  renderSummary();renderTable();
+  if(inputOpen)toggleInput();
+
+  if(useAI){
+    document.getElementById('aiStatusBadge').textContent='⚡ AI đang chạy...';
+    document.getElementById('aiStatusBadge').style.background='#EDE9FE';
+    document.getElementById('aiStatusBadge').style.color='#5B21B6';
+    document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
+    document.getElementById('aiProg').classList.add('show');
+    const BATCH=12,pairIdx={};
+    pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
+    for(let b=0;b<outList.length;b+=BATCH){
+      const batch=outList.slice(b,b+BATCH);
+      const pct=Math.round((b/outList.length)*100);
+      document.getElementById('aiBar').style.width=pct+'%';
+      document.getElementById('aiMsg').textContent='⚡ AI: '+(b+1)+'–'+Math.min(b+BATCH,outList.length)+' / '+outList.length+' sản phẩm...';
+      const relevant=inList.filter(inS=>!isPlaceholder(inS)&&!batch.every(o=>isCross(o,inS))).slice(0,80);
+      const prompt='Ghép ĐẦU RA với ĐẦU VÀO tương ứng. Viết tắt kho: STTT=Sữa Tươi Tiệt Trùng, NPC=Poca, NMCC=Nước Mắm Cá Cơm, SCA=Sữa Chua Ăn, BVS=Băng Vệ Sinh, HS TT=Hải Sản Thủy Tinh, SCUTT=sữa chua uống tiệt trùng, tp=thuận phát.\nQuy tắc: cùng loại SP (bánh↔bánh, kẹo↔kẹo, sữa↔sữa, gia vị↔gia vị, CSCT↔CSCT), cùng thương hiệu ưu tiên, trọng lượng ±30% OK, 1 đầu vào có thể ghép nhiều đầu ra, không tìm được → null.\n\nĐẦU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\n\nĐẦU VÀO ('+relevant.length+' sp):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\n\nJSON only: {"m":[{"o":"tên đầu ra","i":"tên đầu vào hoặc null","s":85,"r":"lý do ngắn"}]}';
+      try{
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+        const data=await resp.json();
+        if(data.error)throw new Error(data.error.message);
+        const text=data.content.map(c=>c.text||'').join('');
+        const clean=text.replace(/```json|```/g,'').trim();
+        const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
+        if(s===-1)throw new Error('no JSON');
+        const json=JSON.parse(clean.slice(s,e+1));
+        const inSet=new Set(inList);
+        for(const m of(json.m||[])){
+          if(!m.i||(m.s||0)<40)continue;
+          let validIn=inSet.has(m.i)?m.i:null;
+          if(m.i&&!validIn){const mn=nv(m.i);validIn=inList.find(s=>{const sn=nv(s);return sn.includes(mn.slice(0,12))||mn.includes(sn.slice(0,12));})||null;}
+          if(!validIn)continue;
+          const idx=pairIdx[m.o];
+          if(idx!==undefined){if(m.s>pairs[idx].score+5){pairs[idx]={...pairs[idx],in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'AI cải thiện ('+pairs[idx].score+'%→'+m.s+'%)',isAI:true,improved:true};}}
+          else{const newId=pairs.length;pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});pairIdx[m.o]=newId;unmOut=unmOut.filter(o=>o!==m.o);}
+        }
+        renderSummary();renderTable();
+      }catch(e){
+        if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){
+          document.getElementById('aiMsg').textContent='⚠ File đang mở từ file:// – AI cần chạy qua server hoặc trong Claude.ai. Thuật toán vẫn hoạt động bình thường.';
+          document.getElementById('aiStatusBadge').textContent='⚙ Offline – AI không khả dụng';
+          document.getElementById('aiStatusBadge').style.background='var(--a50)';
+          document.getElementById('aiStatusBadge').style.color='var(--amber)';
+          document.getElementById('aiStatusBadge').style.borderColor='var(--a400)';
+          break;
+        }
+        document.getElementById('aiMsg').textContent='⚠ Lỗi batch: '+e.message.slice(0,50);
+        await new Promise(r=>setTimeout(r,1000));
+      }
+      await new Promise(r=>setTimeout(r,180));
+    }
+    document.getElementById('aiBar').style.width='100%';
+    const aiCount=pairs.filter(p=>p.isAI).length;
+    document.getElementById('aiMsg').textContent='✓ AI hoàn tất! Đã ghép thêm/cải thiện '+aiCount+' sản phẩm.';
+    document.getElementById('aiStatusBadge').textContent='⚡ AI hoàn tất ('+aiCount+')';
+    setTimeout(()=>{document.getElementById('aiProg').classList.remove('show');},4000);
+  }
+
+  const conflicts=pairs.filter(p=>p.flavorConflict).length;
+  if(conflicts>0)showAlert('Warn','⚠ <strong>'+conflicts+' cặp xung đột vị/hương</strong> – đã giảm điểm và đánh dấu. Lọc "⚠ Xung đột vị" để xem.');
+  if(unmOut.length>0)showAlert('Info','ℹ <strong>'+unmOut.length+' sản phẩm đầu ra</strong> chưa ghép được. Xem tab "Chưa ghép".');
+  renderUnmatched();
+  btn.disabled=false;btn.textContent=useAI?'⚡ Ghép nối + AI':'▶ Ghép nối';
+  renderSummary();renderTable();
+}
+
+/* ═══════════════════════════════════════════
+   RENDER SUMMARY
+═══════════════════════════════════════════ */
+function renderSummary(){
+  const h=pairs.filter(p=>p.score>=80&&!p.flavorConflict).length;
+  const m=pairs.filter(p=>p.score>=60&&p.score<80&&!p.flavorConflict).length;
+  const l=pairs.filter(p=>p.score<60&&p.score>0&&!p.flavorConflict).length;
+  const cf=pairs.filter(p=>p.flavorConflict).length;
+  const ai=pairs.filter(p=>p.isAI).length;
+  const pills=[
+    {v:h,l:'Cao ≥80%',bg:' style="background:var(--g50);color:var(--g800)"',f:'h'},
+    {v:m,l:'Trung bình',bg:' style="background:var(--a50);color:var(--amber)"',f:'m'},
+    {v:l,l:'Thấp',bg:' style="background:var(--r50);color:var(--red)"',f:'l'},
+  ];
+  if(cf)pills.push({v:cf,l:'Xung đột',bg:' style="background:#FCE4E4;color:var(--red)"',f:'x'});
+  if(ai)pills.push({v:ai,l:'AI ghép',bg:' style="background:#EDE9FE;color:#5B21B6"',f:'ai'});
+  const r2=pairs.filter(p=>p.round2&&!p.isAI).length;
+  if(r2)pills.push({v:r2,l:'Lần 2',bg:' style="background:var(--b50);color:var(--b800)"',f:'r2'});
+  if(unmOut.length)pills.push({v:unmOut.length,l:'Chưa ghép',bg:' style="background:var(--sf2);color:var(--tx2)"',f:'u'});
+  pills.push({v:confirmed.size,l:'Đã xác nhận',bg:' style="background:var(--b50);color:var(--b800)"',f:'c'});
+  document.getElementById('summaryArea').innerHTML='<div class="pills">'+pills.map(p=>`<div class="pill"${p.bg} onclick="setFilter('${p.f}')" id="pill-${p.f}"><b>${p.v}</b> ${p.l}</div>`).join('')+'<button class="btn success sm" onclick="confirmAll()" style="margin-left:auto">✓ Xác nhận tất cả ≥80%</button></div>';
+}
+
+/* ═══════════════════════════════════════════
+   RENDER TABLE
+═══════════════════════════════════════════ */
+function renderTable(){
+  const q=(document.getElementById('srch').value||'').toLowerCase();
+  const flt=document.getElementById('flt').value;
+  let rows=pairs.filter(p=>{
+    if(q&&!(p.out+p.in).toLowerCase().includes(q))return false;
+    if(flt==='h')return p.score>=80&&!p.flavorConflict;
+    if(flt==='m')return p.score>=60&&p.score<80&&!p.flavorConflict;
+    if(flt==='l')return p.score<60&&p.score>0&&!p.flavorConflict;
+    if(flt==='x')return p.flavorConflict;
+    if(flt==='ai')return p.isAI;
+    if(flt==='r2')return p.round2;
+    if(flt==='c')return confirmed.has(p.id);
+    if(flt==='p')return!confirmed.has(p.id)&&!rejected.has(p.id);
+    if(flt==='u')return false;
+    return true;
+  });
+  const unmRows=(!flt||flt==='u')?unmOut.map((o,i)=>({id:-1-i,out:o,barcode:maVachMap[o]||'',in:'—',score:0,diffs:['Chưa ghép'],types:['name'],note:'Cần bổ sung đầu vào',isAI:false,unmatched:true})):[];
+  const all=[...rows,...unmRows];
+  document.getElementById('rowCount').textContent=all.length+' dòng';
+  if(!all.length){document.getElementById('tblBody').innerHTML='<div class="empty"><div class="empty-ic">🔍</div>Không tìm thấy</div>';return;}
+  const sc=p=>p.score>=80?'background:var(--g50);color:var(--g800)':p.score>=60?'background:var(--a50);color:var(--amber)':p.score>0?'background:var(--r50);color:var(--red)':'background:var(--sf2);color:var(--tx2)';
+  const bc=p=>p.score>=80?'#1D9E75':p.score>=60?'var(--a400)':'var(--red)';
+  const rowBL=p=>p.isAI?'border-left:3px solid #7C3AED':confirmed.has(p.id)?'border-left:3px solid var(--green)':'border-left:3px solid transparent';
+  const rowBg=p=>confirmed.has(p.id)?'background:#E1F5EE15':rejected.has(p.id)?'opacity:.35;':'';
+  const tagBg=t=>t==='flavor'?'#FCE4E4;color:#962828':t==='abbr'?'#EEEDFE;color:#3C3489':t==='weight'?'var(--a50);color:var(--amber)':t==='unit'?'var(--g50);color:var(--g800)':'#FAECE7;color:#712B13';
+  document.getElementById('tblBody').innerHTML=all.map((p,idx)=>{
+    const isC=confirmed.has(p.id),isR=rejected.has(p.id),dts=p.types||[];
+    return `<div class="trow" style="${rowBg(p)};${rowBL(p)}" onclick="toggleConf(${p.id})">
+      <div class="tc tc-num">${idx+1}</div>
+      <div class="tc tc-barcode">
+        ${p.barcode
+          ? `<div class="barcode-val">&#128278;<br>${esc(p.barcode)}</div>`
+          : `<div class="barcode-empty" style="font-size:10px;color:var(--tx3);font-style:italic">Chưa có<br>mã vạch</div>`}
+      </div>
+      <div class="tc tc-out">
+        <div class="pname">${esc(p.out)}</div>
+        <div class="pmeta">${(p.diffs||[]).map((d,i)=>`<span class="dtag" style="background:${tagBg(dts[i]||'')}">${esc(d)}</span>`).join('')}</div>
+      </div>
+      <div class="tc tc-mid">
+        <div style="font-size:17px;color:var(--tx3)">⇌</div>
+        <span class="sc-pill" style="${sc(p)}">${p.score>0?p.score+'%':'—'}</span>
+        ${p.score>0?`<div class="bar-bg"><div class="bar-fill" style="width:${Math.min(100,p.score)}%;background:${bc(p)}"></div></div>`:''}
+        ${isC?`<span style="font-size:13px;color:var(--green)">✔</span>`:''}
+      </div>
+      <div class="tc tc-in">
+        <div class="pname" style="color:${p.unmatched?'var(--tx3)':'inherit'};font-style:${p.unmatched?'italic':'normal'}">${esc(p.in)}</div>
+        ${p.isAI&&p.round2
+          ? `<div class="r2-note">&#9660; Lần 2: ${esc((p.diffs[0]||'').replace('⚡ AI lần 2: ','').replace('AI lần 2: ',''))}</div>`
+          : p.isAI
+          ? `<div class="ai-note">&#9889; AI: ${esc((p.diffs[0]||'').replace('AI: ',''))}</div>`
+          : p.note==='⚙ Thuật toán lần 2'
+          ? `<div class="r2-note">&#9660; Thuật toán lần 2</div>`
+          : `<div class="pnote">${esc(p.note||'')}</div>`}
+      </div>
+      <div class="tc tc-acts" onclick="event.stopPropagation()">
+        ${!p.unmatched&&!isC&&!isR?`<button onclick="toggleRej(${p.id})" class="btn xs danger">✗</button><button onclick="toggleConf(${p.id})" class="btn xs success">✓ OK</button>`:''}
+        ${isC?`<span style="font-size:10px;color:var(--green);font-weight:600">✔ OK</span><button onclick="toggleConf(${p.id})" class="btn xs">↺</button>`:''}
+        ${isR?`<span style="font-size:10px;color:var(--tx3)">Bỏ qua</span><button onclick="toggleRej(${p.id})" class="btn xs">↺</button>`:''}
+      </div>
+    </div>`;
+  }).join('');
+}
+function renderUnmatched(){
+  const box=document.getElementById('unmatchedBox');
+  if(!unmOut.length){box.innerHTML='';return;}
+  box.innerHTML=`<div class="unmatch-box"><h4>⚠ ${unmOut.length} sản phẩm đầu ra chưa ghép được</h4>${unmOut.map(s=>`<div class="uitem">${esc(s)}</div>`).join('')}</div>`;
+}
+
+/* ═══════════════════════════════════════════
+   ACTIONS
+═══════════════════════════════════════════ */
+function setFilter(f){const el=document.getElementById('flt');el.value=el.value===f?'':f;renderTable();}
+function toggleConf(id){if(id<0||rejected.has(id))return;if(confirmed.has(id))confirmed.delete(id);else{confirmed.add(id);rejected.delete(id);}renderSummary();renderTable();}
+function toggleRej(id){if(id<0)return;if(rejected.has(id))rejected.delete(id);else{rejected.add(id);confirmed.delete(id);}renderSummary();renderTable();}
+function confirmAll(){pairs.filter(p=>p.score>=80&&!p.flavorConflict&&!rejected.has(p.id)).forEach(p=>confirmed.add(p.id));renderSummary();renderTable();}
+
+/* ═══════════════════════════════════════════
+   EXPORT
+═══════════════════════════════════════════ */
+function dl(csv,name){const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,'+encodeURIComponent(csv);a.download=name;a.click();}
+function toCSV(hdr,rows){return'\uFEFF'+[hdr,...rows.map(r=>r.map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','))].join('\n');}
+function exportCSV(){
+  if(!pairs.length){alert('Chưa có dữ liệu');return;}
+  dl(toCSV('STT,Ma_Vach,San_Pham_Dau_Ra,San_Pham_Dau_Vao,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai',
+    pairs.filter(p=>!rejected.has(p.id)).map((p,i)=>[
+      i+1, p.barcode||'', p.out, p.in, p.score,
+      (p.diffs||[]).join(' | '), p.note||'',
+      confirmed.has(p.id)||p.isManual?'Da xac nhan':p.isAI?'AI ghep':'Cho xet'
+    ]))
+  ,'ghep_noi_v10_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+function exportUnmatched(){
+  if(!unmOut.length&&!unmIn.length){alert('Không có sản phẩm chưa ghép!');return;}
+  dl(toCSV('Loai,Ten_San_Pham,Ghi_Chu',[...unmOut.map(s=>['Dau_Ra',s,'Can bo sung dau vao tuong ung']),...unmIn.map(s=>['Dau_Vao',s,'Khong co dau ra tuong ung'])]),'chua_ghep_v10_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+
+/* ═══════════════════════════════════════════
+   BẢNG GHÉP THỦ CÔNG
+═══════════════════════════════════════════ */
+let manSelOut = null;   // tên SP đầu ra đang chọn
+let manSelIn  = new Set(); // set tên SP đầu vào đang chọn
+let manualPairs = [];   // [{out, barcode, in, type:'manual'}]
+
+function renderUnmatched(){
+  const box = document.getElementById('unmatchedBox');
+  const sec = document.getElementById('manualSection');
+  const run2 = document.getElementById('run2Bar');
+
+  if(!unmOut.length && !unmIn.length){
+    box.innerHTML='';
+    if(sec) sec.style.display='none';
+    if(run2) run2.classList.remove('show');
+    return;
+  }
+
+  // Box tóm tắt
+  box.innerHTML = unmOut.length
+    ? `<div class="unmatch-box" style="display:none"></div>` : '';
+
+  // Hiện run2 bar
+  if(run2 && unmOut.length){
+    run2.classList.add('show');
+    document.getElementById('run2Msg').textContent =
+      `${unmOut.length} sản phẩm đầu ra chưa ghép được`;
+  }
+
+  // Hiện bảng thủ công
+  if(sec){
+    sec.style.display = 'block';
+    manSelOut = null; manSelIn = new Set();
+    renderManual();
+  }
+}
+
+function renderManual(){
+  const q = (document.getElementById('manSrch').value||'').toLowerCase();
+
+  // Lấy đầu ra chưa ghép (unmOut) trừ đã ghép thủ công
+  const manPairedOut = new Set(manualPairs.map(p=>p.out));
+  const availOut = unmOut.filter(o=>!manPairedOut.has(o));
+  const filtOut = q ? availOut.filter(o=>o.toLowerCase().includes(q)) : availOut;
+
+  // Đầu vào chưa được ghép bởi thuật toán (unmIn) + chưa ghép thủ công
+  const manPairedIn = new Set(manualPairs.flatMap(p=>p.ins));
+  const allInList = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const usedInAlgo = new Set(pairs.map(p=>p.in).filter(Boolean));
+  // Đề xuất: toàn bộ đầu vào (để linh hoạt), đánh dấu đã dùng
+  const filtIn = q ? allInList.filter(s=>s.toLowerCase().includes(q)) : allInList;
+
+  document.getElementById('manOutCount').textContent = availOut.length;
+  document.getElementById('manInCount').textContent = filtIn.length;
+
+  // Render đầu ra
+  document.getElementById('manOutList').innerHTML = filtOut.length
+    ? filtOut.map((o,i)=>{
+        const isSel = manSelOut === o;
+        const bc = maVachMap[o]||'';
+        return `<div class="mrow${isSel?' sel-out':''}" onclick="toggleManOut('${escJ(o)}')">
+          <div class="mchk${isSel?' checked-out':''}">✓</div>
+          <div class="mstt">${i+1}</div>
+          <div style="flex:1;min-width:0">
+            <div class="mname">${esc(o)}</div>
+            ${bc?`<div style="font-size:10px;font-family:'Courier New',monospace;color:var(--amber);margin-top:1px">&#128278; ${esc(bc)}</div>`:'<div style="font-size:10px;color:var(--tx3);font-style:italic">Không có mã vạch</div>'}
+          </div>
+        </div>`;
+      }).join('')
+    : `<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">
+        ${unmOut.length===0?'✓ Tất cả đầu ra đã được ghép!':'Không tìm thấy kết quả'}</div>`;
+
+  // Render đầu vào
+  document.getElementById('manInList').innerHTML = filtIn.length
+    ? filtIn.map((s,i)=>{
+        const isSel = manSelIn.has(s);
+        const usedAlgo = usedInAlgo.has(s);
+        const usedMan  = manPairedIn.has(s);
+        const badge = usedAlgo?`<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:var(--g50);color:var(--g800)">Đã ghép ✓</span>`
+                    : usedMan?`<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:#EDE9FE;color:#5B21B6">Thủ công ✓</span>`:''
+        return `<div class="mrow${isSel?' sel-in':''}" onclick="toggleManIn('${escJ(s)}')">
+          <div class="mchk${isSel?' checked-in':''}">✓</div>
+          <div class="mstt">${i+1}</div>
+          <div style="flex:1;min-width:0">
+            <div class="mname">${esc(s)}</div>
+            ${badge?`<div style="margin-top:2px">${badge}</div>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    : `<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">Không có đầu vào</div>`;
+
+  updateManSelInfo();
+}
+
+function toggleManOut(name){
+  manSelOut = manSelOut===name ? null : name;
+  renderManual();
+}
+function toggleManIn(name){
+  if(manSelIn.has(name)) manSelIn.delete(name);
+  else manSelIn.add(name);
+  renderManual();
+}
+function clearManualSel(){ manSelOut=null; manSelIn=new Set(); renderManual(); }
+
+function updateManSelInfo(){
+  const outLbl = document.getElementById('selOutLabel');
+  const inLbl  = document.getElementById('selInLabel');
+  const btn    = document.getElementById('btnManualPair');
+  outLbl.textContent = manSelOut ? manSelOut.slice(0,60)+(manSelOut.length>60?'…':'') : '— (chưa chọn đầu ra)';
+  if(manSelIn.size===0){
+    inLbl.textContent='— (chưa chọn đầu vào)';
+  } else {
+    const arr=[...manSelIn];
+    inLbl.textContent=arr[0].slice(0,40)+(arr.length>1?` + ${arr.length-1} SP khác`:'');
+  }
+  btn.disabled = !manSelOut || manSelIn.size===0;
+}
+
+function doManualPair(){
+  if(!manSelOut || manSelIn.size===0) return;
+  // Với mỗi đầu vào được chọn → tạo 1 cặp thủ công
+  const ins = [...manSelIn];
+  manualPairs.push({
+    out: manSelOut,
+    barcode: maVachMap[manSelOut]||'',
+    ins: ins,
+    type: 'manual'
+  });
+  // Thêm vào pairs chính để xuất CSV chung
+  ins.forEach(inp=>{
+    pairs.push({
+      id: pairs.length,
+      out: manSelOut,
+      barcode: maVachMap[manSelOut]||'',
+      in: inp,
+      score: 100,
+      diffs:['Ghép thủ công'],
+      types:['abbr'],
+      note:'✎ Ghép thủ công',
+      flavorConflict:false,
+      isAI:false,
+      isManual:true,
+      improved:false
+    });
+    // Xóa khỏi unmOut
+    unmOut = unmOut.filter(o=>o!==manSelOut);
+  });
+  manSelOut=null; manSelIn=new Set();
+  renderManual();
+  renderManualPaired();
+  renderSummary();
+  renderTable();
+  // Ẩn run2 nếu không còn chưa ghép
+  if(!unmOut.length) document.getElementById('run2Bar').classList.remove('show');
+}
+
+function renderManualPaired(){
+  const sec=document.getElementById('manualPairedSection');
+  const rowsEl=document.getElementById('manPairedRows');
+  if(!manualPairs.length){sec.style.display='none';return;}
+  sec.style.display='block';
+  document.getElementById('manPairedCount').textContent=manualPairs.reduce((s,p)=>s+p.ins.length,0);
+  let idx=0;
+  rowsEl.innerHTML=manualPairs.flatMap((p,pi)=>
+    p.ins.map((inp,ii)=>{
+      idx++;
+      return `<div class="paired-row" style="background:${idx%2===0?'var(--sf2)':'var(--sf)'}">
+        <div class="pc" style="color:var(--tx3)">${idx}</div>
+        <div class="pc" style="font-size:10px;font-family:'Courier New',monospace;color:var(--amber);line-height:1.4">${p.barcode?'&#128278; '+esc(p.barcode):'<span style=\"color:var(--tx3);font-style:italic\">—</span>'}</div>
+        <div class="pc" style="font-size:11px;font-weight:500">${esc(p.out)}</div>
+        <div class="pc" style="text-align:center"><span style="font-size:10px;padding:1px 6px;border-radius:3px;background:#EDE9FE;color:#5B21B6">✎ Thủ công</span></div>
+        <div class="pc" style="font-size:11px">${esc(inp)}</div>
+        <div class="pc" style="text-align:center">
+          <button onclick="removeManualPair(${pi},${ii})" class="btn xs danger">✗</button>
+        </div>
+      </div>`;
+    })
+  ).join('');
+}
+
+function removeManualPair(pi, ii){
+  const p=manualPairs[pi];
+  const inp=p.ins[ii];
+  // Xóa khỏi pairs chính
+  pairs=pairs.filter(x=>!(x.isManual&&x.out===p.out&&x.in===inp));
+  // Xóa khỏi ins array
+  p.ins.splice(ii,1);
+  if(p.ins.length===0) manualPairs.splice(pi,1);
+  // Đưa đầu ra về unmOut nếu không còn cặp nào
+  const stillPaired=pairs.some(x=>x.out===p.out);
+  if(!stillPaired && !unmOut.includes(p.out)) unmOut.push(p.out);
+  renderManual();
+  renderManualPaired();
+  renderSummary();
+  renderTable();
+  if(unmOut.length) document.getElementById('run2Bar').classList.add('show');
+}
+
+function exportManualCSV(){
+  if(!manualPairs.length){alert('Chưa có cặp ghép thủ công');return;}
+  const rows=[];
+  let i=0;
+  manualPairs.forEach(p=>p.ins.forEach(inp=>{
+    rows.push([++i,p.barcode||'',p.out,inp,'100','Ghép thủ công','Da xac nhan']);
+  }));
+  dl(toCSV('STT,Ma_Vach,San_Pham_Dau_Ra,San_Pham_Dau_Vao,Do_Khop_Pct,Ghi_Chu,Trang_Thai',rows),
+    'thu_cong_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LỌC ĐẦU VÀO THÔNG MINH CHO TỪNG ĐẦU RA (5 tầng)
+   Tầng 1: Bỏ placeholder + đã dùng bởi thuật toán lần 1
+   Tầng 2: Cùng nhóm danh mục (isCross)
+   Tầng 3: Có ít nhất 1 token chung sau normalize
+   Tầng 4: Cùng thương hiệu (brand match)
+   Tầng 5: Nếu < MIN thì nới lỏng lần lượt từng tầng
+═══════════════════════════════════════════════════════════════ */
+function smartFilterIn(outS, allIn, maxCount=60) {
+  const usedByAlgo = new Set(pairs.map(p=>p.in).filter(Boolean));
+
+  // Tầng 0: loại placeholder và đã dùng lần 1
+  const pool = allIn.filter(s => !isPlaceholder(s));
+  // Không loại "đã dùng" vì 1 đầu vào có thể dùng nhiều lần
+
+  // Tầng 1: cùng nhóm danh mục
+  const t1 = pool.filter(s => !isCross(outS, s));
+
+  // Tầng 2: token chung — ít nhất 1 từ chung sau expand
+  const outToks = new Set(tok(outS));
+  function shareToken(s){ return tok(s).some(t => outToks.has(t)); }
+  const t2 = t1.filter(shareToken);
+
+  // Tầng 3: cùng thương hiệu
+  const BRANDS=['lay','poca','danisa','bauli','moonfils','popit','th true','th milk','oatta',
+    'cholimex','redbull','red bull','warrior','xmen','x-men','oliv','ooliv','purite',
+    'kotex','lacusina','kitkool','trung nguyen','vietngucoc','viet dai','dalatmilk','seaspimex'];
+  const noS = nv(outS);
+  const outBrand = BRANDS.find(b=>noS.includes(nv(b)));
+  const t3 = outBrand ? t2.filter(s=>nv(s).includes(nv(outBrand))) : t2;
+
+  // Nới lỏng dần nếu quá ít kết quả
+  let result;
+  if(t3.length >= 3)       result = t3;        // có brand + token + cat
+  else if(t2.length >= 3)  result = t2;        // token + cat
+  else if(t1.length >= 3)  result = t1;        // chỉ cần cùng cat
+  else if(pool.length >= 3)result = pool;       // fallback: loại placeholder thôi
+  else                     result = allIn;      // cuối cùng: tất cả
+
+  // Ưu tiên: chưa dùng lần 1 lên đầu, đã dùng xuống cuối
+  result.sort((a,b)=>{
+    const ua=usedByAlgo.has(a)?1:0, ub=usedByAlgo.has(b)?1:0;
+    return ua-ub;
+  });
+
+  return result.slice(0, maxCount);
+}
+
+/* ── Chạy thuật toán + AI lần 2 tự động như lần 1 ── */
+async function runRound2(){
+  if(!unmOut.length){alert('Không còn sản phẩm cần ghép!');return;}
+  const allIn=document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const btn=document.querySelector('#run2Bar .btn.primary');
+  btn.disabled=true; btn.textContent='⏳ Đang chạy lần 2...';
+  document.getElementById('aiProg').classList.add('show');
+  document.getElementById('aiBar').style.width='0%';
+  document.getElementById('aiMsg').textContent='⚙ Bước 1: Thuật toán lọc lần 2...';
+
+  /* ── Bước 1: Chạy thuật toán greedy lần 2 (ngưỡng thấp hơn) ── */
+  await new Promise(r=>setTimeout(r,20));
+  const wt2  = Math.min(35, (+document.getElementById('slWt').value||20)+10);
+  const min2 = Math.max(25, (+document.getElementById('slMin').value||40)-15);
+  const strict2 = false; // lần 2 bỏ khớp vị/hương chặt
+
+  // Greedy chỉ cho unmOut
+  const unmOutCopy = [...unmOut];
+  const flat2=[];
+  unmOutCopy.forEach((o,oi)=>{
+    const candidates = smartFilterIn(o, allIn, 80);
+    candidates.forEach((inp,ii)=>{
+      const r=masterScore(o,inp,wt2,strict2);
+      if(!r.blocked&&r.score>=min2) flat2.push({oi,ii,out:o,in:inp,...r,candidateIn:inp});
+    });
+  });
+  flat2.sort((a,b)=>b.score-a.score);
+  const usedOut2=new Set();
+  const algoResults2=[];
+  for(const c of flat2){
+    if(usedOut2.has(c.oi)) continue;
+    algoResults2.push(c);
+    usedOut2.add(c.oi);
+  }
+  // Áp dụng kết quả thuật toán lần 2
+  for(const c of algoResults2){
+    pairs.push({id:pairs.length,out:c.out,barcode:maVachMap[c.out]||'',in:c.in,
+      score:c.score,diffs:c.diffs,types:c.types,note:'⚙ Thuật toán lần 2',
+      isAI:false,improved:false,flavorConflict:c.flavorConflict,blocked:false,round2:true});
+    unmOut=unmOut.filter(o=>o!==c.out);
+  }
+  document.getElementById('aiMsg').textContent=
+    `⚙ Thuật toán lần 2: +${algoResults2.length} cặp. Còn ${unmOut.length} chưa ghép → AI xử lý tiếp...`;
+  renderSummary(); renderTable();
+
+  /* ── Bước 2: AI lần 2 chỉ cho phần còn lại ── */
+  if(!unmOut.length){
+    document.getElementById('aiBar').style.width='100%';
+    document.getElementById('aiMsg').textContent='✓ Lần 2 hoàn tất! Thuật toán đã ghép hết.';
+    setTimeout(()=>document.getElementById('aiProg').classList.remove('show'),3000);
+    btn.disabled=false; btn.textContent='⚡ Chạy AI lần 2';
+    renderManual();
+    document.getElementById('run2Bar').classList.remove('show');
+    return;
+  }
+
+  const pairIdx={};
+  pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
+  const BATCH=8; // batch nhỏ hơn để context sạch hơn
+  const inSet=new Set(allIn);
+
+  for(let b=0;b<unmOut.length;b+=BATCH){
+    const batch=unmOut.slice(b,b+BATCH);
+    const pct=40+Math.round((b/unmOut.length)*58);
+    document.getElementById('aiBar').style.width=pct+'%';
+    document.getElementById('aiMsg').textContent=
+      '⚡ AI lần 2: '+(b+1)+'–'+Math.min(b+BATCH,unmOut.length)+' / '+unmOut.length+' SP (đã lọc thông minh)';
+
+    // Lọc đầu vào riêng cho từng SP trong batch — ưu tiên theo brand + cat + token
+    const batchCandidates={};
+    let mergedCandidates=[];
+    batch.forEach(o=>{
+      const cands=smartFilterIn(o,allIn,50);
+      batchCandidates[o]=cands;
+      cands.forEach(c=>{if(!mergedCandidates.includes(c))mergedCandidates.push(c);});
+    });
+    if(mergedCandidates.length>80) mergedCandidates=mergedCandidates.slice(0,80);
+
+    // Build prompt đơn dòng
+    const _out2=batch.map((o,i)=>{const c=batchCandidates[o]||[];return (i+1)+'. '+o+' [goi y: '+c.slice(0,5).join(' | ')+']';}).join('\n');
+    const _in2=mergedCandidates.map((s,i)=>(i+1)+'. '+s).join('\n');
+    const prompt='Ghep san pham dau ra vao dau vao. Viet tat kho: STTT=Sua Tuoi Tiet Trung, NPC=Poca, NMCC=Nuoc Mam Ca Com, BVS=Bang Ve Sinh, HS TT=Hai San Thuy Tinh, SCA=Sua Chua An, TP=Thuan Phat. Quy tac: cung loai SP, cung thuong hieu, trong luong +-40% ok, Hang KM ghep voi SP chinh cung thuong hieu, 1 dau vao nhieu dau ra, khong tim duoc tra null.\nDAU RA CAN GHEP:\n'+_out2+'\nDAU VAO KHA DUNG (da loc theo loai SP):\n'+_in2+'\nJSON only: {"m":[{"o":"ten dau ra nguyen van","i":"ten dau vao nguyen van hoac null","s":80,"r":"ly do"}]}';
+
+    try{
+      const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        method:'POST',
+        headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
+        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
+          messages:[{role:'user',content:prompt}]})
+      });
+      const data=await resp.json();
+      if(data.error)throw new Error(data.error.message);
+      const text=data.content.map(c=>c.text||'').join('');
+      const clean=text.replace(/```json|```/g,'').trim();
+      const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
+      if(si===-1)throw new Error('no JSON');
+      const json=JSON.parse(clean.slice(si,ei+1));
+      for(const m of(json.m||[])){
+        if(!m.i||(m.s||0)<30) continue;
+        // Validate: tên đầu vào phải tồn tại trong danh sách thực
+        let validIn=inSet.has(m.i)?m.i:null;
+        if(m.i&&!validIn){
+          const mn=nv(m.i);
+          // Tìm fuzzy match
+          validIn=allIn.find(s=>{
+            const sn=nv(s);
+            return sn===mn
+              || (mn.length>10 && sn.includes(mn.slice(0,14)))
+              || (sn.length>10 && mn.includes(sn.slice(0,14)));
+          })||null;
+        }
+        if(!validIn) continue;
+        // Validate cross-category: không cho phép ghép sai loại
+        if(isCross(m.o,validIn)) continue;
+        // Thêm vào pairs
+        const newId=pairs.length;
+        pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,
+          score:m.s,diffs:['⚡ AI lần 2: '+m.r],types:['abbr'],
+          note:'⚡ AI lần 2',isAI:true,improved:false,
+          flavorConflict:false,blocked:false,round2:true});
+        pairIdx[m.o]=newId;
+        unmOut=unmOut.filter(o=>o!==m.o);
+      }
+      renderSummary(); renderTable();
+    }catch(e){
+      if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){
+        document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Kết quả thuật toán lần 2 vẫn được áp dụng.';
+        break;
+      }
+      document.getElementById('aiMsg').textContent='⚠ Batch lỗi: '+e.message.slice(0,40)+' — tiếp tục...';
+      await new Promise(r=>setTimeout(r,800));
+    }
+    await new Promise(r=>setTimeout(r,180));
+  }
+
+  document.getElementById('aiBar').style.width='100%';
+  const r2count=pairs.filter(p=>p.round2).length;
+  document.getElementById('aiMsg').textContent=
+    '✓ Lần 2 hoàn tất! Ghép thêm '+r2count+' cặp. Còn '+unmOut.length+' SP chưa ghép → ghép thủ công bên dưới.';
+  setTimeout(()=>document.getElementById('aiProg').classList.remove('show'),4000);
+  btn.disabled=false; btn.textContent='⚡ Chạy AI lần 2';
+  renderManual();
+  if(!unmOut.length) document.getElementById('run2Bar').classList.remove('show');
+}
+
+function escJ(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\'");}
+
+initStt();
+initApiKey();
+</script>
+</body>
+</html>
