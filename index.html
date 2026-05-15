@@ -74,15 +74,15 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .legend{display:flex;gap:6px;align-items:center;margin-bottom:8px;flex-wrap:wrap;font-size:10px;color:var(--tx2)}
 .dtag-ex{font-size:10px;padding:1px 5px;border-radius:3px;font-weight:500}
 .tbl-wrap{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden}
-.tbl-hd{display:grid;grid-template-columns:38px 100px minmax(0,1fr) 68px minmax(0,1fr) 110px;border-bottom:1px solid var(--bd2)}
-.th{padding:8px 11px;font-size:10px;font-weight:700;letter-spacing:.5px;text-transform:uppercase;color:var(--tx2);background:var(--sf2);border-right:1px solid var(--bd)}
+.tbl-hd{display:grid;border-bottom:1px solid var(--bd2)}
+.th{padding:7px 9px;font-size:10px;font-weight:600;letter-spacing:.3px;text-transform:uppercase;color:var(--tx2);background:var(--sf2);border-right:1px solid var(--bd);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .th:last-child{border-right:none}
 .th.out{background:#E1F5EE22;color:var(--g800)}
 .th.in{background:#E6F1FB22;color:var(--b800)}
-.trow{display:grid;grid-template-columns:38px 100px minmax(0,1fr) 68px minmax(0,1fr) 110px;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
+.trow{display:grid;border-bottom:1px solid var(--bd);cursor:pointer;transition:background .1s}
 .trow:last-child{border-bottom:none}
 .trow:hover{background:#faf9f5}
-.tc{padding:9px 11px;border-right:1px solid var(--bd);display:flex;align-items:center;min-height:50px}
+.tc{padding:8px 9px;border-right:1px solid var(--bd);display:flex;align-items:center;min-height:48px;overflow:hidden}
 .tc:last-child{border-right:none}
 .tc-num{justify-content:center;color:var(--tx3);font-size:11px}
 .tc-out{background:#E1F5EE08;flex-direction:column;align-items:flex-start;gap:2px}
@@ -139,12 +139,12 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .file-name{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .file-meta{font-size:10px;color:var(--tx3);margin-top:1px}
 .empty-files{padding:2rem;text-align:center;color:var(--tx3);font-size:12px}
-/* Cột đơn giá trong bảng */
-.tbl-hd,.trow{grid-template-columns:38px 90px minmax(0,1fr) 95px 68px minmax(0,1fr) 95px 90px!important}
+/* Bảng kết quả: #|MãVạch|ĐầuRa|GiáRa|Khớp|ĐầuVào|GiáVào|ThaoTác */
+.tbl-hd,.trow{grid-template-columns:36px 88px minmax(0,1fr) 88px 64px minmax(0,1fr) 88px 86px}
 .th.price{text-align:right;background:#E1F5EE22;color:var(--g800)}
 .th.price-in{background:#E6F1FB22;color:var(--b800)}
-.tc-price{flex-direction:column;align-items:flex-end;gap:1px;padding:6px 8px}
-@media(max-width:1100px){.tbl-hd,.trow{grid-template-columns:34px 80px minmax(0,1fr) 80px 60px minmax(0,1fr) 80px 80px!important}}
+.tc-price{flex-direction:column;align-items:flex-end;gap:1px;padding:6px 8px;overflow:hidden}
+@media(max-width:1100px){.tbl-hd,.trow{grid-template-columns:32px 76px minmax(0,1fr) 76px 58px minmax(0,1fr) 76px 78px}}
 @media(max-width:900px){@media(max-width:900px){.tbl-hd,.trow{grid-template-columns:30px 70px minmax(0,1fr) 54px minmax(0,1fr) 90px}}
 @media(max-width:650px){.tbl-hd,.trow{grid-template-columns:30px minmax(0,1fr) 54px minmax(0,1fr) 80px}}
 @media print{.hdr,.icard,.ai-prog,.pills,.toolbar,.legend,.tc-acts,.btn{display:none!important}.tbl-wrap{border:1px solid #ccc}}
@@ -266,7 +266,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
   </div>
   <div class="icard-body open" id="inputBody" style="grid-template-columns:1fr 130px 1fr;gap:0;border:0.5px solid var(--bd2);border-radius:var(--r3);overflow:hidden">
 
-  <!-- KHỐI TRÁI: Đầu Ra + Đơn Giá Ra -->
+  <!-- KHỐI TRÁI: Đầu Ra + Đơn Giá Nhập -->
   <div style="display:flex;flex-direction:column;border-right:0.5px solid var(--bd2)">
     <!-- Header -->
     <div style="display:grid;grid-template-columns:minmax(0,1fr) 96px;border-bottom:0.5px solid var(--bd)">
@@ -275,7 +275,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
         <span id="cntOut" style="margin-left:auto;background:rgba(15,110,86,0.1);color:var(--g800);font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px">0 SP</span>
       </div>
       <div style="padding:7px 8px;font-size:11px;font-weight:500;background:#E1F5EE22;color:#0C447C;display:flex;align-items:center;justify-content:center;white-space:nowrap">
-        &#128200; Đơn Giá Ra
+        &#128200; Đơn Giá Nhập
       </div>
     </div>
     <!-- Nội dung -->
@@ -287,11 +287,11 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
           oninput="syncStt('Out');syncStt('In')"></textarea>
       </div>
       <div class="inp-grid">
-        <div class="inp-stt" id="sttGiaOut"><div class="inp-stt-inner" id="sttGiaOutInner"></div></div>
-        <textarea class="inp-ta" id="taDonGiaOut"
+        <div class="inp-stt" id="sttGiaNhap"><div class="inp-stt-inner" id="sttGiaNhapInner"></div></div>
+        <textarea class="inp-ta" id="taDonGiaNhap"
           placeholder="25000&#10;18500&#10;32000&#10;..."
           style="font-size:11px;font-family:'Courier New',monospace;text-align:right;padding:0 6px"
-          oninput="syncStt('GiaOut');syncDonGia()"></textarea>
+          oninput="syncStt('GiaNhap');syncDonGia()"></textarea>
       </div>
     </div>
     <div style="padding:5px 10px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd)">
@@ -421,14 +421,14 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 
 <div class="tbl-wrap">
   <div class="tbl-hd">
-    <div class="th">#</div>
-    <div class="th" style="background:#FBF0DC33;color:var(--amber)">&#128278; Mã Vạch</div>
+    <div class="th" style="text-align:center">#</div>
+    <div class="th" style="background:#FBF0DC22;color:var(--amber);text-align:center">&#128278; Mã Vạch</div>
     <div class="th out">&#8599; Đầu Ra (Bán ra)</div>
-    <div class="th" style="text-align:right;background:#E1F5EE22;color:#0C447C;font-size:9px">&#128200; Giá Ra</div>
-    <div class="th" style="text-align:center;cursor:pointer;user-select:none" onclick="toggleScoreSort()" title="Nhấn để sắp xếp">Khớp &#8597;</div>
+    <div class="th" style="background:#E1F5EE22;color:#0C447C;text-align:right;font-size:10px;white-space:nowrap">&#128200; Giá Ra</div>
+    <div class="th" style="text-align:center;cursor:pointer;user-select:none;white-space:nowrap" onclick="toggleScoreSort()">Khớp &#8597;</div>
     <div class="th in">&#8601; Đầu Vào (Mua vào)</div>
-    <div class="th" style="text-align:right;background:#E6F1FB22;color:#085041;font-size:9px">&#128201; Giá Vào</div>
-    <div class="th" style="text-align:center">Thao tác</div>
+    <div class="th" style="background:#E6F1FB22;color:#085041;text-align:right;font-size:10px;white-space:nowrap">&#128201; Giá Vào</div>
+    <div class="th" style="text-align:center;white-space:nowrap">Thao tác</div>
   </div>
   <div id="tblBody">
     <div class="empty">
@@ -1131,9 +1131,9 @@ let maVachMap={};
 
 /* ── STT + đếm dòng realtime ── */
 function syncStt(key) {
-  const taId = key==='Out'?'taOut':key==='In'?'taIn':key==='Mv'?'taMaVach':key==='GiaOut'?'taDonGiaOut':'taDonGiaIn';
+  const taId = key==='Out'?'taOut':key==='In'?'taIn':key==='Mv'?'taMaVach':key==='GiaNhap'?'taDonGiaNhap':'taDonGiaIn';
   const sttId = 'stt'+key+'Inner';
-  const cntId = 'cnt'+(key==='Mv'?'Mv':key==='GiaOut'||key==='GiaIn'?'':key);
+  const cntId = 'cnt'+(key==='Mv'?'Mv':key==='GiaNhap'||key==='GiaIn'?'':key);
   const ta = document.getElementById(taId);
   const lines = ta.value.split('\n');
   const filled = lines.filter(l=>l.trim()).length;
@@ -1151,7 +1151,7 @@ function syncStt(key) {
   }
 }
 // Init on load
-function initStt(){['Out','In','Mv','GiaOut','GiaIn'].forEach(k=>syncStt(k));}
+function initStt(){['Out','In','Mv','GiaNhap','GiaIn'].forEach(k=>syncStt(k));}
 let inputOpen=true;
 
 /* ═══════════════════════════════════════════
@@ -1162,9 +1162,9 @@ function loadDemo(){
   document.getElementById('taOut').value=DEMO_OUT;
   document.getElementById('taIn').value=DEMO_IN;
   document.getElementById('taMaVach').value='';
-  document.getElementById('taDonGiaOut').value='';
+  document.getElementById('taDonGiaNhap').value='';
   document.getElementById('taDonGiaIn').value='';
-  ['Out','In','Mv','GiaOut','GiaIn'].forEach(k=>syncStt(k));
+  ['Out','In','Mv','GiaNhap','GiaIn'].forEach(k=>syncStt(k));
   syncDonGia();
 }
 function loadDemoRun(){if(!inputOpen)toggleInput();loadDemo();setTimeout(runMatch,100);}
@@ -1859,16 +1859,16 @@ function escJ(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\'");}
 
 
 /* ── ĐƠN GIÁ ── */
-let donGiaOutMap = {}; // outName → giá
+let donGiaNhapMap = {}; // outName → giá
 let donGiaInMap  = {}; // inName  → giá
 
 function syncDonGia(){
   const outList = document.getElementById('taOut').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
   const inList  = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
-  const giaOut  = document.getElementById('taDonGiaOut').value.trim().split('\n').map(s=>s.trim());
+  const giaOut  = document.getElementById('taDonGiaNhap').value.trim().split('\n').map(s=>s.trim());
   const giaIn   = document.getElementById('taDonGiaIn').value.trim().split('\n').map(s=>s.trim());
-  donGiaOutMap={};
-  outList.forEach((sp,i)=>{ if(giaOut[i]&&giaOut[i].trim()) donGiaOutMap[sp]=giaOut[i].trim(); });
+  donGiaNhapMap={};
+  outList.forEach((sp,i)=>{ if(giaOut[i]&&giaOut[i].trim()) donGiaNhapMap[sp]=giaOut[i].trim(); });
   donGiaInMap={};
   inList.forEach((sp,i)=>{ if(giaIn[i]&&giaIn[i].trim()) donGiaInMap[sp]=giaIn[i].trim(); });
 }
@@ -1882,7 +1882,7 @@ function fmtPrice(v){
 
 function setPriceOut(id, val){
   const p=pairs.find(x=>x.id===id);
-  if(p && val.trim()){ p.donGiaOut=val.trim(); renderTable(); }
+  if(p && val.trim()){ p.donGiaNhap=val.trim(); renderTable(); }
 }
 function setPriceIn(id, val){
   const p=pairs.find(x=>x.id===id);
@@ -1892,7 +1892,7 @@ function setPriceIn(id, val){
 // Khi run xong → gán giá từ map vào pairs
 function applyPriceToPairs(){
   pairs.forEach(p=>{
-    if(!p.donGiaOut && donGiaOutMap[p.out]) p.donGiaOut=donGiaOutMap[p.out];
+    if(!p.donGiaNhap && donGiaNhapMap[p.out]) p.donGiaNhap=donGiaNhapMap[p.out];
     if(!p.donGiaIn  && donGiaInMap[p.in])   p.donGiaIn =donGiaInMap[p.in];
   });
 }
@@ -1934,7 +1934,7 @@ function saveSession(){
     taOut:    document.getElementById('taOut').value,
     taMaVach: document.getElementById('taMaVach').value,
     taIn:     document.getElementById('taIn').value,
-    taDonGiaOut: document.getElementById('taDonGiaOut').value,
+    taDonGiaNhap: document.getElementById('taDonGiaNhap').value,
     taDonGiaIn:  document.getElementById('taDonGiaIn').value,
     pairs:    pairs,
     unmOut:   unmOut,
@@ -1988,7 +1988,7 @@ function loadSession(idx){
   document.getElementById('taOut').value     = f.taOut||'';
   document.getElementById('taMaVach').value  = f.taMaVach||'';
   document.getElementById('taIn').value      = f.taIn||'';
-  document.getElementById('taDonGiaOut').value = f.taDonGiaOut||'';
+  document.getElementById('taDonGiaNhap').value = f.taDonGiaNhap||'';
   document.getElementById('taDonGiaIn').value  = f.taDonGiaIn||'';
   syncStt('Out'); syncStt('In'); syncStt('Mv'); syncDonGia();
 
@@ -2016,9 +2016,9 @@ function exportSessionCSV(idx){
   const files=getSavedFiles();
   const f=files[idx];
   if(!f) return;
-  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Out,San_Pham_Dau_Vao,Don_Gia_In,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
+  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Nhap,San_Pham_Dau_Vao,Don_Gia_In,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
   const rows=(f.pairs||[]).map((p,i)=>[
-    i+1, p.barcode||'', p.out, p.donGiaOut||'', p.in, p.donGiaIn||'',
+    i+1, p.barcode||'', p.out, p.donGiaNhap||'', p.in, p.donGiaIn||'',
     p.score, (p.diffs||[]).join(' | '), p.note||'',
     (f.confirmed||[]).includes(p.id)?'Da xac nhan':p.isAI?'AI ghep':'Cho xet'
   ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
@@ -2045,9 +2045,9 @@ function clearAllFiles(){
 const _origExportCSV = exportCSV;
 exportCSV = function(){
   if(!pairs.length){ alert('Chưa có dữ liệu'); return; }
-  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Ra,San_Pham_Dau_Vao,Don_Gia_Vao,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
+  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Nhap,San_Pham_Dau_Vao,Don_Gia_Vao,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
   const rows=pairs.filter(p=>!rejected.has(p.id)).map((p,i)=>[
-    i+1, p.barcode||'', p.out, p.donGiaOut||'', p.in, p.donGiaIn||'', p.score,
+    i+1, p.barcode||'', p.out, p.donGiaNhap||'', p.in, p.donGiaIn||'', p.score,
     (p.diffs||[]).join(' | '), p.note||'',
     confirmed.has(p.id)||p.isManual?'Da xac nhan':p.isAI?'AI ghep':'Cho xet'
   ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
