@@ -145,8 +145,10 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .th.price-in{background:#E6F1FB22;color:var(--b800)}
 .tc-price{flex-direction:column;align-items:flex-end;gap:1px;padding:6px 8px;overflow:hidden}
 @media(max-width:1200px){.tbl-hd,.trow{grid-template-columns:32px 80px minmax(0,2fr) 72px 56px minmax(0,2fr) 72px 76px}}
-@media(max-width:900px){@media(max-width:900px){.tbl-hd,.trow{grid-template-columns:30px 70px minmax(0,1fr) 54px minmax(0,1fr) 90px}}
-@media(max-width:650px){.tbl-hd,.trow{grid-template-columns:30px minmax(0,1fr) 54px minmax(0,1fr) 80px}}
+@media(max-width:900px){
+  .tbl-hd,.trow{grid-template-columns:32px 80px minmax(0,1fr) 70px 58px minmax(0,1fr) 70px 76px}
+  .icard-body.open{grid-template-columns:1fr}
+}
 @media print{.hdr,.icard,.ai-prog,.pills,.toolbar,.legend,.tc-acts,.btn{display:none!important}.tbl-wrap{border:1px solid #ccc}}
 
 /* ── BẢNG GHÉP THỦ CÔNG ── */
@@ -1214,48 +1216,68 @@ async function runMatch(){
     document.getElementById('aiStatusBadge').style.color='#5B21B6';
     document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
     document.getElementById('aiProg').classList.add('show');
-    const BATCH=12,pairIdx={};
+    // ── Song song CONCURRENT=4 batch cùng lúc → nhanh ~4x ──
+    const BATCH=12, CONCURRENT=4;
+    const pairIdx={};
     pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
-    for(let b=0;b<outList.length;b+=BATCH){
-      const batch=outList.slice(b,b+BATCH);
-      const pct=Math.round((b/outList.length)*100);
-      document.getElementById('aiBar').style.width=pct+'%';
-      document.getElementById('aiMsg').textContent='⚡ AI: '+(b+1)+'–'+Math.min(b+BATCH,outList.length)+' / '+outList.length+' sản phẩm...';
-      const relevant=inList.filter(inS=>!isPlaceholder(inS)&&!batch.every(o=>isCross(o,inS))).slice(0,80);
-      const prompt='Ghép ĐẦU RA với ĐẦU VÀO tương ứng. Viết tắt kho: STTT=Sữa Tươi Tiệt Trùng, NPC=Poca, NMCC=Nước Mắm Cá Cơm, SCA=Sữa Chua Ăn, BVS=Băng Vệ Sinh, HS TT=Hải Sản Thủy Tinh, SCUTT=sữa chua uống tiệt trùng, tp=thuận phát.\nQuy tắc: cùng loại SP (bánh↔bánh, kẹo↔kẹo, sữa↔sữa, gia vị↔gia vị, CSCT↔CSCT), cùng thương hiệu ưu tiên, trọng lượng ±30% OK, 1 đầu vào có thể ghép nhiều đầu ra, không tìm được → null.\n\nĐẦU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\n\nĐẦU VÀO ('+relevant.length+' sp):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\n\nJSON only: {"m":[{"o":"tên đầu ra","i":"tên đầu vào hoặc null","s":85,"r":"lý do ngắn"}]}';
+    const inSet=new Set(inList);
+    let corsError=false, doneBatches=0;
+
+    async function processBatch(batch){
+      if(corsError) return;
+      const relevant=inList.filter(s=>!isPlaceholder(s)&&!batch.every(o=>isCross(o,s))).slice(0,80);
+      const prompt='Ghep san pham. Viet tat: STTT=Sua Tuoi Tiet Trung, NPC=Poca, NMCC=Nuoc Mam Ca Com, SCA=Sua Chua An, BVS=Bang Ve Sinh, SRM=Sua Rua Mat, NSM=Nuoc Suc Mieng.\nQuy tac: cung loai SP, cung thuong hieu uu tien, trong luong +-30% ok, 1 dau vao nhieu dau ra, khong tim duoc null.\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO ('+relevant.length+' sp):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":85,"r":"ly do ngan"}]}';
       try{
-        const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,messages:[{role:'user',content:prompt}]})});
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+        });
         const data=await resp.json();
         if(data.error)throw new Error(data.error.message);
         const text=data.content.map(c=>c.text||'').join('');
         const clean=text.replace(/```json|```/g,'').trim();
-        const s=clean.indexOf('{'),e=clean.lastIndexOf('}');
-        if(s===-1)throw new Error('no JSON');
-        const json=JSON.parse(clean.slice(s,e+1));
-        const inSet=new Set(inList);
-        for(const m of(json.m||[])){
-          if(!m.i||(m.s||0)<40)continue;
-          let validIn=inSet.has(m.i)?m.i:null;
-          if(m.i&&!validIn){const mn=nv(m.i);validIn=inList.find(s=>{const sn=nv(s);return sn.includes(mn.slice(0,12))||mn.includes(sn.slice(0,12));})||null;}
-          if(!validIn)continue;
-          const idx=pairIdx[m.o];
-          if(idx!==undefined){if(m.s>pairs[idx].score+5){pairs[idx]={...pairs[idx],in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'AI cải thiện ('+pairs[idx].score+'%→'+m.s+'%)',isAI:true,improved:true};}}
-          else{const newId=pairs.length;pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});pairIdx[m.o]=newId;unmOut=unmOut.filter(o=>o!==m.o);}
+        const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
+        if(si!==-1){
+          const json=JSON.parse(clean.slice(si,ei+1));
+          for(const m of(json.m||[])){
+            if(!m.i||(m.s||0)<40)continue;
+            let validIn=inSet.has(m.i)?m.i:null;
+            if(m.i&&!validIn){const mn=nv(m.i);validIn=inList.find(s=>{const sn=nv(s);return sn.includes(mn.slice(0,12))||mn.includes(sn.slice(0,12));})||null;}
+            if(!validIn)continue;
+            const idx=pairIdx[m.o];
+            if(idx!==undefined){
+              if(m.s>pairs[idx].score+5){pairs[idx]={...pairs[idx],in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'AI cải thiện ('+pairs[idx].score+'%→'+m.s+'%)',isAI:true,improved:true};}
+            }else{
+              const newId=pairs.length;
+              pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});
+              pairIdx[m.o]=newId;
+              unmOut=unmOut.filter(o=>o!==m.o);
+            }
+          }
         }
-        renderSummary();renderTable();
       }catch(e){
         if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){
-          document.getElementById('aiMsg').textContent='⚠ File đang mở từ file:// – AI cần chạy qua server hoặc trong Claude.ai. Thuật toán vẫn hoạt động bình thường.';
-          document.getElementById('aiStatusBadge').textContent='⚙ Offline – AI không khả dụng';
+          corsError=true;
+          document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Cần mở qua server.';
+          document.getElementById('aiStatusBadge').textContent='⚙ Offline';
           document.getElementById('aiStatusBadge').style.background='var(--a50)';
           document.getElementById('aiStatusBadge').style.color='var(--amber)';
-          document.getElementById('aiStatusBadge').style.borderColor='var(--a400)';
-          break;
         }
-        document.getElementById('aiMsg').textContent='⚠ Lỗi batch: '+e.message.slice(0,50);
-        await new Promise(r=>setTimeout(r,1000));
       }
-      await new Promise(r=>setTimeout(r,180));
+      doneBatches++;
+      const totalBatches=Math.ceil(outList.length/BATCH);
+      document.getElementById('aiBar').style.width=Math.round((doneBatches/totalBatches)*100)+'%';
+      document.getElementById('aiMsg').textContent='⚡ AI: '+doneBatches+'/'+totalBatches+' batch ('+pairs.filter(p=>p.isAI).length+' SP đã ghép)...';
+      renderSummary();renderTable();
+    }
+
+    // Chia batch và chạy song song
+    const allBatches=[];
+    for(let b=0;b<outList.length;b+=BATCH) allBatches.push(outList.slice(b,b+BATCH));
+    document.getElementById('aiMsg').textContent='⚡ AI: Chạy song song '+allBatches.length+' batch ('+CONCURRENT+'/lần), 184 SP...';
+    for(let i=0;i<allBatches.length&&!corsError;i+=CONCURRENT){
+      await Promise.all(allBatches.slice(i,i+CONCURRENT).map(b=>processBatch(b)));
     }
     document.getElementById('aiBar').style.width='100%';
     const aiCount=pairs.filter(p=>p.isAI).length;
