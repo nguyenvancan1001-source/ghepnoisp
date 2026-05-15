@@ -37,7 +37,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .icard-body.open{display:grid;grid-template-columns:1fr 1fr}
 .icard-body.open.three{grid-template-columns:1fr 120px 1fr}
 .pcol{border:1px solid var(--bd2);border-radius:var(--r3);overflow:hidden}
-.pchd{padding:7px 11px;font-size:11px;font-weight:600;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:5px}
+.pchd{padding:6px 10px;font-size:11px;font-weight:500;border-bottom:0.5px solid var(--bd);display:flex;align-items:center;gap:5px;white-space:nowrap;overflow:hidden;min-height:34px;flex-shrink:0}
 .pchd.out{background:#E1F5EE33;color:var(--g800)}
 .pchd.in{background:#E6F1FB33;color:var(--b800)}
 .pcol textarea{width:100%;min-height:130px;padding:9px;font-size:12px;font-family:"Courier New",monospace;border:none;resize:vertical;background:var(--sf);color:var(--tx);line-height:1.7;display:block}
@@ -114,14 +114,38 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .inp-hd.mv{background:#FBF0DC33;color:var(--amber)}
 .inp-count{font-size:10px;font-weight:700;padding:2px 7px;border-radius:4px;background:rgba(0,0,0,0.06)}
 .inp-grid{display:flex;flex:1;overflow:hidden}
-.inp-stt{width:34px;background:var(--sf2);border-right:0.5px solid var(--bd);font-size:10px;color:var(--tx3);font-family:"Courier New",monospace;overflow:hidden;flex-shrink:0;user-select:none;pointer-events:none}
+.inp-stt{width:28px;background:var(--sf2);border-right:0.5px solid var(--bd);font-size:10px;color:var(--tx3);font-family:"Courier New",monospace;overflow:hidden;flex-shrink:0;user-select:none;pointer-events:none}
 .inp-stt-inner{padding:0}
-.stt-line{height:22px;line-height:22px;text-align:center;border-bottom:0.5px solid var(--bd)}
+.stt-line{height:22px;line-height:22px;text-align:right;padding-right:3px;border-bottom:0.5px solid var(--bd);font-size:10px}
 .stt-line:last-child{border-bottom:none}
-.inp-ta{flex:1;border:none;resize:none;padding:0 8px;font-size:12px;font-family:"Courier New",monospace;line-height:22px;background:var(--sf);color:var(--tx);min-height:176px;overflow-y:auto}
+.inp-ta{flex:1;border:none;resize:none;padding:0 6px;font-size:12px;font-family:"Segoe UI",system-ui,sans-serif;line-height:22px;background:var(--sf);color:var(--tx);min-height:176px;overflow-y:auto;overflow-x:hidden}
 .inp-ta:focus{outline:none;background:#fffdf8}
 .inp-footer{padding:5px 10px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd)}
-@media(max-width:900px){.tbl-hd,.trow{grid-template-columns:30px 70px minmax(0,1fr) 54px minmax(0,1fr) 90px}}
+/* ── ĐƠN GIÁ + LƯU FILE ── */
+.price-input{width:88px;padding:3px 6px;height:24px;font-size:11px;border:1px solid var(--bd);border-radius:4px;background:var(--sf);color:var(--tx);font-family:var(--font-mono,'Courier New'),monospace;text-align:right}
+.price-input:focus{outline:none;border-color:var(--blue)}
+.price-val{font-size:11px;font-family:'Courier New',monospace;color:var(--g800);font-weight:500}
+.price-out{color:#0C447C}
+.price-in{color:#085041}
+/* Lưu file panel */
+.save-panel{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden;margin-bottom:12px;display:none}
+.save-panel.open{display:block}
+.save-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--sf2);border-bottom:1px solid var(--bd);cursor:pointer}
+.save-hd h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:6px}
+.file-list{max-height:260px;overflow-y:auto}
+.file-row{display:grid;grid-template-columns:minmax(0,1fr) 80px 80px 90px;gap:6px;padding:8px 14px;border-bottom:1px solid var(--bd);align-items:center;font-size:12px}
+.file-row:last-child{border-bottom:none}
+.file-row:hover{background:var(--sf2)}
+.file-name{font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-meta{font-size:10px;color:var(--tx3);margin-top:1px}
+.empty-files{padding:2rem;text-align:center;color:var(--tx3);font-size:12px}
+/* Cột đơn giá trong bảng */
+.tbl-hd,.trow{grid-template-columns:38px 90px minmax(0,1fr) 95px 68px minmax(0,1fr) 95px 90px!important}
+.th.price{text-align:right;background:#E1F5EE22;color:var(--g800)}
+.th.price-in{background:#E6F1FB22;color:var(--b800)}
+.tc-price{flex-direction:column;align-items:flex-end;gap:1px;padding:6px 8px}
+@media(max-width:1100px){.tbl-hd,.trow{grid-template-columns:34px 80px minmax(0,1fr) 80px 60px minmax(0,1fr) 80px 80px!important}}
+@media(max-width:900px){@media(max-width:900px){.tbl-hd,.trow{grid-template-columns:30px 70px minmax(0,1fr) 54px minmax(0,1fr) 90px}}
 @media(max-width:650px){.tbl-hd,.trow{grid-template-columns:30px minmax(0,1fr) 54px minmax(0,1fr) 80px}}
 @media print{.hdr,.icard,.ai-prog,.pills,.toolbar,.legend,.tc-acts,.btn{display:none!important}.tbl-wrap{border:1px solid #ccc}}
 
@@ -181,6 +205,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
     <span class="offline-badge" id="aiStatusBadge">&#9679; Offline</span>
     <div class="hdr-right">
       <button class="btn sm" id="btnApiKey" onclick="toggleApiPanel()" style="border-color:#7C3AED;color:#5B21B6">&#128273; API Key</button>
+      <button class="btn sm success" onclick="saveSession()" id="btnSave" style="display:none">&#128190; Lưu</button>
+      <button class="btn sm" onclick="toggleSavePanel()" id="btnFiles">&#128193; Xem file đã lưu (<span id="fileCount">0</span>)</button>
       <button class="btn sm" onclick="exportCSV()">&#8659; Xuất CSV</button>
       <button class="btn sm" onclick="exportUnmatched()">&#9888; Xuất chưa ghép</button>
       <button class="btn sm" onclick="window.print()">&#9113; In</button>
@@ -212,6 +238,24 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
   </div>
 </div>
 
+<!-- PANEL FILE ĐÃ LƯU -->
+<div class="save-panel" id="savePanel">
+  <div class="save-hd" onclick="toggleSavePanel()">
+    <h3>&#128193; File ghép nối đã lưu</h3>
+    <div style="display:flex;gap:6px;align-items:center">
+      <span id="saveCount" style="font-size:11px;color:var(--tx2)"></span>
+      <button class="btn sm danger" onclick="event.stopPropagation();clearAllFiles()" style="font-size:10px">Xóa tất cả</button>
+    </div>
+  </div>
+  <div class="file-row" style="background:var(--sf2);font-size:10px;font-weight:600;color:var(--tx2)">
+    <div>Tên file / Thời gian lưu</div>
+    <div style="text-align:center">Tổng SP</div>
+    <div style="text-align:center">Đã ghép</div>
+    <div style="text-align:center">Thao tác</div>
+  </div>
+  <div class="file-list" id="fileList"></div>
+</div>
+
 <div class="alert warn" id="alertWarn"></div>
 <div class="alert info" id="alertInfo"></div>
 
@@ -220,59 +264,93 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
     <h2 id="inputHd">&#9654; Nhập danh sách sản phẩm</h2>
     <span style="font-size:11px;color:var(--tx2)">Nhấn để mở / đóng</span>
   </div>
-  <div class="icard-body open" id="inputBody" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)">
+  <div class="icard-body open" id="inputBody" style="grid-template-columns:1fr 130px 1fr;gap:0;border:0.5px solid var(--bd2);border-radius:var(--r3);overflow:hidden">
 
-    <!-- ĐẦU RA + MÃ VẠCH ghép chung 1 lưới 2 cột -->
-    <div style="display:grid;grid-template-columns:minmax(0,1fr) 130px;gap:8px;min-width:0">
-
-      <!-- ĐẦU RA -->
-      <div class="inp-wrap">
-        <div class="inp-hd out">
-          <span>&#8599; Sản phẩm Đầu Ra</span>
-          <span class="inp-count" id="cntOut">0 SP</span>
-        </div>
-        <div class="inp-grid">
-          <div class="inp-stt" id="sttOut"><div class="inp-stt-inner" id="sttOutInner"></div></div>
-          <textarea class="inp-ta" id="taOut"
-            placeholder="Mỗi dòng 1 sản phẩm&#10;Snack Lay's Stax Phô Mai 100g&#10;Sữa TH True Milk 1L&#10;Nước mắm Thuận Phát 490ml&#10;..."
-            oninput="syncStt('Out');syncStt('In')"></textarea>
-        </div>
-        <div class="inp-footer">&#128712; Mỗi dòng = 1 sản phẩm · Tương ứng theo thứ tự dòng mã vạch</div>
+  <!-- KHỐI TRÁI: Đầu Ra + Đơn Giá Ra -->
+  <div style="display:flex;flex-direction:column;border-right:0.5px solid var(--bd2)">
+    <!-- Header -->
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 96px;border-bottom:0.5px solid var(--bd)">
+      <div style="padding:7px 10px;font-size:11px;font-weight:500;background:#E1F5EE22;color:var(--g800);display:flex;align-items:center;gap:6px;border-right:0.5px solid var(--bd);white-space:nowrap">
+        &#8599; Sản phẩm Đầu Ra
+        <span id="cntOut" style="margin-left:auto;background:rgba(15,110,86,0.1);color:var(--g800);font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px">0 SP</span>
       </div>
-
-      <!-- MÃ VẠCH -->
-      <div class="inp-wrap">
-        <div class="inp-hd mv">
-          <span>&#128278; Mã Vạch</span>
-          <span class="inp-count" id="cntMv" style="background:rgba(122,70,8,0.12);color:var(--amber)">0</span>
-        </div>
-        <div class="inp-grid">
-          <div class="inp-stt" id="sttMv"><div class="inp-stt-inner" id="sttMvInner"></div></div>
-          <textarea class="inp-ta" id="taMaVach"
-            placeholder="8934563142018&#10;8934563120016&#10;8934563111001&#10;..."
-            style="font-size:11px;letter-spacing:0.5px"
-            oninput="syncStt('Mv')"></textarea>
-        </div>
-        <div class="inp-footer">&#128272; Dán 1 mã/dòng · Để trống dòng nếu không có</div>
+      <div style="padding:7px 8px;font-size:11px;font-weight:500;background:#E1F5EE22;color:#0C447C;display:flex;align-items:center;justify-content:center;white-space:nowrap">
+        &#128200; Đơn Giá Ra
       </div>
     </div>
+    <!-- Nội dung -->
+    <div style="display:grid;grid-template-columns:minmax(0,1fr) 96px;flex:1">
+      <div class="inp-grid" style="border-right:0.5px solid var(--bd)">
+        <div class="inp-stt" id="sttOut"><div class="inp-stt-inner" id="sttOutInner"></div></div>
+        <textarea class="inp-ta" id="taOut"
+          placeholder="Mỗi dòng 1 sản phẩm&#10;Snack Lay's Stax Phô Mai 100g&#10;Sữa TH True Milk 1L&#10;..."
+          oninput="syncStt('Out');syncStt('In')"></textarea>
+      </div>
+      <div class="inp-grid">
+        <div class="inp-stt" id="sttGiaOut"><div class="inp-stt-inner" id="sttGiaOutInner"></div></div>
+        <textarea class="inp-ta" id="taDonGiaOut"
+          placeholder="25000&#10;18500&#10;32000&#10;..."
+          style="font-size:11px;font-family:'Courier New',monospace;text-align:right;padding:0 6px"
+          oninput="syncStt('GiaOut');syncDonGia()"></textarea>
+      </div>
+    </div>
+    <div style="padding:5px 10px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd)">
+      &#128712; Mỗi dòng = 1 sản phẩm · Giá để trống nếu không có
+    </div>
+  </div>
 
-    <!-- ĐẦU VÀO -->
-    <div class="inp-wrap">
-      <div class="inp-hd in">
-        <span>&#8601; Sản phẩm Đầu Vào</span>
-        <span class="inp-count" id="cntIn">0 SP</span>
+  <!-- KHỐI GIỮA: Mã Vạch -->
+  <div style="display:flex;flex-direction:column;border-right:0.5px solid var(--bd2);background:var(--sf2)">
+    <div style="padding:7px 8px;font-size:11px;font-weight:500;background:#FBF0DC33;color:var(--amber);display:flex;align-items:center;justify-content:space-between;border-bottom:0.5px solid var(--bd);white-space:nowrap;gap:4px">
+      <span>&#128278; Mã Vạch</span>
+      <span id="cntMv" style="background:rgba(122,70,8,0.12);color:var(--amber);font-size:10px;font-weight:600;padding:1px 5px;border-radius:3px">0 mã</span>
+    </div>
+    <div class="inp-grid" style="flex:1">
+      <div class="inp-stt" id="sttMv"><div class="inp-stt-inner" id="sttMvInner"></div></div>
+      <textarea class="inp-ta" id="taMaVach"
+        placeholder="8934563142018&#10;8934563120016&#10;8934563111001&#10;..."
+        style="font-size:10.5px;font-family:'Courier New',monospace;padding:0 5px;letter-spacing:0"
+        oninput="syncStt('Mv')"></textarea>
+    </div>
+    <div style="padding:5px 8px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd);text-align:center">
+      1 mã / dòng
+    </div>
+  </div>
+
+  <!-- KHỐI PHẢI: Đơn Giá Vào + Đầu Vào -->
+  <div style="display:flex;flex-direction:column">
+    <!-- Header -->
+    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);border-bottom:0.5px solid var(--bd)">
+      <div style="padding:7px 8px;font-size:11px;font-weight:500;background:#E6F1FB22;color:#085041;display:flex;align-items:center;justify-content:center;border-right:0.5px solid var(--bd);white-space:nowrap">
+        &#128201; Đơn Giá Vào
+      </div>
+      <div style="padding:7px 10px;font-size:11px;font-weight:500;background:#E6F1FB22;color:#0C447C;display:flex;align-items:center;gap:6px;white-space:nowrap">
+        &#8601; Sản phẩm Đầu Vào
+        <span id="cntIn" style="margin-left:auto;background:rgba(24,95,165,0.1);color:#0C447C;font-size:10px;font-weight:600;padding:1px 6px;border-radius:3px">0 SP</span>
+      </div>
+    </div>
+    <!-- Nội dung -->
+    <div style="display:grid;grid-template-columns:96px minmax(0,1fr);flex:1">
+      <div class="inp-grid" style="border-right:0.5px solid var(--bd)">
+        <div class="inp-stt" id="sttGiaIn"><div class="inp-stt-inner" id="sttGiaInInner"></div></div>
+        <textarea class="inp-ta" id="taDonGiaIn"
+          placeholder="22000&#10;16000&#10;28000&#10;..."
+          style="font-size:11px;font-family:'Courier New',monospace;text-align:right;padding:0 6px"
+          oninput="syncStt('GiaIn');syncDonGia()"></textarea>
       </div>
       <div class="inp-grid">
         <div class="inp-stt" id="sttIn"><div class="inp-stt-inner" id="sttInInner"></div></div>
         <textarea class="inp-ta" id="taIn"
-          placeholder="Mỗi dòng 1 sản phẩm&#10;LAY'S STAX BBQ 100G 1X16_VN&#10;STTT it duong TH True Milk 1Lx12T&#10;NPC 10M - Bo Luc Lac 60g&#10;..."
+          placeholder="Mỗi dòng 1 sản phẩm&#10;LAY'S STAX BBQ 100G 1X16_VN&#10;STTT it duong TH True Milk 1Lx12T&#10;..."
           oninput="syncStt('In')"></textarea>
       </div>
-      <div class="inp-footer">&#128712; Dán từ phần mềm kho · Đầu vào nhiều hơn đầu ra là bình thường</div>
     </div>
-
+    <div style="padding:5px 10px;font-size:10px;color:var(--tx3);background:var(--sf2);border-top:0.5px solid var(--bd)">
+      &#128712; Dán từ phần mềm kho · Đầu vào nhiều hơn đầu ra là bình thường
+    </div>
   </div>
+
+</div>
   <div class="icard-ft open" id="inputFt">
     <div class="ctrl-pill">
       <label>Sai số KL</label>
@@ -346,8 +424,10 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
     <div class="th">#</div>
     <div class="th" style="background:#FBF0DC33;color:var(--amber)">&#128278; Mã Vạch</div>
     <div class="th out">&#8599; Đầu Ra (Bán ra)</div>
+    <div class="th" style="text-align:right;background:#E1F5EE22;color:#0C447C;font-size:9px">&#128200; Giá Ra</div>
     <div class="th" style="text-align:center;cursor:pointer;user-select:none" onclick="toggleScoreSort()" title="Nhấn để sắp xếp">Khớp &#8597;</div>
     <div class="th in">&#8601; Đầu Vào (Mua vào)</div>
+    <div class="th" style="text-align:right;background:#E6F1FB22;color:#085041;font-size:9px">&#128201; Giá Vào</div>
     <div class="th" style="text-align:center">Thao tác</div>
   </div>
   <div id="tblBody">
@@ -1051,9 +1131,9 @@ let maVachMap={};
 
 /* ── STT + đếm dòng realtime ── */
 function syncStt(key) {
-  const taId = key==='Out'?'taOut':key==='In'?'taIn':'taMaVach';
+  const taId = key==='Out'?'taOut':key==='In'?'taIn':key==='Mv'?'taMaVach':key==='GiaOut'?'taDonGiaOut':'taDonGiaIn';
   const sttId = 'stt'+key+'Inner';
-  const cntId = 'cnt'+(key==='Mv'?'Mv':key);
+  const cntId = 'cnt'+(key==='Mv'?'Mv':key==='GiaOut'||key==='GiaIn'?'':key);
   const ta = document.getElementById(taId);
   const lines = ta.value.split('\n');
   const filled = lines.filter(l=>l.trim()).length;
@@ -1071,7 +1151,7 @@ function syncStt(key) {
   }
 }
 // Init on load
-function initStt(){['Out','In','Mv'].forEach(k=>syncStt(k));}
+function initStt(){['Out','In','Mv','GiaOut','GiaIn'].forEach(k=>syncStt(k));}
 let inputOpen=true;
 
 /* ═══════════════════════════════════════════
@@ -1082,7 +1162,10 @@ function loadDemo(){
   document.getElementById('taOut').value=DEMO_OUT;
   document.getElementById('taIn').value=DEMO_IN;
   document.getElementById('taMaVach').value='';
-  syncStt('Out');syncStt('In');syncStt('Mv');
+  document.getElementById('taDonGiaOut').value='';
+  document.getElementById('taDonGiaIn').value='';
+  ['Out','In','Mv','GiaOut','GiaIn'].forEach(k=>syncStt(k));
+  syncDonGia();
 }
 function loadDemoRun(){if(!inputOpen)toggleInput();loadDemo();setTimeout(runMatch,100);}
 function showAlert(type,msg){const el=document.getElementById('alert'+type);el.innerHTML=msg;el.classList.add('show');}
@@ -1120,8 +1203,10 @@ async function runMatch(){
   pairs=res.result;unmOut=res.unmOut;unmIn=res.unmIn;
   document.getElementById('toolbarArea').style.display='flex';
   document.getElementById('legendArea').style.display='flex';
+  syncDonGia(); applyPriceToPairs();
   renderSummary();renderTable();
   if(inputOpen)toggleInput();
+  document.getElementById('btnSave').style.display='inline-flex';
 
   if(useAI){
     document.getElementById('aiStatusBadge').textContent='⚡ AI đang chạy...';
@@ -1268,13 +1353,20 @@ function renderTable(){
       </div>
       <div class="tc tc-in">
         <div class="pname" style="color:${p.unmatched?'var(--tx3)':'inherit'};font-style:${p.unmatched?'italic':'normal'}">${esc(p.in)}</div>
-        ${p.isAI&&p.round2
-          ? `<div class="r2-note">&#9660; Lần 2: ${esc((p.diffs[0]||'').replace('⚡ AI lần 2: ','').replace('AI lần 2: ',''))}</div>`
+        ${p.isAI&&p.round>=2
+          ? `<div class="r2-note">&#9660; ${cfg.label||'Lần 2+'}: ${esc((p.diffs[0]||'').replace(/AI lần \d+: /,''))}</div>`
           : p.isAI
           ? `<div class="ai-note">&#9889; AI: ${esc((p.diffs[0]||'').replace('AI: ',''))}</div>`
-          : p.note==='⚙ Thuật toán lần 2'
-          ? `<div class="r2-note">&#9660; Thuật toán lần 2</div>`
+          : (p.round||0)>=2
+          ? `<div class="r2-note">&#9660; Thuật toán lần ${p.round||2}</div>`
           : `<div class="pnote">${esc(p.note||'')}</div>`}
+      </div>
+      <div class="tc tc-price">
+        ${p.donGiaIn
+          ? `<div class="price-val price-in">${fmtPrice(p.donGiaIn)}</div>`
+          : (!p.unmatched ? `<input class="price-input" type="text" placeholder="Nhập giá..."
+              onblur="setPriceIn(${p.id},this.value)" onkeydown="if(event.key==='Enter')this.blur()"
+              style="color:#085041">` : '')}
       </div>
       <div class="tc tc-acts" onclick="event.stopPropagation()">
         ${!p.unmatched&&!isC&&!isR?`<button onclick="toggleRej(${p.id})" class="btn xs danger">✗</button><button onclick="toggleConf(${p.id})" class="btn xs success">✓ OK</button>`:''}
@@ -1765,8 +1857,207 @@ async function runRound2(){ await runRound(2); }
 
 function escJ(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\'");}
 
+
+/* ── ĐƠN GIÁ ── */
+let donGiaOutMap = {}; // outName → giá
+let donGiaInMap  = {}; // inName  → giá
+
+function syncDonGia(){
+  const outList = document.getElementById('taOut').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const inList  = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const giaOut  = document.getElementById('taDonGiaOut').value.trim().split('\n').map(s=>s.trim());
+  const giaIn   = document.getElementById('taDonGiaIn').value.trim().split('\n').map(s=>s.trim());
+  donGiaOutMap={};
+  outList.forEach((sp,i)=>{ if(giaOut[i]&&giaOut[i].trim()) donGiaOutMap[sp]=giaOut[i].trim(); });
+  donGiaInMap={};
+  inList.forEach((sp,i)=>{ if(giaIn[i]&&giaIn[i].trim()) donGiaInMap[sp]=giaIn[i].trim(); });
+}
+
+function fmtPrice(v){
+  if(!v) return '';
+  const n=parseFloat(String(v).replace(/[^0-9.]/g,''));
+  if(isNaN(n)) return v;
+  return n.toLocaleString('vi-VN')+'đ';
+}
+
+function setPriceOut(id, val){
+  const p=pairs.find(x=>x.id===id);
+  if(p && val.trim()){ p.donGiaOut=val.trim(); renderTable(); }
+}
+function setPriceIn(id, val){
+  const p=pairs.find(x=>x.id===id);
+  if(p && val.trim()){ p.donGiaIn=val.trim(); renderTable(); }
+}
+
+// Khi run xong → gán giá từ map vào pairs
+function applyPriceToPairs(){
+  pairs.forEach(p=>{
+    if(!p.donGiaOut && donGiaOutMap[p.out]) p.donGiaOut=donGiaOutMap[p.out];
+    if(!p.donGiaIn  && donGiaInMap[p.in])   p.donGiaIn =donGiaInMap[p.in];
+  });
+}
+
+/* ── LƯU FILE ── */
+const STORAGE_KEY = 'ghep_noi_saved_files';
+
+function getSavedFiles(){
+  try{ return JSON.parse(localStorage.getItem(STORAGE_KEY)||'[]'); }
+  catch(e){ return []; }
+}
+function updateFileCount(){
+  const files=getSavedFiles();
+  document.getElementById('fileCount').textContent=files.length;
+  document.getElementById('saveCount').textContent=files.length+' file đã lưu';
+}
+
+function toggleSavePanel(){
+  const p=document.getElementById('savePanel');
+  const isOpen=p.classList.contains('open');
+  p.classList.toggle('open',!isOpen);
+  if(!isOpen) renderFileList();
+}
+
+function saveSession(){
+  if(!pairs.length){ alert('Chưa có dữ liệu để lưu!'); return; }
+  const name=prompt('Tên file lưu:','Ghép nối '+new Date().toLocaleDateString('vi-VN'));
+  if(!name) return;
+  const files=getSavedFiles();
+  const session={
+    id: Date.now(),
+    name: name.trim(),
+    savedAt: new Date().toISOString(),
+    totalOut: document.getElementById('taOut').value.trim().split('\n').filter(Boolean).length,
+    totalIn:  document.getElementById('taIn').value.trim().split('\n').filter(Boolean).length,
+    pairsCount: pairs.filter(p=>!p.unmatched).length,
+    unmatchedCount: unmOut.length,
+    // Lưu dữ liệu đầy đủ
+    taOut:    document.getElementById('taOut').value,
+    taMaVach: document.getElementById('taMaVach').value,
+    taIn:     document.getElementById('taIn').value,
+    taDonGiaOut: document.getElementById('taDonGiaOut').value,
+    taDonGiaIn:  document.getElementById('taDonGiaIn').value,
+    pairs:    pairs,
+    unmOut:   unmOut,
+    confirmed: [...confirmed],
+    rejected:  [...rejected],
+  };
+  files.unshift(session);
+  // Giới hạn 20 file
+  if(files.length>20) files.splice(20);
+  try{
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(files));
+    updateFileCount();
+    alert('✓ Đã lưu file "'+session.name+'"!');
+    renderFileList();
+    document.getElementById('savePanel').classList.add('open');
+  }catch(e){
+    alert('Lỗi lưu: localStorage đầy. Hãy xóa bớt file cũ.');
+  }
+}
+
+function renderFileList(){
+  const files=getSavedFiles();
+  const el=document.getElementById('fileList');
+  if(!files.length){
+    el.innerHTML='<div class="empty-files">&#128193; Chưa có file nào được lưu.<br>Sau khi ghép nối xong, nhấn <b>💾 Lưu</b> để lưu lại.</div>';
+    return;
+  }
+  el.innerHTML=files.map((f,i)=>`
+    <div class="file-row">
+      <div>
+        <div class="file-name">&#128196; ${esc(f.name)}</div>
+        <div class="file-meta">${new Date(f.savedAt).toLocaleString('vi-VN')} · ${f.totalOut||0} đầu ra · ${f.totalIn||0} đầu vào</div>
+      </div>
+      <div style="text-align:center;font-size:12px;color:var(--g800);font-weight:500">${f.pairsCount||0}</div>
+      <div style="text-align:center;font-size:12px;color:var(--red)">${f.unmatchedCount||0} chưa ghép</div>
+      <div style="display:flex;gap:4px;justify-content:center">
+        <button class="btn xs primary" onclick="loadSession(${i})">&#128065; Mở</button>
+        <button class="btn xs" onclick="exportSessionCSV(${i})">&#8659; CSV</button>
+        <button class="btn xs danger" onclick="deleteFile(${i})">&#10005;</button>
+      </div>
+    </div>`).join('');
+}
+
+function loadSession(idx){
+  const files=getSavedFiles();
+  const f=files[idx];
+  if(!f){ alert('File không tồn tại!'); return; }
+  if(!confirm('Tải file "'+f.name+'"? Dữ liệu hiện tại sẽ bị thay thế.')) return;
+
+  // Restore inputs
+  document.getElementById('taOut').value     = f.taOut||'';
+  document.getElementById('taMaVach').value  = f.taMaVach||'';
+  document.getElementById('taIn').value      = f.taIn||'';
+  document.getElementById('taDonGiaOut').value = f.taDonGiaOut||'';
+  document.getElementById('taDonGiaIn').value  = f.taDonGiaIn||'';
+  syncStt('Out'); syncStt('In'); syncStt('Mv'); syncDonGia();
+
+  // Restore state
+  pairs    = f.pairs||[];
+  unmOut   = f.unmOut||[];
+  confirmed= new Set(f.confirmed||[]);
+  rejected = new Set(f.rejected||[]);
+
+  // Restore maVachMap
+  const outListRaw = (f.taOut||'').trim().split('\n').map(s=>s.trim()).filter(Boolean);
+  const mvRaw      = (f.taMaVach||'').trim().split('\n').map(s=>s.trim());
+  maVachMap={};
+  outListRaw.forEach((sp,i)=>{ if(mvRaw[i]&&mvRaw[i].trim()) maVachMap[sp]=mvRaw[i].trim(); });
+
+  document.getElementById('toolbarArea').style.display='flex';
+  document.getElementById('legendArea').style.display='flex';
+  document.getElementById('btnSave').style.display='inline-flex';
+  renderSummary(); renderTable(); renderUnmatched();
+  document.getElementById('savePanel').classList.remove('open');
+  showAlert('Info','&#128065; Đã tải file <strong>'+esc(f.name)+'</strong> — '+pairs.length+' cặp ghép.');
+}
+
+function exportSessionCSV(idx){
+  const files=getSavedFiles();
+  const f=files[idx];
+  if(!f) return;
+  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Out,San_Pham_Dau_Vao,Don_Gia_In,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
+  const rows=(f.pairs||[]).map((p,i)=>[
+    i+1, p.barcode||'', p.out, p.donGiaOut||'', p.in, p.donGiaIn||'',
+    p.score, (p.diffs||[]).join(' | '), p.note||'',
+    (f.confirmed||[]).includes(p.id)?'Da xac nhan':p.isAI?'AI ghep':'Cho xet'
+  ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
+  dl('\uFEFF'+[hdr,...rows].join('\n'), esc(f.name)+'_'+new Date().toISOString().slice(0,10)+'.csv');
+}
+
+function deleteFile(idx){
+  const files=getSavedFiles();
+  if(!confirm('Xóa file "'+files[idx].name+'"?')) return;
+  files.splice(idx,1);
+  localStorage.setItem(STORAGE_KEY,JSON.stringify(files));
+  updateFileCount();
+  renderFileList();
+}
+
+function clearAllFiles(){
+  if(!confirm('Xóa TẤT CẢ file đã lưu?')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  updateFileCount();
+  renderFileList();
+}
+
+/* ── Override exportCSV để thêm cột giá ── */
+const _origExportCSV = exportCSV;
+exportCSV = function(){
+  if(!pairs.length){ alert('Chưa có dữ liệu'); return; }
+  const hdr='STT,Ma_Vach,San_Pham_Dau_Ra,Don_Gia_Ra,San_Pham_Dau_Vao,Don_Gia_Vao,Do_Khop_Pct,Chenh_Lech,Ghi_Chu,Trang_Thai';
+  const rows=pairs.filter(p=>!rejected.has(p.id)).map((p,i)=>[
+    i+1, p.barcode||'', p.out, p.donGiaOut||'', p.in, p.donGiaIn||'', p.score,
+    (p.diffs||[]).join(' | '), p.note||'',
+    confirmed.has(p.id)||p.isManual?'Da xac nhan':p.isAI?'AI ghep':'Cho xet'
+  ].map(v=>`"${String(v||'').replace(/"/g,'""')}"`).join(','));
+  dl('\uFEFF'+[hdr,...rows].join('\n'),'ghep_noi_'+new Date().toISOString().slice(0,10)+'.csv');
+};
+
 initStt();
 initApiKey();
+syncDonGia();
+updateFileCount();
 </script>
 </body>
 </html>
