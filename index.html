@@ -163,6 +163,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .pc{padding:6px 9px;border-right:0.5px solid var(--bd)}
 .pc:last-child{border-right:none}
 .run2-bar{padding:10px 14px;background:var(--b50);border:1px solid #B5D4F4;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
+.run3-bar{padding:10px 14px;background:#EDE9FE;border:1px solid #C4B5FD;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
+.run4-bar{padding:10px 14px;background:var(--g50);border:1px solid #9FE1CB;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .run2-bar.show{display:flex}
 @media(max-width:750px){.manual-body{grid-template-columns:1fr}.manual-list.in{border-left:none;border-top:1px solid var(--bd)}}
 </style>
@@ -303,6 +305,13 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 
 <div class="toolbar" id="toolbarArea" style="display:none">
   <input type="text" id="srch" placeholder="&#128269; Tìm sản phẩm..." oninput="renderTable()">
+  <select id="sortBy" onchange="renderTable()" title="Sắp xếp">
+    <option value="score_desc">&#8595; Điểm cao → thấp</option>
+    <option value="score_asc">&#8593; Điểm thấp → cao</option>
+    <option value="default">Thứ tự mặc định</option>
+    <option value="ai_first">⚡ AI lên đầu</option>
+    <option value="unmatched_first">⚠ Chưa ghép lên đầu</option>
+  </select>
   <select id="flt" onchange="renderTable()">
     <option value="">Tất cả</option>
     <option value="h">Cao &#8805;80%</option>
@@ -337,7 +346,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
     <div class="th">#</div>
     <div class="th" style="background:#FBF0DC33;color:var(--amber)">&#128278; Mã Vạch</div>
     <div class="th out">&#8599; Đầu Ra (Bán ra)</div>
-    <div class="th" style="text-align:center">Khớp</div>
+    <div class="th" style="text-align:center;cursor:pointer;user-select:none" onclick="toggleScoreSort()" title="Nhấn để sắp xếp">Khớp &#8597;</div>
     <div class="th in">&#8601; Đầu Vào (Mua vào)</div>
     <div class="th" style="text-align:center">Thao tác</div>
   </div>
@@ -355,9 +364,32 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 
 <!-- RUN LẦN 2 -->
 <div class="run2-bar" id="run2Bar">
-  <span style="font-size:13px">&#9650; <strong id="run2Msg">Còn sản phẩm chưa ghép</strong> — Nhấn để chạy AI lần 2 với ngưỡng thấp hơn hoặc ghép thủ công bên dưới</span>
-  <button class="btn primary sm" onclick="runRound2()">&#9889; Chạy AI lần 2</button>
-  <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">&#8595; Ghép thủ công</button>
+  <div style="flex:1">
+    <div style="font-size:11px;color:var(--b800);font-weight:600;margin-bottom:2px">⚡ Lần 2 — AI ngưỡng thấp hơn</div>
+    <div style="font-size:12px"><strong id="run2Msg">Còn sản phẩm chưa ghép</strong> — thuật toán + AI với ngưỡng -15%, sai số KL +10%</div>
+  </div>
+  <button class="btn primary sm" onclick="runRound(2)">⚡ Chạy lần 2</button>
+  <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
+</div>
+
+<!-- RUN LẦN 3 -->
+<div class="run3-bar" id="run3Bar">
+  <div style="flex:1">
+    <div style="font-size:11px;color:#5B21B6;font-weight:600;margin-bottom:2px">⚡ Lần 3 — AI bỏ điều kiện vị/hương + mở rộng từ điển</div>
+    <div style="font-size:12px"><strong id="run3Msg">Còn sản phẩm chưa ghép</strong> — tìm theo thương hiệu + loại sản phẩm, bỏ qua khớp vị</div>
+  </div>
+  <button class="btn sm" id="run3Btn" onclick="runRound(3)" style="background:#7C3AED;border-color:#7C3AED;color:#fff">⚡ Chạy lần 3</button>
+  <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
+</div>
+
+<!-- RUN LẦN 4 -->
+<div class="run4-bar" id="run4Bar">
+  <div style="flex:1">
+    <div style="font-size:11px;color:var(--g800);font-weight:600;margin-bottom:2px">⚡ Lần 4 — AI tự do, chỉ cần cùng loại SP</div>
+    <div style="font-size:12px"><strong id="run4Msg">Còn sản phẩm chưa ghép</strong> — AI gợi ý đầu vào gần nhất, ngưỡng tối thiểu 20%</div>
+  </div>
+  <button class="btn sm" id="run4Btn" onclick="runRound(4)" style="background:var(--green);border-color:var(--green);color:#fff">⚡ Chạy lần 4</button>
+  <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
 </div>
 
 <!-- BẢNG GHÉP THỦ CÔNG -->
@@ -1171,8 +1203,9 @@ function renderSummary(){
   ];
   if(cf)pills.push({v:cf,l:'Xung đột',bg:' style="background:#FCE4E4;color:var(--red)"',f:'x'});
   if(ai)pills.push({v:ai,l:'AI ghép',bg:' style="background:#EDE9FE;color:#5B21B6"',f:'ai'});
-  const r2=pairs.filter(p=>p.round2&&!p.isAI).length;
-  if(r2)pills.push({v:r2,l:'Lần 2',bg:' style="background:var(--b50);color:var(--b800)"',f:'r2'});
+  const r2=pairs.filter(p=>p.round>=2&&!p.isAI).length;
+  const r2ai=pairs.filter(p=>p.round>=2&&p.isAI).length;
+  if(r2||r2ai)pills.push({v:r2+r2ai,l:'Lần 2/3/4',bg:' style="background:var(--b50);color:var(--b800)"',f:'r2'});
   if(unmOut.length)pills.push({v:unmOut.length,l:'Chưa ghép',bg:' style="background:var(--sf2);color:var(--tx2)"',f:'u'});
   pills.push({v:confirmed.size,l:'Đã xác nhận',bg:' style="background:var(--b50);color:var(--b800)"',f:'c'});
   document.getElementById('summaryArea').innerHTML='<div class="pills">'+pills.map(p=>`<div class="pill"${p.bg} onclick="setFilter('${p.f}')" id="pill-${p.f}"><b>${p.v}</b> ${p.l}</div>`).join('')+'<button class="btn success sm" onclick="confirmAll()" style="margin-left:auto">✓ Xác nhận tất cả ≥80%</button></div>';
@@ -1184,6 +1217,7 @@ function renderSummary(){
 function renderTable(){
   const q=(document.getElementById('srch').value||'').toLowerCase();
   const flt=document.getElementById('flt').value;
+  const sortBy=(document.getElementById('sortBy')||{value:'score_desc'}).value;
   let rows=pairs.filter(p=>{
     if(q&&!(p.out+p.in).toLowerCase().includes(q))return false;
     if(flt==='h')return p.score>=80&&!p.flavorConflict;
@@ -1191,12 +1225,19 @@ function renderTable(){
     if(flt==='l')return p.score<60&&p.score>0&&!p.flavorConflict;
     if(flt==='x')return p.flavorConflict;
     if(flt==='ai')return p.isAI;
-    if(flt==='r2')return p.round2;
+    if(flt==='r2')return p.round>=2;
     if(flt==='c')return confirmed.has(p.id);
     if(flt==='p')return!confirmed.has(p.id)&&!rejected.has(p.id);
     if(flt==='u')return false;
     return true;
   });
+  // Sắp xếp
+  if(sortBy==='score_desc') rows.sort((a,b)=>b.score-a.score);
+  else if(sortBy==='score_asc') rows.sort((a,b)=>a.score-b.score);
+  else if(sortBy==='ai_first') rows.sort((a,b)=>(b.isAI?1:0)-(a.isAI?1:0)||b.score-a.score);
+  else if(sortBy==='unmatched_first') rows.sort((a,b)=>a.score-b.score);
+  // default: giữ thứ tự gốc
+
   const unmRows=(!flt||flt==='u')?unmOut.map((o,i)=>({id:-1-i,out:o,barcode:maVachMap[o]||'',in:'—',score:0,diffs:['Chưa ghép'],types:['name'],note:'Cần bổ sung đầu vào',isAI:false,unmatched:true})):[];
   const all=[...rows,...unmRows];
   document.getElementById('rowCount').textContent=all.length+' dòng';
@@ -1253,6 +1294,15 @@ function renderUnmatched(){
    ACTIONS
 ═══════════════════════════════════════════ */
 function setFilter(f){const el=document.getElementById('flt');el.value=el.value===f?'':f;renderTable();}
+function toggleScoreSort(){
+  const el=document.getElementById('sortBy');
+  if(!el) return;
+  el.value = el.value==='score_desc' ? 'score_asc' : 'score_desc';
+  renderTable();
+  // Update header icon
+  const th=document.querySelector('.th[onclick="toggleScoreSort()"]');
+  if(th) th.textContent='Khớp '+(el.value==='score_desc'?'↓':'↑');
+}
 function toggleConf(id){if(id<0||rejected.has(id))return;if(confirmed.has(id))confirmed.delete(id);else{confirmed.add(id);rejected.delete(id);}renderSummary();renderTable();}
 function toggleRej(id){if(id<0)return;if(rejected.has(id))rejected.delete(id);else{rejected.add(id);confirmed.delete(id);}renderSummary();renderTable();}
 function confirmAll(){pairs.filter(p=>p.score>=80&&!p.flavorConflict&&!rejected.has(p.id)).forEach(p=>confirmed.add(p.id));renderSummary();renderTable();}
@@ -1537,150 +1587,181 @@ function smartFilterIn(outS, allIn, maxCount=60) {
   return result.slice(0, maxCount);
 }
 
-/* ── Chạy thuật toán + AI lần 2 tự động như lần 1 ── */
-async function runRound2(){
-  if(!unmOut.length){alert('Không còn sản phẩm cần ghép!');return;}
-  const allIn=document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
-  const btn=document.querySelector('#run2Bar .btn.primary');
-  btn.disabled=true; btn.textContent='⏳ Đang chạy lần 2...';
+/* ══════════════════════════════════════════════════════════════
+   runRound(n) — Chạy lần 2/3/4 với chiến lược khác nhau
+   Lần 2: ngưỡng -15%, sai số KL +10%, bỏ strict flavor
+   Lần 3: bỏ hẳn cross-category check, chỉ match brand + type
+   Lần 4: tự do hoàn toàn, AI quyết định, ngưỡng 20%
+═══════════════════════════════════════════════════════════════ */
+function getRoundConfig(n) {
+  const base_wt  = +document.getElementById('slWt').value  || 20;
+  const base_min = +document.getElementById('slMin').value || 30;
+  switch(n) {
+    case 2: return { wt: Math.min(40, base_wt+10), min: Math.max(20, base_min-15), strict: false,  crossCheck: true,  aiMin: 30, batch: 8,  label: 'lần 2' };
+    case 3: return { wt: Math.min(50, base_wt+20), min: Math.max(15, base_min-20), strict: false,  crossCheck: false, aiMin: 25, batch: 6,  label: 'lần 3' };
+    case 4: return { wt: 60,                         min: 15,                        strict: false,  crossCheck: false, aiMin: 20, batch: 5,  label: 'lần 4' };
+    default: return { wt: base_wt, min: base_min, strict: true, crossCheck: true, aiMin: 40, batch: 12, label: 'lần 1' };
+  }
+}
+
+async function runRound(n) {
+  if(!unmOut.length){ alert('Không còn sản phẩm nào cần ghép!'); return; }
+  const cfg = getRoundConfig(n);
+  const allIn = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
+
+  // Disable button
+  const btnId = n===2?'run2Bar':n===3?'run3Bar':'run4Bar';
+  const barEl = document.getElementById(btnId);
+  const btn = barEl.querySelector('button');
+  const origTxt = btn.textContent;
+  btn.disabled=true; btn.textContent='⏳ Đang chạy...';
+
   document.getElementById('aiProg').classList.add('show');
   document.getElementById('aiBar').style.width='0%';
-  document.getElementById('aiMsg').textContent='⚙ Bước 1: Thuật toán lọc lần 2...';
+  document.getElementById('aiMsg').textContent=`⚙ Bước 1: Thuật toán ${cfg.label}...`;
 
-  /* ── Bước 1: Chạy thuật toán greedy lần 2 (ngưỡng thấp hơn) ── */
   await new Promise(r=>setTimeout(r,20));
-  const wt2  = Math.min(35, (+document.getElementById('slWt').value||20)+10);
-  const min2 = Math.max(25, (+document.getElementById('slMin').value||40)-15);
-  const strict2 = false; // lần 2 bỏ khớp vị/hương chặt
 
-  // Greedy chỉ cho unmOut
+  /* ── Bước 1: Thuật toán greedy với config của lần này ── */
   const unmOutCopy = [...unmOut];
-  const flat2=[];
+  const flat=[];
   unmOutCopy.forEach((o,oi)=>{
-    const candidates = smartFilterIn(o, allIn, 80);
-    candidates.forEach((inp,ii)=>{
-      const r=masterScore(o,inp,wt2,strict2);
-      if(!r.blocked&&r.score>=min2) flat2.push({oi,ii,out:o,in:inp,...r,candidateIn:inp});
+    const candidates = cfg.crossCheck
+      ? smartFilterIn(o, allIn, 80)
+      : allIn.filter(s=>!isPlaceholder(s)).slice(0,80);
+    candidates.forEach((inp)=>{
+      const r = masterScore(o, inp, cfg.wt, cfg.strict);
+      if(!r.blocked && r.score>=cfg.min) flat.push({oi, out:o, in:inp, ...r});
     });
   });
-  flat2.sort((a,b)=>b.score-a.score);
+  flat.sort((a,b)=>b.score-a.score);
   const usedOut2=new Set();
-  const algoResults2=[];
-  for(const c of flat2){
+  const algoRes=[];
+  for(const c of flat){
     if(usedOut2.has(c.oi)) continue;
-    algoResults2.push(c);
+    algoRes.push(c);
     usedOut2.add(c.oi);
   }
-  // Áp dụng kết quả thuật toán lần 2
-  for(const c of algoResults2){
-    pairs.push({id:pairs.length,out:c.out,barcode:maVachMap[c.out]||'',in:c.in,
-      score:c.score,diffs:c.diffs,types:c.types,note:'⚙ Thuật toán lần 2',
-      isAI:false,improved:false,flavorConflict:c.flavorConflict,blocked:false,round2:true});
+  for(const c of algoRes){
+    pairs.push({id:pairs.length, out:c.out, barcode:maVachMap[c.out]||'',
+      in:c.in, score:c.score, diffs:c.diffs, types:c.types,
+      note:`⚙ Thuật toán ${cfg.label}`, isAI:false, improved:false,
+      flavorConflict:c.flavorConflict, blocked:false, round:n});
     unmOut=unmOut.filter(o=>o!==c.out);
   }
   document.getElementById('aiMsg').textContent=
-    `⚙ Thuật toán lần 2: +${algoResults2.length} cặp. Còn ${unmOut.length} chưa ghép → AI xử lý tiếp...`;
+    `⚙ Thuật toán ${cfg.label}: +${algoRes.length} cặp. Còn ${unmOut.length} → AI xử lý...`;
   renderSummary(); renderTable();
 
-  /* ── Bước 2: AI lần 2 chỉ cho phần còn lại ── */
-  if(!unmOut.length){
-    document.getElementById('aiBar').style.width='100%';
-    document.getElementById('aiMsg').textContent='✓ Lần 2 hoàn tất! Thuật toán đã ghép hết.';
-    setTimeout(()=>document.getElementById('aiProg').classList.remove('show'),3000);
-    btn.disabled=false; btn.textContent='⚡ Chạy AI lần 2';
-    renderManual();
-    document.getElementById('run2Bar').classList.remove('show');
-    return;
-  }
+  /* ── Bước 2: AI cho phần còn lại ── */
+  if(unmOut.length && _apiKey){
+    const pairIdx={};
+    pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
+    const inSet=new Set(allIn);
+    const BATCH=cfg.batch;
 
-  const pairIdx={};
-  pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
-  const BATCH=8; // batch nhỏ hơn để context sạch hơn
-  const inSet=new Set(allIn);
+    for(let b=0;b<unmOut.length;b+=BATCH){
+      const batch=unmOut.slice(b,b+BATCH);
+      const pct=40+Math.round((b/Math.max(unmOut.length,1))*58);
+      document.getElementById('aiBar').style.width=pct+'%';
+      document.getElementById('aiMsg').textContent=
+        `⚡ AI ${cfg.label}: ${b+1}–${Math.min(b+BATCH,unmOut.length)} / ${unmOut.length}`;
 
-  for(let b=0;b<unmOut.length;b+=BATCH){
-    const batch=unmOut.slice(b,b+BATCH);
-    const pct=40+Math.round((b/unmOut.length)*58);
-    document.getElementById('aiBar').style.width=pct+'%';
-    document.getElementById('aiMsg').textContent=
-      '⚡ AI lần 2: '+(b+1)+'–'+Math.min(b+BATCH,unmOut.length)+' / '+unmOut.length+' SP (đã lọc thông minh)';
+      const candidates = cfg.crossCheck
+        ? (() => {
+            let m=[];
+            batch.forEach(o=>{smartFilterIn(o,allIn,50).forEach(c=>{if(!m.includes(c))m.push(c);});});
+            return m.slice(0,70);
+          })()
+        : allIn.filter(s=>!isPlaceholder(s)).slice(0,70);
 
-    // Lọc đầu vào riêng cho từng SP trong batch — ưu tiên theo brand + cat + token
-    const batchCandidates={};
-    let mergedCandidates=[];
-    batch.forEach(o=>{
-      const cands=smartFilterIn(o,allIn,50);
-      batchCandidates[o]=cands;
-      cands.forEach(c=>{if(!mergedCandidates.includes(c))mergedCandidates.push(c);});
-    });
-    if(mergedCandidates.length>80) mergedCandidates=mergedCandidates.slice(0,80);
+      const roundPrompts = {
+        2: 'Ghep san pham dau ra vao dau vao tuong ung. Nguong thap hon, trong luong chenh +-40% ok.',
+        3: 'Ghep san pham dau ra vao dau vao. Bo qua dieu kien vi/huong. Chi can cung thuong hieu va cung loai san pham.',
+        4: 'Ghep san pham dau ra vao dau vao gan nhat co the. Neu khong tim duoc chinh xac, chon san pham cung loai cung thuong hieu.',
+      };
+      const prompt = (roundPrompts[n]||roundPrompts[2])
+        +' Viet tat: STTT=Sua Tuoi Tiet Trung, NPC=Poca, BVS=Bang Ve Sinh, SCA=Sua Chua An, SRM=Sua Rua Mat, NSM=Nuoc Suc Mieng.'
+        +'\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')
+        +'\nDAU VAO:\n'+candidates.map((s,i)=>(i+1)+'. '+s).join('\n')
+        +'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":70,"r":"ly do"}]}';
 
-    // Build prompt đơn dòng
-    const _out2=batch.map((o,i)=>{const c=batchCandidates[o]||[];return (i+1)+'. '+o+' [goi y: '+c.slice(0,5).join(' | ')+']';}).join('\n');
-    const _in2=mergedCandidates.map((s,i)=>(i+1)+'. '+s).join('\n');
-    const prompt='Ghep san pham dau ra vao dau vao. Viet tat kho: STTT=Sua Tuoi Tiet Trung, NPC=Poca, NMCC=Nuoc Mam Ca Com, BVS=Bang Ve Sinh, HS TT=Hai San Thuy Tinh, SCA=Sua Chua An, TP=Thuan Phat. Quy tac: cung loai SP, cung thuong hieu, trong luong +-40% ok, Hang KM ghep voi SP chinh cung thuong hieu, 1 dau vao nhieu dau ra, khong tim duoc tra null.\nDAU RA CAN GHEP:\n'+_out2+'\nDAU VAO KHA DUNG (da loc theo loai SP):\n'+_in2+'\nJSON only: {"m":[{"o":"ten dau ra nguyen van","i":"ten dau vao nguyen van hoac null","s":80,"r":"ly do"}]}';
-
-    try{
-      const resp=await fetch('https://api.anthropic.com/v1/messages',{
-        method:'POST',
-        headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-        body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1200,
-          messages:[{role:'user',content:prompt}]})
-      });
-      const data=await resp.json();
-      if(data.error)throw new Error(data.error.message);
-      const text=data.content.map(c=>c.text||'').join('');
-      const clean=text.replace(/```json|```/g,'').trim();
-      const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
-      if(si===-1)throw new Error('no JSON');
-      const json=JSON.parse(clean.slice(si,ei+1));
-      for(const m of(json.m||[])){
-        if(!m.i||(m.s||0)<30) continue;
-        // Validate: tên đầu vào phải tồn tại trong danh sách thực
-        let validIn=inSet.has(m.i)?m.i:null;
-        if(m.i&&!validIn){
-          const mn=nv(m.i);
-          // Tìm fuzzy match
-          validIn=allIn.find(s=>{
-            const sn=nv(s);
-            return sn===mn
-              || (mn.length>10 && sn.includes(mn.slice(0,14)))
-              || (sn.length>10 && mn.includes(sn.slice(0,14)));
-          })||null;
+      try{
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+        });
+        const data=await resp.json();
+        if(data.error)throw new Error(data.error.message);
+        const text=data.content.map(c=>c.text||'').join('');
+        const clean=text.replace(/```json|```/g,'').trim();
+        const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
+        if(si===-1)throw new Error('no JSON');
+        const json=JSON.parse(clean.slice(si,ei+1));
+        for(const m of(json.m||[])){
+          if(!m.i||(m.s||0)<cfg.aiMin) continue;
+          let validIn=inSet.has(m.i)?m.i:null;
+          if(m.i&&!validIn){
+            const mn=nv(m.i);
+            validIn=allIn.find(s=>{const sn=nv(s);return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));  })||null;
+          }
+          if(!validIn) continue;
+          if(cfg.crossCheck && isCross(m.o,validIn)) continue;
+          const newId=pairs.length;
+          pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,
+            score:m.s,diffs:[`AI ${cfg.label}: ${m.r}`],types:['abbr'],
+            note:`⚡ AI ${cfg.label}`,isAI:true,improved:false,
+            flavorConflict:false,blocked:false,round:n});
+          pairIdx[m.o]=newId;
+          unmOut=unmOut.filter(o=>o!==m.o);
         }
-        if(!validIn) continue;
-        // Validate cross-category: không cho phép ghép sai loại
-        if(isCross(m.o,validIn)) continue;
-        // Thêm vào pairs
-        const newId=pairs.length;
-        pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,
-          score:m.s,diffs:['⚡ AI lần 2: '+m.r],types:['abbr'],
-          note:'⚡ AI lần 2',isAI:true,improved:false,
-          flavorConflict:false,blocked:false,round2:true});
-        pairIdx[m.o]=newId;
-        unmOut=unmOut.filter(o=>o!==m.o);
+        renderSummary(); renderTable();
+      }catch(e){
+        if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){
+          document.getElementById('aiMsg').textContent='⚠ Lỗi kết nối API.';
+          break;
+        }
+        await new Promise(r=>setTimeout(r,600));
       }
-      renderSummary(); renderTable();
-    }catch(e){
-      if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){
-        document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Kết quả thuật toán lần 2 vẫn được áp dụng.';
-        break;
-      }
-      document.getElementById('aiMsg').textContent='⚠ Batch lỗi: '+e.message.slice(0,40)+' — tiếp tục...';
-      await new Promise(r=>setTimeout(r,800));
+      await new Promise(r=>setTimeout(r,150));
     }
-    await new Promise(r=>setTimeout(r,180));
   }
 
   document.getElementById('aiBar').style.width='100%';
-  const r2count=pairs.filter(p=>p.round2).length;
+  const roundCount=pairs.filter(p=>p.round===n).length;
   document.getElementById('aiMsg').textContent=
-    '✓ Lần 2 hoàn tất! Ghép thêm '+r2count+' cặp. Còn '+unmOut.length+' SP chưa ghép → ghép thủ công bên dưới.';
-  setTimeout(()=>document.getElementById('aiProg').classList.remove('show'),4000);
-  btn.disabled=false; btn.textContent='⚡ Chạy AI lần 2';
+    `✓ ${cfg.label} hoàn tất! Ghép thêm ${roundCount} cặp. Còn ${unmOut.length} SP.`;
+  setTimeout(()=>document.getElementById('aiProg').classList.remove('show'),3000);
+  btn.disabled=false; btn.textContent=origTxt;
+
+  // Hiện bar lần tiếp theo
+  updateRoundBars();
   renderManual();
-  if(!unmOut.length) document.getElementById('run2Bar').classList.remove('show');
 }
+
+function updateRoundBars(){
+  // Lần 2
+  const b2=document.getElementById('run2Bar');
+  const b3=document.getElementById('run3Bar');
+  const b4=document.getElementById('run4Bar');
+  const hasRun2=pairs.some(p=>p.round===2);
+  const hasRun3=pairs.some(p=>p.round===3);
+
+  if(unmOut.length){
+    if(!hasRun2){ b2.classList.add('show'); b3.classList.remove('show'); b4.classList.remove('show'); }
+    else if(!hasRun3){ b2.classList.remove('show'); b3.classList.add('show'); b4.classList.remove('show'); }
+    else { b2.classList.remove('show'); b3.classList.remove('show'); b4.classList.add('show'); }
+    document.getElementById('run2Msg').textContent=`${unmOut.length} SP chưa ghép`;
+    document.getElementById('run3Msg').textContent=`${unmOut.length} SP chưa ghép`;
+    document.getElementById('run4Msg').textContent=`${unmOut.length} SP chưa ghép`;
+  } else {
+    b2.classList.remove('show'); b3.classList.remove('show'); b4.classList.remove('show');
+  }
+}
+
+/* ── Chạy thuật toán + AI lần 2 tự động như lần 1 ── */
+async function runRound2(){ await runRound(2); }
 
 function escJ(s){return String(s||'').replace(/\\/g,'\\\\').replace(/'/g,"\'");}
 
