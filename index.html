@@ -582,35 +582,42 @@ STTT ít đường TH True Milk 180mlx48C`;
 ═══════════════════════════════════════════ */
 function nv(s){return s.toLowerCase().replace(/[áàảãạăắặằẳẵâấầẩẫậ]/g,'a').replace(/[éèẻẽẹêếềểễệ]/g,'e').replace(/[íìỉĩị]/g,'i').replace(/[óòỏõọôốồổỗộơớờởỡợ]/g,'o').replace(/[úùủũụưứừửữự]/g,'u').replace(/[ýỳỷỹỵ]/g,'y').replace(/đ/g,'d').replace(/[^a-z0-9\s]/g,' ').replace(/\s+/g,' ').trim();}
 const DICT={
-  // Mã kho phổ biến
-  'nmcc':'nuoc mam ca com','npc':'poca','sttt':'sua tuoi tiet trung',
-  'stax':'lay stax','lays':'lay','bvs':'bang ve sinh',
-  'sca ':'sua chua an ','stc ':'sua trai cay ',
-  'hs ':'hai san ','tt ':'thuy tinh ','40n':'40 do dam',
-  // Sản phẩm
-  'moonfils':'moonfils bauli','popit':'popit keo deo',
-  'tao bien':'tao bien nori','kem hanh':'kem hanh',
-  'thit nuong':'thit nuong bbq','muc sot cay':'muc sot cay',
-  'tom hum':'tom hum','truyen thong':'truyen thong','bo wagyu':'bo wagyu',
-  // Viết tắt CSCT & gia dụng
-  'nsm ':'nuoc suc mieng ','nsm':'nuoc suc mieng',
-  'srm nm ':'sua rua mat nam ','srm nm':'sua rua mat nam',
-  'srm nu ':'sua rua mat nu ','srm nu':'sua rua mat nu',
-  'srm ':'sua rua mat ','nrc ':'nuoc tang luc nrc ',
-  'kdr ':'kem danh rang ','kdr':'kem danh rang',
-  'vs gp+':'vang sua grow plus','vs gp ':'vang sua grow plus ',
-  'sp bag':'goi','tp ':'thuan phat ','nm ':'nuoc mam ',
-  // Nivea mã nội bộ
-  '88521':'sua rua mat nivea anti acne',
-  '81273':'sua rua mat nivea set',
-  '85083':'son duong tay nivea',
-  // Ajinomoto
-  'aji-q':'aji quick','aji q':'aji quick',
-  // Kem lạnh
-  'kem mer':'kem merino','kem cel':'kem celano',
-  // Thực phẩm
-  'hv thi bam':'hv thit bam gau do chao',
-  'gau do':'gau do mi chao',
+  // ── Sữa TH ──
+  'sttt ':'sua tuoi tiet trung ',
+  'sca ':'sua chua an ','scutt ':'sua chua uong tiet trung ',
+  'scams ':'sua chua an mix vi ','stc ':'sua trai cay th truejuicemilk ',
+  'sudd gp+':'sua uong dinh duong grow plus',
+  'sudd gp+ do':'sua uong dinh duong grow plus do sdd',
+  'sudd gp+ xanh':'sua uong dinh duong grow plus xanh ba 1+',
+  'vs gp+':'vang sua grow plus',
+  'tu lmcc nuvi':'thuc uong sua nuvi lmcc co thach',
+  'tu nuvi':'thuc uong nuvi co thach',
+  'tustc nuvi':'thuc uong sua trai cay nuvi',
+  'scu nuvi':'sua chua uong nuvi',
+  'sca nuvi':'sua chua an nuvi',
+  // ── Lay/Poca/NPC ──
+  'nmcc ':'nuoc mam ca com ','npc ':'poca ',
+  'stax ':'lay stax ','lays ':'lay ',
+  // ── BVS ──
+  'bvs ':'bang ve sinh ','bvs kotex':'bang ve sinh kotex',
+  // ── Sữa chua dẻo/Kem lạnh ──
+  'scd merino':'sua chua deo merino phuc bon tu',
+  'sc deo mer':'sua chua deo merino','kem cel':'kem celano',
+  'kem mer ':'kem merino ','kem mer.':'kem merino',
+  // ── CSCT Nivea ──
+  'lnm ':'lan ngam mui nivea ','xnm ':'xit ngam mui nivea ',
+  'nuoc taytrg nivea':'nuoc tay trang nivea','nuoc taytrg':'nuoc tay trang',
+  'son nivea':'son duong moi nivea','son duong nivea':'son duong moi nivea',
+  'kdr sensodyne':'kem danh rang sensodyne',
+  // ── Nước ──
+  'nrc ':'nuoc tang luc nrc ','tk th':'nuoc khoang th true water',
+  // ── Gấu Đỏ ──
+  'gau cay':'gau do mi tom cay',
+  // ── Vật tư ──
+  'hs ':'hai san ','tt ':'thuy tinh ','tp ':'thuan phat ',
+  '40n':'40 do dam','moonfils':'bauli moonfils',
+  'tao bien':'tao bien nori','kem hanh':'kem hanh sour cream',
+  'thit nuong':'thit nuong bbq',
 };
 function expand(s){let n=nv(s);Object.entries(DICT).sort((a,b)=>b[0].length-a[0].length).forEach(([k,v])=>{n=n.replace(new RegExp('\\b'+k.trim()+'\\b','g'),v);});return n;}
 function tok(s){return expand(s).split(/\s+/).filter(Boolean);}
@@ -640,8 +647,10 @@ const CATS=[
   {id:'BANH_XOP',kw:['kalpa','wafer','banh xop kem']},
   {id:'BANH_QUY',kw:['d-maxx','d maxx','roma','cal cheese','banh quy sua','banh quy bo','superstar chocolate']},
   {id:'KEO',kw:['keo deo','popit','pop it','thien thach','keo fres','fres bac ha','kopiko','keo socola','keo trung','tube popit','keo tube']},
-  {id:'SUA_TUOI',kw:['sttt','sua tuoi tiet trung','th true milk','th milk','dalatmilk','da lat milk','th hilo','hilo','uht th']},
-  {id:'SUA_CHUA',kw:['sca ','th true yogurt','yogurt','sua chua an','sua chua uong','scutt topkid','scutt']},
+  {id:'SUA_TUOI',kw:['sttt','sua tuoi tiet trung','th true milk','th milk','dalatmilk','da lat milk','th hilo','hilo','uht th',
+    'tu lmcc nuvi','tu nuvi','tustc nuvi','thuc uong nuvi','nuvi co thach',
+    'sua trai cay th','stc th','nước stc','nuoc stc']},
+  {id:'SUA_CHUA',kw:['sca ','th true yogurt','yogurt','sua chua an','sua chua uong','scutt topkid','scutt','scams','sca nuvi','sua chua an nuvi']},
   {id:'SUA_TC',kw:['stc ','truejuicemilk','sua trai cay']},
   {id:'SUA_HAT',kw:['sua hat oc cho','th true nut','sua hat']},
   {id:'YEN_MACH',kw:['oatta','yen mach nguyen chat','yen mach trai cay']},
@@ -661,6 +670,23 @@ const CATS=[
 
   // ══ BỔ SUNG THIẾU ══
 
+  // DutchLady: Fristi/Fino = SUA_TUOI, Yomost = SUA_CHUA_UONG, CGHLan đặc = SUA_DAC
+  {id:'SUA_TUOI',kw:['sttt','sua tuoi tiet trung','th true milk','th milk','dalatmilk',
+    'th hilo','hilo','uht th','tu lmcc nuvi','tu nuvi','tustc nuvi','nuvi co thach',
+    'sua trai cay th','stc th','nuoc stc',
+    // DutchLady sữa tươi
+    'fristi','fino ','fino socola','fino dau','fino it duong','fino dutch',
+    'sua tuoi co gai ha lan','co gai ha lan tuoi','dl omegasmart','omegasmart',
+    'sua tiep trung cao khoe']},
+  {id:'SUA_CHUA',kw:['sca ','th true yogurt','yogurt','sua chua an','sua chua uong','scutt',
+    'scams','sca nuvi','sua chua an nuvi',
+    // Yomost = sữa chua uống DutchLady
+    'yomost','sua chua len men yomost','len men yomost','yomost dau','yomost cam',
+    'yomost bac ha','yomost nho','yomost luu','yomost jelly']},
+  {id:'SUA_DAC',kw:['sua dac','sua dac co duong','kem dac','co gai ha lan dac',
+    'co gai ha lan hao hang','co gai ha lan cao cap','sua nguyen kem',
+    'nguyen kem vani co gai','sua dac co gai ha lan']},
+
   // Nước rửa chén (KHÁC nước tẩy Javel)
   {id:'NUOC_RUA_CHEN',kw:['nuoc rua chen','rua chen','my hao nuoc rua',
     'sunlight rua chen','gift rua chen','vim rua chen','nuoc rua bat',
@@ -668,8 +694,9 @@ const CATS=[
     'nuoc rua chen chanh gung']},
 
   // Váng sữa (KHÁC sữa tươi)
-  {id:'VANG_SUA',kw:['vang sua','vs gp','grow plus','immunel','vang sua grow',
-    'vs vinamilk','vang sua vinamilk','vang sua ba vi','yomost vang']},
+  {id:'VANG_SUA',kw:['vang sua','vs gp+','vs gp ','sudd gp+','sudd gp ',
+    'grow plus','immunel','vang sua grow','sua uong dinh duong grow',
+    'vs vinamilk','vang sua vinamilk','vang sua ba vi']},
 
   // Chăm sóc em bé – Johnson's, Bübchen...
   {id:'CSCT_BABY',kw:['johnson baby','johnsons baby','phan rom','dau massage baby',
@@ -788,6 +815,7 @@ const CATS=[
     'xit khu mui niv','niv men xit','xit nivea','nivea xit','dry comfort nivea',
     'black white invisible','fresh flower nivea','protect care nivea xit']},
   {id:'NIVEA_LAN',  kw:['lan nivea','lan khu mui nivea','lan ngan mui nivea','roll on nivea',
+    'lnm ','lnm nam','lnm nu','lan ngam mui nivea','83778','83735','83734','82978','85392',
     'nivea roll','nivea lan','deodorant roll nivea','serum trang min','serum trang min nivea',
     'serum trang','lan serum nivea','nivea serum lan',
     'lan ngan mui','ngan mui nivea','lan nivea serum','serum hoa nivea','lan serum',
@@ -969,6 +997,8 @@ const SUBCATS_SAME_BRAND = [
   new Set(['NUOC_HOA_CO_THE','XIT_PHONG']),
   // Nước tẩy Javel ≠ nước rửa chén (cùng Mỹ Hảo nhưng khác sản phẩm)
   new Set(['NUOC_TAY','NUOC_RUA_CHEN']),
+  // Sữa đặc ≠ sữa tươi ≠ sữa chua
+  new Set(['SUA_DAC','SUA_TUOI','SUA_CHUA']),
   // Đường thường ≠ đường ăn kiêng
   new Set(['DUONG','DUONG_KIEN']),
   // SRM Nivea Nam ≠ SRM Nivea Nữ
