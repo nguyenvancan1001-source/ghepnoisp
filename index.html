@@ -25,7 +25,7 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .ai-badge{background:linear-gradient(135deg,#7C3AED,#2563EB);color:#fff;font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px}
 .offline-badge{background:var(--a50);color:var(--amber);font-size:10px;font-weight:700;padding:2px 7px;border-radius:3px;border:1px solid var(--a400)}
 .hdr-right{margin-left:auto;display:flex;gap:6px;align-items:center}
-.main{max-width:1360px;margin:0 auto;padding:14px}
+.main{max-width:100%;margin:0 auto;padding:12px 16px;box-sizing:border-box}
 .alert{border-radius:var(--r3);padding:10px 14px;margin-bottom:12px;font-size:12px;line-height:1.6;display:none;gap:10px;align-items:flex-start}
 .alert.show{display:flex}
 .alert.warn{background:var(--a50);border:1px solid var(--a400);color:var(--amber)}
@@ -152,41 +152,42 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 @media print{.hdr,.icard,.ai-prog,.pills,.toolbar,.legend,.tc-acts,.btn{display:none!important}.tbl-wrap{border:1px solid #ccc}}
 
 /* ── BẢNG GHÉP THỦ CÔNG ── */
-.manual-section{margin-top:16px}
+.manual-section{margin-top:14px}
 .manual-card{background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r4);overflow:hidden}
-.manual-hd{display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--sf2);border-bottom:1px solid var(--bd)}
-.manual-hd h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px}
-.manual-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
-.manual-col{display:flex;flex-direction:column}
-.manual-col-hd{padding:8px 12px;font-size:11px;font-weight:600;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between}
+.manual-hd{display:flex;align-items:center;justify-content:space-between;padding:9px 14px;background:var(--sf2);border-bottom:1px solid var(--bd);flex-wrap:wrap;gap:8px}
+.manual-hd h3{font-size:13px;font-weight:600;display:flex;align-items:center;gap:7px;white-space:nowrap}
+/* Body: 2 cột bằng nhau, có border giữa */
+.manual-body{display:grid;grid-template-columns:1fr 1fr;border-bottom:1px solid var(--bd)}
+.manual-col{display:flex;flex-direction:column;min-width:0;overflow:hidden}
+.manual-col-hd{padding:8px 12px;font-size:11px;font-weight:600;border-bottom:1px solid var(--bd);display:flex;align-items:center;justify-content:space-between;white-space:nowrap;overflow:hidden;gap:6px}
 .manual-col-hd.out{background:#E1F5EE22;color:var(--g800)}
 .manual-col-hd.in{background:#E6F1FB22;color:var(--b800);border-left:1px solid var(--bd)}
-.manual-list{overflow-y:auto;max-height:320px}
-.manual-list.in{border-left:1px solid var(--bd)}
-.mrow{display:flex;align-items:center;gap:8px;padding:7px 10px;border-bottom:0.5px solid var(--bd);cursor:pointer;transition:background .1s;user-select:none}
+.manual-list{overflow-y:auto;height:280px}
+.manual-list.in{border-left:1px solid var(--bd);height:280px}
+.mrow{display:flex;align-items:center;gap:7px;padding:7px 10px;border-bottom:0.5px solid var(--bd);cursor:pointer;transition:background .1s;user-select:none;min-width:0}
 .mrow:last-child{border-bottom:none}
 .mrow:hover{background:var(--sf2)}
-.mrow.sel-out{background:#E1F5EE44;border-left:3px solid var(--green)}
-.mrow.sel-in{background:#E6F1FB44;border-left:3px solid var(--blue)}
-.mrow.sel-out:hover{background:#E1F5EE66}
-.mrow.sel-in:hover{background:#E6F1FB66}
-.mrow.already-paired{opacity:.45;cursor:not-allowed}
-.mchk{width:16px;height:16px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;background:var(--sf);transition:all .1s}
+.mrow.sel-out{background:#E1F5EE33;border-left:3px solid var(--green)}
+.mrow.sel-in{background:#E6F1FB33;border-left:3px solid var(--blue)}
+.mrow.already-paired{opacity:.4;cursor:not-allowed}
+.mchk{width:15px;height:15px;border:1.5px solid var(--bd2);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:9px;background:var(--sf)}
 .mchk.checked-out{background:var(--green);border-color:var(--green);color:#fff}
 .mchk.checked-in{background:var(--blue);border-color:var(--blue);color:#fff}
-.mname{font-size:12px;line-height:1.3;flex:1;min-width:0}
-.mbc{font-size:10px;font-family:"Courier New",monospace;color:var(--amber);flex-shrink:0;max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.mstt{font-size:10px;color:var(--tx3);width:22px;text-align:right;flex-shrink:0}
-.manual-action-bar{padding:10px 14px;background:var(--sf2);border-top:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.sel-info{font-size:12px;flex:1}
+.mname{font-size:12px;line-height:1.3;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mbc{font-size:10px;font-family:"Courier New",monospace;color:var(--amber);flex-shrink:0;max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.mstt{font-size:10px;color:var(--tx3);width:20px;text-align:right;flex-shrink:0}
+/* Action bar dưới */
+.manual-action-bar{padding:9px 14px;background:var(--sf2);border-top:1px solid var(--bd);display:flex;align-items:center;gap:10px;flex-wrap:wrap;min-height:46px}
+.sel-info{font-size:12px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sel-info .out-sel{color:var(--green);font-weight:600}
 .sel-info .in-sel{color:var(--blue);font-weight:600}
-.paired-result{margin-top:8px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r3);overflow:hidden}
+/* Bảng kết quả thủ công */
+.paired-result{margin-top:10px;background:var(--sf);border:1px solid var(--bd2);border-radius:var(--r3);overflow:hidden}
 .paired-hd{padding:7px 12px;background:var(--g50);border-bottom:1px solid var(--bd);font-size:11px;font-weight:600;color:var(--g800);display:flex;align-items:center;justify-content:space-between}
-.paired-row{display:grid;grid-template-columns:30px 80px minmax(0,1fr) 50px minmax(0,1fr) 70px;border-bottom:0.5px solid var(--bd);font-size:11px}
+.paired-row{display:grid;grid-template-columns:28px 90px minmax(0,1fr) 46px minmax(0,1fr) 68px;border-bottom:0.5px solid var(--bd);font-size:11px}
 .paired-row:last-child{border-bottom:none}
 .paired-row.header{background:var(--sf2);font-weight:600;font-size:10px;color:var(--tx2)}
-.pc{padding:6px 9px;border-right:0.5px solid var(--bd)}
+.pc{padding:6px 8px;border-right:0.5px solid var(--bd);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .pc:last-child{border-right:none}
 .run2-bar{padding:10px 14px;background:var(--b50);border:1px solid #B5D4F4;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .run3-bar{padding:10px 14px;background:#EDE9FE;border:1px solid #C4B5FD;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
@@ -478,10 +479,11 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 <div class="manual-section" id="manualSection" style="display:none">
   <div class="manual-card">
     <div class="manual-hd">
-      <h3>&#9998; Ghép Nối Thủ Công — Chọn 1 Đầu Ra + 1 hoặc nhiều Đầu Vào</h3>
-      <div style="display:flex;gap:6px;align-items:center">
+      <h3>&#9998; Ghép Nối Thủ Công</h3>
+      <div style="display:flex;gap:6px;align-items:center;flex-wrap:wrap">
         <input type="text" id="manSrch" placeholder="&#128269; Lọc nhanh..." oninput="renderManual()"
-          style="padding:4px 8px;height:26px;font-size:11px;border:0.5px solid var(--bd2);border-radius:5px;background:var(--sf);color:var(--tx);font-family:inherit;width:160px">
+          style="padding:4px 8px;height:28px;font-size:11px;border:0.5px solid var(--bd2);border-radius:5px;background:var(--sf);color:var(--tx);font-family:inherit;width:150px">
+        <span style="font-size:11px;color:var(--tx3)">Chọn 1 đầu ra + 1 hoặc nhiều đầu vào</span>
         <button class="btn sm" onclick="clearManualSel()">&#10005; Bỏ chọn</button>
       </div>
     </div>
@@ -490,16 +492,16 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
       <!-- CỘT ĐẦU RA CHƯA GHÉP -->
       <div class="manual-col">
         <div class="manual-col-hd out">
-          <span>&#8599; Đầu Ra chưa ghép (<span id="manOutCount">0</span> SP) · <span style="color:var(--amber)">&#128278; kèm mã vạch</span></span>
-          <span style="font-size:10px;color:var(--tx3)">Click để chọn 1 dòng</span>
+          <span>&#8599; Đầu Ra chưa ghép <b id="manOutCount">0</b> SP</span>
+          <span>Click chọn 1 dòng</span>
         </div>
         <div class="manual-list" id="manOutList"></div>
       </div>
       <!-- CỘT ĐẦU VÀO CHƯA ĐƯỢC CHỌN -->
       <div class="manual-col">
         <div class="manual-col-hd in">
-          <span>&#8601; Đầu Vào để ghép (<span id="manInCount">0</span> SP)</span>
-          <span style="font-size:10px;color:var(--tx3)">Chọn 1 hoặc nhiều</span>
+          <span>&#8601; Đầu Vào để ghép <b id="manInCount">0</b> SP</span>
+          <span>Chọn 1 hoặc nhiều dòng</span>
         </div>
         <div class="manual-list in" id="manInList"></div>
       </div>
@@ -1496,12 +1498,18 @@ function renderManual(){
   const availOut = unmOut.filter(o=>!manPairedOut.has(o));
   const filtOut = q ? availOut.filter(o=>o.toLowerCase().includes(q)) : availOut;
 
-  // Đầu vào chưa được ghép bởi thuật toán (unmIn) + chưa ghép thủ công
   const manPairedIn = new Set(manualPairs.flatMap(p=>p.ins));
   const allInList = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
   const usedInAlgo = new Set(pairs.map(p=>p.in).filter(Boolean));
-  // Đề xuất: toàn bộ đầu vào (để linh hoạt), đánh dấu đã dùng
-  const filtIn = q ? allInList.filter(s=>s.toLowerCase().includes(q)) : allInList;
+  // Lọc đầu vào: ưu tiên cùng category với đầu ra đang chọn
+  let filtIn = allInList.filter(s=>!isPlaceholder(s));
+  if(manSelOut){
+    // Ưu tiên: cùng category lên đầu
+    const sameCat = filtIn.filter(s=>!isCross(manSelOut,s));
+    const diffCat = filtIn.filter(s=>isCross(manSelOut,s));
+    filtIn = [...sameCat,...diffCat];
+  }
+  if(q) filtIn = filtIn.filter(s=>s.toLowerCase().includes(q));
 
   document.getElementById('manOutCount').textContent = availOut.length;
   document.getElementById('manInCount').textContent = filtIn.length;
@@ -1511,13 +1519,11 @@ function renderManual(){
     ? filtOut.map((o,i)=>{
         const isSel = manSelOut === o;
         const bc = maVachMap[o]||'';
-        return `<div class="mrow${isSel?' sel-out':''}" onclick="toggleManOut('${escJ(o)}')">
+        return `<div class="mrow${isSel?' sel-out':''}" onclick="toggleManOut('${escJ(o)}')" title="${esc(o)}">
           <div class="mchk${isSel?' checked-out':''}">✓</div>
           <div class="mstt">${i+1}</div>
-          <div style="flex:1;min-width:0">
-            <div class="mname">${esc(o)}</div>
-            ${bc?`<div style="font-size:10px;font-family:'Courier New',monospace;color:var(--amber);margin-top:1px">&#128278; ${esc(bc)}</div>`:'<div style="font-size:10px;color:var(--tx3);font-style:italic">Không có mã vạch</div>'}
-          </div>
+          <div class="mname">${esc(o)}</div>
+          ${bc?`<span class="mbc" title="${esc(bc)}">🔖${esc(bc)}</span>`:''}
         </div>`;
       }).join('')
     : `<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">
@@ -1531,13 +1537,12 @@ function renderManual(){
         const usedMan  = manPairedIn.has(s);
         const badge = usedAlgo?`<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:var(--g50);color:var(--g800)">Đã ghép ✓</span>`
                     : usedMan?`<span style="font-size:9px;padding:1px 4px;border-radius:3px;background:#EDE9FE;color:#5B21B6">Thủ công ✓</span>`:''
-        return `<div class="mrow${isSel?' sel-in':''}" onclick="toggleManIn('${escJ(s)}')">
+        const isCrossMatch = manSelOut ? isCross(manSelOut,s) : false;
+        return `<div class="mrow${isSel?' sel-in':''}${isCrossMatch?' used':''}" onclick="${isCrossMatch?'':"toggleManIn('" + escJ(s) + "')"}" title="${isCrossMatch?'Khác loại sản phẩm':esc(s)}">
           <div class="mchk${isSel?' checked-in':''}">✓</div>
           <div class="mstt">${i+1}</div>
-          <div style="flex:1;min-width:0">
-            <div class="mname">${esc(s)}</div>
-            ${badge?`<div style="margin-top:2px">${badge}</div>`:''}
-          </div>
+          <div class="mname" title="${esc(s)}">${esc(s)}</div>
+          ${badge?`<span class="mbadge" style="background:var(--g50);color:var(--g800)">${badge.replace(/<[^>]+>/g,'')}</span>`:''}
         </div>`;
       }).join('')
     : `<div style="padding:20px;text-align:center;color:var(--tx3);font-size:12px">Không có đầu vào</div>`;
