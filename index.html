@@ -193,6 +193,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 .run3-bar{padding:10px 14px;background:#EDE9FE;border:1px solid #C4B5FD;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .run4-bar{padding:10px 14px;background:var(--g50);border:1px solid #9FE1CB;border-radius:var(--r3);margin-bottom:10px;display:none;gap:10px;flex-wrap:wrap;align-items:center}
 .run2-bar.show{display:flex}
+.run3-bar.show{display:flex}
+.run4-bar.show{display:flex}
 @media(max-width:750px){.manual-body{grid-template-columns:1fr}.manual-list.in{border-left:none;border-top:1px solid var(--bd)}}
 </style>
 </head>
@@ -448,8 +450,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 <!-- RUN LẦN 2 -->
 <div class="run2-bar" id="run2Bar">
   <div style="flex:1">
-    <div style="font-size:11px;color:var(--b800);font-weight:600;margin-bottom:2px">⚡ Lần 2 — AI ngưỡng thấp hơn</div>
-    <div style="font-size:12px"><strong id="run2Msg">Còn sản phẩm chưa ghép</strong> — thuật toán + AI với ngưỡng -15%, sai số KL +10%</div>
+    <div style="font-size:11px;color:var(--b800);font-weight:600;margin-bottom:2px">⚡ Lần 2 — Nới lỏng KL +15%, bỏ khớp vị/hương (VẪN giữ cùng loại SP)</div>
+    <div style="font-size:12px"><strong id="run2Msg">Còn sản phẩm chưa ghép</strong> — tìm cùng loại SP + thương hiệu, bỏ qua khác biệt vị/hương nhỏ</div>
   </div>
   <button class="btn primary sm" onclick="runRound(2)">⚡ Chạy lần 2</button>
   <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
@@ -458,8 +460,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 <!-- RUN LẦN 3 -->
 <div class="run3-bar" id="run3Bar">
   <div style="flex:1">
-    <div style="font-size:11px;color:#5B21B6;font-weight:600;margin-bottom:2px">⚡ Lần 3 — AI bỏ điều kiện vị/hương + mở rộng từ điển</div>
-    <div style="font-size:12px"><strong id="run3Msg">Còn sản phẩm chưa ghép</strong> — tìm theo thương hiệu + loại sản phẩm, bỏ qua khớp vị</div>
+    <div style="font-size:11px;color:#5B21B6;font-weight:600;margin-bottom:2px">⚡ Lần 3 — Nới lỏng KL ±50%, khác vị/hương OK (VẪN cùng loại SP)</div>
+    <div style="font-size:12px"><strong id="run3Msg">Còn sản phẩm chưa ghép</strong> — tìm SP cùng loại gần nhất, cho phép khác KL đến 50%</div>
   </div>
   <button class="btn sm" id="run3Btn" onclick="runRound(3)" style="background:#7C3AED;border-color:#7C3AED;color:#fff">⚡ Chạy lần 3</button>
   <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
@@ -468,8 +470,8 @@ body{font-family:"Segoe UI",system-ui,sans-serif;background:var(--bg);color:var(
 <!-- RUN LẦN 4 -->
 <div class="run4-bar" id="run4Bar">
   <div style="flex:1">
-    <div style="font-size:11px;color:var(--g800);font-weight:600;margin-bottom:2px">⚡ Lần 4 — AI tự do, chỉ cần cùng loại SP</div>
-    <div style="font-size:12px"><strong id="run4Msg">Còn sản phẩm chưa ghép</strong> — AI gợi ý đầu vào gần nhất, ngưỡng tối thiểu 20%</div>
+    <div style="font-size:11px;color:var(--g800);font-weight:600;margin-bottom:2px">⚡ Lần 4 — Tìm SP cùng loại gần nhất, cho phép khác thương hiệu</div>
+    <div style="font-size:12px"><strong id="run4Msg">Còn sản phẩm chưa ghép</strong> — AI tìm SP tương đồng nhất trong cùng danh mục, ngưỡng 22%</div>
   </div>
   <button class="btn sm" id="run4Btn" onclick="runRound(4)" style="background:var(--green);border-color:var(--green);color:#fff">⚡ Chạy lần 4</button>
   <button class="btn sm" onclick="document.getElementById('manualSection').scrollIntoView({behavior:'smooth'})">↓ Ghép thủ công</button>
@@ -846,9 +848,12 @@ const PARENT=[
   ['NIVEA_SRM'],   // chỉ SRM Nivea với SRM Nivea
   ['NIVEA_SON'],   // chỉ son Nivea với son Nivea
   // Đông lạnh / viên / xúc xích
-  ['VIEN','XUC_XICH','DONG_LANH'],
+  ['VIEN'],       // chả viên các loại
+  ['XUC_XICH'],   // xúc xích
+  ['DONG_LANH'],  // gà rán, mực vòng...
   // Gia vị chung
-  ['GIA_VI','NUOC_MAM','DO_HOP','DUONG','DAU_AN'],
+  ['GIA_VI','NUOC_MAM','DUONG','DAU_AN'],
+  ['DO_HOP'],
   // Ajinomoto sub-cat: bột ngọt ↔ bột ngọt, bột canh ↔ bột canh (KHÔNG mix)
   ['AJI_BOT_NGOT'],   // bột ngọt riêng
   ['AJI_BOT_CANH'],   // bột canh riêng
@@ -1219,7 +1224,7 @@ async function runMatch(){
     document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
     document.getElementById('aiProg').classList.add('show');
     // ── Song song CONCURRENT=4 batch cùng lúc → nhanh ~4x ──
-    const BATCH=12, CONCURRENT=4;
+    const BATCH=8, CONCURRENT=4;
     const pairIdx={};
     pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
     const inSet=new Set(inList);
@@ -1227,13 +1232,14 @@ async function runMatch(){
 
     async function processBatch(batch){
       if(corsError) return;
-      const relevant=inList.filter(s=>!isPlaceholder(s)&&!batch.every(o=>isCross(o,s))).slice(0,80);
-      const prompt='Ghep san pham. Viet tat: STTT=Sua Tuoi Tiet Trung, NPC=Poca, NMCC=Nuoc Mam Ca Com, SCA=Sua Chua An, BVS=Bang Ve Sinh, SRM=Sua Rua Mat, NSM=Nuoc Suc Mieng.\nQuy tac: cung loai SP, cung thuong hieu uu tien, trong luong +-30% ok, 1 dau vao nhieu dau ra, khong tim duoc null.\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO ('+relevant.length+' sp):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":85,"r":"ly do ngan"}]}';
+      const relevant=inList.filter(s=>!isPlaceholder(s)&&!batch.every(o=>isCross(o,s))).slice(0,40);
+      const _sys="Ban la CHUYEN GIA KHO HANG TAP HOA 'VICOMART' voi 10 nam kinh nghiem.\nNHIEM VU: Ghep dung SAN PHAM DAU RA (ten ban ra) voi TEN TRONG KHO HANG tuong ung.\n\nVIET TAT KHO HANG VICOMART:\nSTTT=Sua Tuoi Tiet Trung | NPC/Poca=Snack khoai tay Poca | SCA=Sua Chua An (dang dac, hu) | SCUTT=Sua Chua Uong Tiet Trung (binh nho)\nSRM=Sua Rua Mat | KDR=Kem Danh Rang | NSM=Nuoc Suc Mieng | BVS=Bang Ve Sinh\nNRC=Nuoc Tang Luc NRC Chanh | LC/Lacusina=thuc pham dong lanh Lacusina | HS TT=Hai San Thuy Tinh\nVS GP=Vang Sua Grow Plus | AJI=Ajinomoto | TP=Thuan Phat | CTM=chai | SP BAG=goi tui\n\nNHOM SAN PHAM (chi ghep trong cung nhom - du khac ten, viet tat):\n\n[SNACK/AN VAT] Lay/Stax/Poca/NPC khoai tay, Swing, O'star, snack rori\n[BANH KHO] Orion, Danisa, Roma, Tatawa, HUU NGHI, Kinh Do banh quy/bong lan/xop\n[BANH MI TUOI/CAKE] Kido banh mi tron/dorayaki, mochi kem, UFK banh trung cuon, banh ran\n[KEO/SING GUM] CoolAir, Doublemint, Alpenlibe, keo deo, kopiko, keo thien thach, keo Dynamite\n[SOCOLA] Hershey, KitKat Nhat, M&M, Snickers, Socola dong tien Viet Thai\n[SUA TUOI HOP] Vinamilk STTT, TH True Milk, DutchLady, NuVi sua, PediaSure, Fami dau nanh\n[SUA CHUA AN] Gotz sua chua an, TH Yogurt, Yakult (hu dac) - KHAC SUA CHUA UONG\n[SUA CHUA UONG] Yakult uong, SCUTT, binh nho - KHAC SUA CHUA AN\n[VANG SUA] Grow Plus VS, Vinamilk vang sua - KHAC SUA TUOI\n[NGU COC/BOT UONG] Oatta yen mach, Ovaltine, Milo, NutriLifes, BetaNGU COC, Bot Ngu Coc\n[NUOC UONG CO GAS] Pepsi, Coca Cola, 7Up, Mirinda, Sprite\n[NUOC EP/NUOC TRAI CAY] Joco, nuoc ep Wonderfarm, nuoc dua Cocoxim, nuoc thach dua Xim\n[NUOC TANG LUC] Redbull, Warrior, NRC Chanh, Sting, Number 1\n[NUOC KHOANG] Lavie, TH Water, Aquafina\n[TRA/CA PHE] Trung Nguyen, G7, Nescafe, Cafe cau dat, Lipton, Cozy tra\n[DAU GOI/DXA/SUA TAM] Sunsilk, Pantene, Clear, Xmen, Oliv, Purite, DrSoftly, Romano\n[LAN/XIT KHU MUI] Nivea lan, Xmen xit, Romano xit - KHAC DAU GOI/SUA TAM\n[SRM/SUA RUA MAT/KEM DUONG] Senka, Nivea SRM, e100, Xmen facial - KHAC DAU GOI\n[KEM DANH RANG/BAN CHAI] Colgate, Sensodyne, Oral-B, Ngoc Chau - KHAC NUOC SUC MIENG\n[NUOC SUC MIENG] Listerine, Colgate suc mieng (nuoc rinse) - KHAC KEM DANH RANG\n[BVS/TAMPON] Kotex, Diana, Laurier bang ve sinh - KHAC KHAN TA\n[KHAN TA/BIM BIM] Bobby, Huggies, ta dan, ta quan - KHAC BVS\n[HANG ME VA BE] Pigeon, Dnee, Johnson Baby, Kichi do cho be, may hut sua\n[GIA VI CHUNG] Cholimex sot/tuong, Chinsu nuoc tuong/sot, DH Foods gia vi, tiêu, muoi\n[BOT NGOT] Ajinomoto bot ngot hat lon/hat min, MIWON bot ngot - KHAC BOT CANH\n[BOT CANH/HAT NEM] Ajinomoto bot canh, Maggi hat nem, Knorr - KHAC BOT NGOT\n[BOT CHIEN/BOT TAM] Aji-Quick bot chien gion, Tempura - KHAC BOT NGOT\n[NUOC MAM/NUOC TUONG] Ca com, Thuoc Phat nuoc mam, Maggi nuoc tuong\n[CA HOP/DO HOP] Ca ngu ngam dau Seaspimex, ca thu, ca moi - KHAC GIA VI\n[VIEN DONG LANH] Ca vien, muc vien, tom vien, bo vien, Deli LC FOODS - KHAC DONG LANH KHAC\n[DONG LANH KHAC] Dui ga/chien gion, muc vong, Bibigo Mandu, Cau Tre Cha Gio\n[XUC XICH/LAP XUONG] Vissan, Massan xuc xich, SiuMe, Heo Cao Boi - KHAC VIEN\n[PHO MAI] La Vache qui rit/Con Bo Cuoi, Vietcoco pho mai, pho mai tan chay\n[MI AN LIEN] Hao Hao, Acecook, Omachi, Cung Dinh, Gau Do mi - KHAC CHAO, KHAC BUN/PHO\n[BUN/PHO/HU TIEU AN LIEN] Vifon, Cung Dinh bun bo, Hu tieu Nam Vang - KHAC MI\n[CHAO AN LIEN] Gau Do chao, chao vi - KHAC MI\n[THUC PHAM KHO] Gao Thom ST25, Nui Meizan, bot min, bun tuoi\n[NGU COC KHO/GAO LUC] NutriLifes ngu coc, gao luc huyet rong - KHAC BOT UONG\n[DUONG] Bien Hoa duong mia, duong phen, duong trang - KHAC DUONG KIEN\n[DUONG KIEN] Isomalt, stevia - KHAC DUONG THUONG\n[DAU AN] Tuong An, Meizan, Neptune dau an nau - KHAC GIA VI\n[HOA PHAM/NUOC GIA] Lix, My Hao, Comfort, Downy, nuoc xa, bot giat, nuoc rua chen, nuoc tay\n[GIA DUNG] tho, chau, ro, hop nhua, ly thuy tinh, noi, chen dia, moc dan tuong\n[KEM LANH] Merino kem, Celano, Vinamilk kem, Nestle kem - KHAC SUA CHUA\n[SUA CHUA DEO] Merino pho mai deo - KHAC KEM LANH\n[NUOC HOA/XIT PHONG] Johnson Baby nuoc hoa, Glade xit phong\n[VAN PHONG PHAM] but bi, but chi, so, muc but - KHAC thuc pham\n[THOI TRANG/PHU KIEN] balo, vong, moc khoa, mu bao hiem - KHAC thuc pham\n\nVI DU GHEP DUNG (hoc pattern nay):\nLay Stax Pho Mai Cheddar 100g → LAY'S STAX VỊ PHÔ MAI CHEDDAR 42G\nPoca Bo Luc Lac Goi 60g → NPC 10M Bo Luc Lac 60g\nSua Chua An TH vi Dau → SCA Dau 110g\nSRM Nivea Men Bot Min 100g → 88521 SRM NM DEEP HIMA ANTI ACNE 100G\nMi Hao Hao Vị Tom Chua Cay 75g → Hao Hao Tom Chua Cay Goi 75g\nChao Gau Do HV Thit Bam → CHAO GAU DO 50 GOI HV Thit Bam\nBang Ve Sinh Kotex Hang Ngay 8M → BVS KOTEX Hang Ngay 8X48\nBot canh Ajinomoto 190g → BOT CANH AJI 190g\nDau Goi Sunsilk Mem Muot 850g → Sunsilk Mem Muot Chai 850g\nKem Merino Kool Sua Dua 56g → Merino Kool sua dua le 56g\n\nTRO VE NULL neu khong co SP cung nhom. KHONG ghep khac nhom du ten co tu giong nhau.";
+      const prompt=_sys+'\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO ('+relevant.length+' sp, da loc cung loai):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":88,"r":"ly do"}]}';
       try{
         const resp=await fetch('https://api.anthropic.com/v1/messages',{
           method:'POST',
           headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
         });
         const data=await resp.json();
         if(data.error)throw new Error(data.error.message);
@@ -1460,6 +1466,9 @@ let manSelIn  = new Set(); // set tên SP đầu vào đang chọn
 let manualPairs = [];   // [{out, barcode, in, type:'manual'}]
 
 function renderUnmatched(){
+  // Lọc bỏ SP đã ghép
+  const _paired=new Set(pairs.map(p=>p.out).filter(Boolean));
+  unmOut=unmOut.filter(o=>!_paired.has(o));
   const box = document.getElementById('unmatchedBox');
   const sec = document.getElementById('manualSection');
   const run2 = document.getElementById('run2Bar');
@@ -1675,40 +1684,53 @@ function exportManualCSV(){
    Tầng 5: Nếu < MIN thì nới lỏng lần lượt từng tầng
 ═══════════════════════════════════════════════════════════════ */
 function smartFilterIn(outS, allIn, maxCount=60) {
-  const usedByAlgo = new Set(pairs.map(p=>p.in).filter(Boolean));
-
-  // Tầng 0: loại placeholder và đã dùng lần 1
+  /* Lọc 5 tầng - LUÔN giữ cross-category check
+     Tầng 1: Loại placeholder
+     Tầng 2: Cùng danh mục (isCross=false) ← KHÔNG BAO GIỜ bỏ qua
+     Tầng 3: Ưu tiên cùng brand
+     Tầng 4: Ưu tiên có token chung
+     Tầng 5: Sắp xếp theo score ước tính
+  */
+  // Tầng 1: loại placeholder
   const pool = allIn.filter(s => !isPlaceholder(s));
-  // Không loại "đã dùng" vì 1 đầu vào có thể dùng nhiều lần
 
-  // Tầng 1: cùng nhóm danh mục
-  const t1 = pool.filter(s => !isCross(outS, s));
+  // Tầng 2: PHẢI cùng danh mục - đây là điều kiện bắt buộc
+  const sameCat = pool.filter(s => !isCross(outS, s));
+  // Nếu không có gì cùng danh mục → trả về rỗng (không ghép bừa)
+  if(sameCat.length === 0) return [];
 
-  // Tầng 2: token chung — ít nhất 1 từ chung sau expand
-  const outToks = new Set(tok(outS));
-  function shareToken(s){ return tok(s).some(t => outToks.has(t)); }
-  const t2 = t1.filter(shareToken);
-
-  // Tầng 3: cùng thương hiệu
-  const BRANDS=['lay','poca','danisa','bauli','moonfils','popit','th true','th milk','oatta',
-    'cholimex','redbull','red bull','warrior','xmen','x-men','oliv','ooliv','purite',
-    'kotex','lacusina','kitkool','trung nguyen','vietngucoc','viet dai','dalatmilk','seaspimex'];
+  // Tầng 3: cùng brand
+  const BRANDS_FULL = ['lay','poca','npc','danisa','bauli','moonfils','popit','pop it',
+    'th true','th milk','oatta','cholimex','redbull','red bull','warrior',
+    'xmen','x-men','oliv','ooliv','purite','kotex','lacusina','kitkool',
+    'trung nguyen','vietngucoc','viet dai','dalatmilk','seaspimex','gau do',
+    'merino','celano','nuvi','nivea','johnson','ajinomoto','aji','my hao',
+    'glade','sensodyne','colgate','listerine','bien hoa','hershey','kido'];
   const noS = nv(outS);
-  const outBrand = BRANDS.find(b=>noS.includes(nv(b)));
-  const t3 = outBrand ? t2.filter(s=>nv(s).includes(nv(outBrand))) : t2;
+  const outBrand = BRANDS_FULL.find(b => noS.includes(nv(b)));
+  const sameBrand = outBrand
+    ? sameCat.filter(s => nv(s).includes(nv(outBrand)))
+    : [];
 
-  // Nới lỏng dần nếu quá ít kết quả
+  // Tầng 4: token chung
+  const outToks = new Set(tok(outS));
+  const shareToken = s => tok(s).some(t => t.length > 2 && outToks.has(t));
+  const sameToken = sameCat.filter(shareToken);
+
+  // Chọn tập tốt nhất
   let result;
-  if(t3.length >= 3)       result = t3;        // có brand + token + cat
-  else if(t2.length >= 3)  result = t2;        // token + cat
-  else if(t1.length >= 3)  result = t1;        // chỉ cần cùng cat
-  else if(pool.length >= 3)result = pool;       // fallback: loại placeholder thôi
-  else                     result = allIn;      // cuối cùng: tất cả
+  if(sameBrand.length >= 2)      result = sameBrand;  // cùng brand → chắc nhất
+  else if(sameToken.length >= 2) result = sameToken;  // token chung
+  else                           result = sameCat;    // cùng danh mục
 
-  // Ưu tiên: chưa dùng lần 1 lên đầu, đã dùng xuống cuối
-  result.sort((a,b)=>{
-    const ua=usedByAlgo.has(a)?1:0, ub=usedByAlgo.has(b)?1:0;
-    return ua-ub;
+  // Sắp xếp: cùng brand > cùng token > còn lại
+  result.sort((a,b) => {
+    const na = nv(a), nb = nv(b);
+    const aB = outBrand && na.includes(nv(outBrand)) ? 2 : 0;
+    const bB = outBrand && nb.includes(nv(outBrand)) ? 2 : 0;
+    const aT = shareToken(a) ? 1 : 0;
+    const bT = shareToken(b) ? 1 : 0;
+    return (bB+bT) - (aB+aT);
   });
 
   return result.slice(0, maxCount);
@@ -1724,15 +1746,33 @@ function getRoundConfig(n) {
   const base_wt  = +document.getElementById('slWt').value  || 20;
   const base_min = +document.getElementById('slMin').value || 30;
   switch(n) {
-    case 2: return { wt: Math.min(40, base_wt+10), min: Math.max(20, base_min-15), strict: false,  crossCheck: true,  aiMin: 30, batch: 8,  label: 'lần 2' };
-    case 3: return { wt: Math.min(50, base_wt+20), min: Math.max(15, base_min-20), strict: false,  crossCheck: false, aiMin: 25, batch: 6,  label: 'lần 3' };
-    case 4: return { wt: 60,                         min: 15,                        strict: false,  crossCheck: false, aiMin: 20, batch: 5,  label: 'lần 4' };
-    default: return { wt: base_wt, min: base_min, strict: true, crossCheck: true, aiMin: 40, batch: 12, label: 'lần 1' };
+    case 2: return {
+      wt: Math.min(45, base_wt+15), min: Math.max(25, base_min-10),
+      strict: false, crossCheck: true, aiMin: 35, batch: 10, label: 'lần 2',
+      aiPromptExtra: 'Yeu cau: cung loai SP (sua chua=sua chua, ca hop=ca hop, banh bao=banh bao). Bo qua khac biet vi/huong. Trong luong chenh +-45% ok.'
+    };
+    case 3: return {
+      wt: Math.min(55, base_wt+25), min: Math.max(20, base_min-15),
+      strict: false, crossCheck: true, aiMin: 28, batch: 8, label: 'lần 3',
+      aiPromptExtra: 'Yeu cau: cung loai SP bat buoc. Cho phep khac vi/huong, khac trong luong den 55%. Uu tien cung thuong hieu. Vi du: sua chua dau=sua chua khac dau, goi mi=mi khac vi, banh quy=banh quy khac thuong hieu.'
+    };
+    case 4: return {
+      wt: 65, min: 15,
+      strict: false, crossCheck: true, aiMin: 22, batch: 6, label: 'lần 4',
+      aiPromptExtra: 'Yeu cau: cung loai SP la bat buoc, tuyet doi khong ghep khac loai (sua chua KHONG the la ngu coc, ca hop KHONG the la tuong ca, banh bao KHONG the la vien dong lanh). Cho phep khac thuong hieu neu cung loai. Trong luong chenh +-60% ok.'
+    };
+    default: return {
+      wt: base_wt, min: base_min, strict: true, crossCheck: true,
+      aiMin: 40, batch: 12, label: 'lần 1', aiPromptExtra: ''
+    };
   }
 }
 
+
 async function runRound(n) {
-  if(!unmOut.length){ alert('Không còn sản phẩm nào cần ghép!'); return; }
+  const _p=new Set(pairs.map(p=>p.out).filter(Boolean));
+  unmOut=unmOut.filter(o=>!_p.has(o));
+  if(!unmOut.length){ alert('Không còn SP nào chưa ghép!'); updateRoundBars(); return; }
   const cfg = getRoundConfig(n);
   const allIn = document.getElementById('taIn').value.trim().split('\n').map(s=>s.trim()).filter(Boolean);
 
@@ -1753,11 +1793,11 @@ async function runRound(n) {
   const unmOutCopy = [...unmOut];
   const flat=[];
   unmOutCopy.forEach((o,oi)=>{
-    const candidates = cfg.crossCheck
-      ? smartFilterIn(o, allIn, 80)
-      : allIn.filter(s=>!isPlaceholder(s)).slice(0,80);
+    // LUÔN dùng smartFilterIn — lọc theo danh mục, thương hiệu, token
+    const candidates = smartFilterIn(o, allIn, 80);
     candidates.forEach((inp)=>{
       const r = masterScore(o, inp, cfg.wt, cfg.strict);
+      // crossCheck LUÔN true từ lần 2 → không ghép khác loại
       if(!r.blocked && r.score>=cfg.min) flat.push({oi, out:o, in:inp, ...r});
     });
   });
@@ -1794,30 +1834,23 @@ async function runRound(n) {
       document.getElementById('aiMsg').textContent=
         `⚡ AI ${cfg.label}: ${b+1}–${Math.min(b+BATCH,unmOut.length)} / ${unmOut.length}`;
 
-      const candidates = cfg.crossCheck
-        ? (() => {
-            let m=[];
-            batch.forEach(o=>{smartFilterIn(o,allIn,50).forEach(c=>{if(!m.includes(c))m.push(c);});});
-            return m.slice(0,70);
-          })()
-        : allIn.filter(s=>!isPlaceholder(s)).slice(0,70);
+      // LUÔN dùng smartFilterIn - giữ cross-category
+      const candidateSet = new Set();
+      batch.forEach(o=>{
+        smartFilterIn(o, allIn, 50).forEach(c=>candidateSet.add(c));
+      });
+      const candidates = [...candidateSet].slice(0, 70);
+      // Nếu không có candidate cùng loại → bỏ qua batch này
+      if(candidates.length === 0) { doneBatches++; continue; }
 
-      const roundPrompts = {
-        2: 'Ghep san pham dau ra vao dau vao tuong ung. Nguong thap hon, trong luong chenh +-40% ok.',
-        3: 'Ghep san pham dau ra vao dau vao. Bo qua dieu kien vi/huong. Chi can cung thuong hieu va cung loai san pham.',
-        4: 'Ghep san pham dau ra vao dau vao gan nhat co the. Neu khong tim duoc chinh xac, chon san pham cung loai cung thuong hieu.',
-      };
-      const prompt = (roundPrompts[n]||roundPrompts[2])
-        +' Viet tat: STTT=Sua Tuoi Tiet Trung, NPC=Poca, BVS=Bang Ve Sinh, SCA=Sua Chua An, SRM=Sua Rua Mat, NSM=Nuoc Suc Mieng.'
-        +'\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')
-        +'\nDAU VAO:\n'+candidates.map((s,i)=>(i+1)+'. '+s).join('\n')
-        +'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":70,"r":"ly do"}]}';
-
+      const _sysR='Ban la CHUYEN GIA TAP HOA. Day la LAN '+n+' ghep noi - SP chua ghep duoc lan truoc.\nLUAT: '+(cfg.aiPromptExtra||'Cung loai SP, trong luong +-45% ok.')+'\nTUYET DOI KHONG GHEP KHAC NHOM: Sua chua!=ngu coc; Ca hop Seaspimex!=tuong ca/gia vi; Banh bao Lacusina!=vien dong lanh; Dui ga!=ca vien; Bot ngot Aji!=bot chien Aji-Quick!=mayo Aji; Lan Nivea!=SRM Nivea; Nuoc tay!=nuoc rua chen; Mi Gau Do!=chao Gau Do; Kem lanh Celano!=sua chua deo Merino; Nuoc hoa!=xit phong; Pin!=bat lua; Duong Isomalt!=duong thuong.\nVIET TAT: STTT=Sua Tuoi TT | NPC=Poca snack | SCA=Sua Chua An | LC=Lacusina | SRM=Sua Rua Mat | BVS=Bang Ve Sinh.\nTra ve null neu khong co SP cung nhom.'
+      const prompt=_sysR+'\nDAU RA CAN GHEP (lan '+n+'):\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO KHO (da loc cung loai SP):\n'+candidates.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra nguyen van","i":"ten dau vao nguyen van hoac null","s":80,"r":"ly do"}]}';
+      
       try{
         const resp=await fetch('https://api.anthropic.com/v1/messages',{
           method:'POST',
           headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1000,messages:[{role:'user',content:prompt}]})
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
         });
         const data=await resp.json();
         if(data.error)throw new Error(data.error.message);
@@ -1868,24 +1901,22 @@ async function runRound(n) {
 }
 
 function updateRoundBars(){
-  // Lần 2
   const b2=document.getElementById('run2Bar');
   const b3=document.getElementById('run3Bar');
   const b4=document.getElementById('run4Bar');
-  const hasRun2=pairs.some(p=>p.round===2);
-  const hasRun3=pairs.some(p=>p.round===3);
-
-  if(unmOut.length){
-    if(!hasRun2){ b2.classList.add('show'); b3.classList.remove('show'); b4.classList.remove('show'); }
-    else if(!hasRun3){ b2.classList.remove('show'); b3.classList.add('show'); b4.classList.remove('show'); }
-    else { b2.classList.remove('show'); b3.classList.remove('show'); b4.classList.add('show'); }
-    document.getElementById('run2Msg').textContent=`${unmOut.length} SP chưa ghép`;
-    document.getElementById('run3Msg').textContent=`${unmOut.length} SP chưa ghép`;
-    document.getElementById('run4Msg').textContent=`${unmOut.length} SP chưa ghép`;
-  } else {
-    b2.classList.remove('show'); b3.classList.remove('show'); b4.classList.remove('show');
-  }
+  if(!b2) return;
+  b2.classList.remove('show');
+  if(b3) b3.classList.remove('show');
+  if(b4) b4.classList.remove('show');
+  if(!unmOut.length) return;
+  const msg=unmOut.length+' SP chưa ghép';
+  ['run2Msg','run3Msg','run4Msg'].forEach(id=>{const el=document.getElementById(id);if(el)el.textContent=msg;});
+  const maxRound=pairs.reduce((mx,p)=>Math.max(mx,p.round||0),0);
+  if(maxRound<2) b2.classList.add('show');
+  else if(maxRound<3 && b3) b3.classList.add('show');
+  else if(maxRound<4 && b4) b4.classList.add('show');
 }
+
 
 /* ── Chạy thuật toán + AI lần 2 tự động như lần 1 ── */
 async function runRound2(){ await runRound(2); }
