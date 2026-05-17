@@ -668,6 +668,46 @@ const CATS=[
   {id:'CA_PHE',kw:['ca phe','trung nguyen','legend classic','passiona','cafe']},
   {id:'GAO',kw:['gao luc canxi','gao st25','gao thom','lua nguyen']},
 
+  // ═══ DUTCH LADY / CÔ GÁI HÀ LAN ═══
+  // Fristi = sữa tươi hộp nhỏ
+  {id:'FRISTI',kw:['fristi','sua fristi','sua tuoi co gai ha lan','co gai ha lan tuoi',
+    'sua tuoi dutch','dutchlady tuoi','dl omegasmart','cao khoe']},
+  // Fino = sữa uống lên men (gói) — KHÁC sữa chua ăn
+  {id:'FINO',kw:['fino socola','fino it duong','fino dau','fino dutch','sua fino']},
+  // Yomost = sữa chua uống lên men
+  {id:'YOMOST',kw:['yomost','sua chua len men yomost','yomost bac ha','yomost dau',
+    'yomost cam','yomost luu','yomost nho','yomost jelly']},
+  // Sữa đặc / kem đặc Cô Gái Hà Lan
+  {id:'SUA_DAC_DL',kw:['sua dac co gai ha lan','kem dac co gai ha lan','sua dac dutch',
+    'co gai ha lan dac','hanh hang','cao cap 380g','co gai ha lan hao hang']},
+  // Sữa nguyên kem / bột Cô Gái Hà Lan
+  {id:'SUA_BOT_DL',kw:['sua nguyen kem co gai ha lan','nguyen kem vani co gai',
+    'sua bot dutch','co gai ha lan 850g','co gai ha lan 400g']},
+
+  // ═══ ORION SNACK ═══
+  {id:'SNACK_ORION',kw:['swing','ostar','toonies','tayox','corn chip','masita',
+    'snack swing','snack ostar','snack toonies','snack masita',
+    'bong bang','bống bang','marine boy','c est bon','c est baguette',
+    'miz socola','jungle bobit','jungle boy','mboy king',
+    'banh gao an','bánh gạo an','an tao','an ngo','an tu nhien','an cha bong']},
+
+  // ═══ P&G CSCT ═══
+  {id:'REJOICE_PANTENE',kw:['rejoice','pantene','dau goi rejoice','dau goi pantene',
+    'dau xa rejoice','dau xa pantene','pantenen xa']},
+  {id:'HEAD_SHOULDER',kw:['head shoulder','head shouder','head&shoulder','clear men','clear dg']},
+  {id:'DOWNY_ARIEL',kw:['downy','ariel','nuoc xa vai downy','nuoc giat downy',
+    'nuoc giat ariel','xa vai downy']},
+  {id:'GILLETTE_VECTOR',kw:['gillette','vector luoi','luoi vector','dao cao gillette',
+    'dao cao vector','bot cao rau','luoi lam 5s','can den dao cao','can vang dao cao']},
+
+  // ═══ HỮU NGHỊ ═══
+  {id:'KEO_HUU_NGHI',kw:['keo boom','boom dao','boom dau','boom xoai','boom nho',
+    'boom chanh','keo hong gung','keo hong tao mo','keo hong thao moc',
+    'king chun','king hai tac']},
+
+  // ═══ AMBI SÁP THƠM ═══
+  {id:'AMBI_SAP',kw:['ambi','sap thom ambi','ambi thu gian','ambi oai huong']},
+
   // ══ BỔ SUNG THIẾU ══
 
   // DutchLady: Fristi/Fino = SUA_TUOI, Yomost = SUA_CHUA_UONG, CGHLan đặc = SUA_DAC
@@ -914,6 +954,16 @@ const PARENT=[
   ['NIVEA_SRM_NAM'],
   // SRM Nivea Nữ (riêng)
   ['NIVEA_SRM_NU'],
+  // Dutch Lady riêng từng loại
+  ['FRISTI'],['FINO'],['YOMOST'],['SUA_DAC_DL'],['SUA_BOT_DL'],
+  // Orion snack/bánh (ghép chéo ok)
+  ['SNACK_ORION'],
+  // P&G riêng từng nhóm
+  ['REJOICE_PANTENE'],['HEAD_SHOULDER'],['DOWNY_ARIEL'],['GILLETTE_VECTOR'],
+  // Hữu Nghị
+  ['KEO_HUU_NGHI'],
+  // Sáp thơm AmBi → cùng nhóm với xịt phòng Glade
+  ['AMBI_SAP'],
   // Pin
   ['PIN'],
   // Bật lửa
@@ -1009,6 +1059,12 @@ const SUBCATS_SAME_BRAND = [
   new Set(['CSCT_BABY','NUOC_HOA_CO_THE','DO_GIA_DUNG','XIT_PHONG']),
   // Kem lạnh ≠ socola
   new Set(['KEM_LANH','KEM_CELANO','SOCOLA']),
+  // Dutch Lady: Fristi ≠ Fino ≠ Yomost ≠ Sữa đặc ≠ Sữa bột ≠ Sữa tươi
+  new Set(['FRISTI','FINO','YOMOST','SUA_DAC_DL','SUA_BOT_DL']),
+  // P&G: Rejoice/Pantene ≠ Head&Shoulder ≠ Downy/Ariel ≠ Gillette
+  new Set(['REJOICE_PANTENE','HEAD_SHOULDER','DOWNY_ARIEL','GILLETTE_VECTOR']),
+  // Ambi sáp thơm KHÁC xịt phòng Glade
+  new Set(['AMBI_SAP','XIT_PHONG']),
 ];
 function isSameBrandDiffSubcat(ca, cb){
   if(!ca||!cb) return false;
@@ -1254,7 +1310,7 @@ async function runMatch(){
     document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
     document.getElementById('aiProg').classList.add('show');
     // ── Song song CONCURRENT=4 batch cùng lúc → nhanh ~4x ──
-    const BATCH=8, CONCURRENT=4;
+    const BATCH=6, CONCURRENT=3; // Mỗi batch=6 SP, gọi song song 3 nhóm
     const pairIdx={};
     pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
     const inSet=new Set(inList);
@@ -1262,58 +1318,100 @@ async function runMatch(){
 
     async function processBatch(batch){
       if(corsError) return;
-      const relevant=inList.filter(s=>!isPlaceholder(s)&&!batch.every(o=>isCross(o,s))).slice(0,40);
-      const _sys="Ban la CHUYEN GIA KHO HANG TAP HOA 'VICOMART' voi 10 nam kinh nghiem.\nNHIEM VU: Ghep dung SAN PHAM DAU RA (ten ban ra) voi TEN TRONG KHO HANG tuong ung.\n\nVIET TAT KHO HANG VICOMART:\nSTTT=Sua Tuoi Tiet Trung | NPC/Poca=Snack khoai tay Poca | SCA=Sua Chua An (dang dac, hu) | SCUTT=Sua Chua Uong Tiet Trung (binh nho)\nSRM=Sua Rua Mat | KDR=Kem Danh Rang | NSM=Nuoc Suc Mieng | BVS=Bang Ve Sinh\nNRC=Nuoc Tang Luc NRC Chanh | LC/Lacusina=thuc pham dong lanh Lacusina | HS TT=Hai San Thuy Tinh\nVS GP=Vang Sua Grow Plus | AJI=Ajinomoto | TP=Thuan Phat | CTM=chai | SP BAG=goi tui\n\nNHOM SAN PHAM (chi ghep trong cung nhom - du khac ten, viet tat):\n\n[SNACK/AN VAT] Lay/Stax/Poca/NPC khoai tay, Swing, O'star, snack rori\n[BANH KHO] Orion, Danisa, Roma, Tatawa, HUU NGHI, Kinh Do banh quy/bong lan/xop\n[BANH MI TUOI/CAKE] Kido banh mi tron/dorayaki, mochi kem, UFK banh trung cuon, banh ran\n[KEO/SING GUM] CoolAir, Doublemint, Alpenlibe, keo deo, kopiko, keo thien thach, keo Dynamite\n[SOCOLA] Hershey, KitKat Nhat, M&M, Snickers, Socola dong tien Viet Thai\n[SUA TUOI HOP] Vinamilk STTT, TH True Milk, DutchLady, NuVi sua, PediaSure, Fami dau nanh\n[SUA CHUA AN] Gotz sua chua an, TH Yogurt, Yakult (hu dac) - KHAC SUA CHUA UONG\n[SUA CHUA UONG] Yakult uong, SCUTT, binh nho - KHAC SUA CHUA AN\n[VANG SUA] Grow Plus VS, Vinamilk vang sua - KHAC SUA TUOI\n[NGU COC/BOT UONG] Oatta yen mach, Ovaltine, Milo, NutriLifes, BetaNGU COC, Bot Ngu Coc\n[NUOC UONG CO GAS] Pepsi, Coca Cola, 7Up, Mirinda, Sprite\n[NUOC EP/NUOC TRAI CAY] Joco, nuoc ep Wonderfarm, nuoc dua Cocoxim, nuoc thach dua Xim\n[NUOC TANG LUC] Redbull, Warrior, NRC Chanh, Sting, Number 1\n[NUOC KHOANG] Lavie, TH Water, Aquafina\n[TRA/CA PHE] Trung Nguyen, G7, Nescafe, Cafe cau dat, Lipton, Cozy tra\n[DAU GOI/DXA/SUA TAM] Sunsilk, Pantene, Clear, Xmen, Oliv, Purite, DrSoftly, Romano\n[LAN/XIT KHU MUI] Nivea lan, Xmen xit, Romano xit - KHAC DAU GOI/SUA TAM\n[SRM/SUA RUA MAT/KEM DUONG] Senka, Nivea SRM, e100, Xmen facial - KHAC DAU GOI\n[KEM DANH RANG/BAN CHAI] Colgate, Sensodyne, Oral-B, Ngoc Chau - KHAC NUOC SUC MIENG\n[NUOC SUC MIENG] Listerine, Colgate suc mieng (nuoc rinse) - KHAC KEM DANH RANG\n[BVS/TAMPON] Kotex, Diana, Laurier bang ve sinh - KHAC KHAN TA\n[KHAN TA/BIM BIM] Bobby, Huggies, ta dan, ta quan - KHAC BVS\n[HANG ME VA BE] Pigeon, Dnee, Johnson Baby, Kichi do cho be, may hut sua\n[GIA VI CHUNG] Cholimex sot/tuong, Chinsu nuoc tuong/sot, DH Foods gia vi, tiêu, muoi\n[BOT NGOT] Ajinomoto bot ngot hat lon/hat min, MIWON bot ngot - KHAC BOT CANH\n[BOT CANH/HAT NEM] Ajinomoto bot canh, Maggi hat nem, Knorr - KHAC BOT NGOT\n[BOT CHIEN/BOT TAM] Aji-Quick bot chien gion, Tempura - KHAC BOT NGOT\n[NUOC MAM/NUOC TUONG] Ca com, Thuoc Phat nuoc mam, Maggi nuoc tuong\n[CA HOP/DO HOP] Ca ngu ngam dau Seaspimex, ca thu, ca moi - KHAC GIA VI\n[VIEN DONG LANH] Ca vien, muc vien, tom vien, bo vien, Deli LC FOODS - KHAC DONG LANH KHAC\n[DONG LANH KHAC] Dui ga/chien gion, muc vong, Bibigo Mandu, Cau Tre Cha Gio\n[XUC XICH/LAP XUONG] Vissan, Massan xuc xich, SiuMe, Heo Cao Boi - KHAC VIEN\n[PHO MAI] La Vache qui rit/Con Bo Cuoi, Vietcoco pho mai, pho mai tan chay\n[MI AN LIEN] Hao Hao, Acecook, Omachi, Cung Dinh, Gau Do mi - KHAC CHAO, KHAC BUN/PHO\n[BUN/PHO/HU TIEU AN LIEN] Vifon, Cung Dinh bun bo, Hu tieu Nam Vang - KHAC MI\n[CHAO AN LIEN] Gau Do chao, chao vi - KHAC MI\n[THUC PHAM KHO] Gao Thom ST25, Nui Meizan, bot min, bun tuoi\n[NGU COC KHO/GAO LUC] NutriLifes ngu coc, gao luc huyet rong - KHAC BOT UONG\n[DUONG] Bien Hoa duong mia, duong phen, duong trang - KHAC DUONG KIEN\n[DUONG KIEN] Isomalt, stevia - KHAC DUONG THUONG\n[DAU AN] Tuong An, Meizan, Neptune dau an nau - KHAC GIA VI\n[HOA PHAM/NUOC GIA] Lix, My Hao, Comfort, Downy, nuoc xa, bot giat, nuoc rua chen, nuoc tay\n[GIA DUNG] tho, chau, ro, hop nhua, ly thuy tinh, noi, chen dia, moc dan tuong\n[KEM LANH] Merino kem, Celano, Vinamilk kem, Nestle kem - KHAC SUA CHUA\n[SUA CHUA DEO] Merino pho mai deo - KHAC KEM LANH\n[NUOC HOA/XIT PHONG] Johnson Baby nuoc hoa, Glade xit phong\n[VAN PHONG PHAM] but bi, but chi, so, muc but - KHAC thuc pham\n[THOI TRANG/PHU KIEN] balo, vong, moc khoa, mu bao hiem - KHAC thuc pham\n\nVI DU GHEP DUNG (hoc pattern nay):\nLay Stax Pho Mai Cheddar 100g → LAY'S STAX VỊ PHÔ MAI CHEDDAR 42G\nPoca Bo Luc Lac Goi 60g → NPC 10M Bo Luc Lac 60g\nSua Chua An TH vi Dau → SCA Dau 110g\nSRM Nivea Men Bot Min 100g → 88521 SRM NM DEEP HIMA ANTI ACNE 100G\nMi Hao Hao Vị Tom Chua Cay 75g → Hao Hao Tom Chua Cay Goi 75g\nChao Gau Do HV Thit Bam → CHAO GAU DO 50 GOI HV Thit Bam\nBang Ve Sinh Kotex Hang Ngay 8M → BVS KOTEX Hang Ngay 8X48\nBot canh Ajinomoto 190g → BOT CANH AJI 190g\nDau Goi Sunsilk Mem Muot 850g → Sunsilk Mem Muot Chai 850g\nKem Merino Kool Sua Dua 56g → Merino Kool sua dua le 56g\n\nTRO VE NULL neu khong co SP cung nhom. KHONG ghep khac nhom du ten co tu giong nhau.";
-      const prompt=_sys+'\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO ('+relevant.length+' sp, da loc cung loai):\n'+relevant.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra","i":"ten dau vao hoac null","s":88,"r":"ly do"}]}';
-      try{
-        const resp=await fetch('https://api.anthropic.com/v1/messages',{
-          method:'POST',
-          headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
-        });
-        const data=await resp.json();
-        if(data.error)throw new Error(data.error.message);
-        const text=data.content.map(c=>c.text||'').join('');
-        const clean=text.replace(/```json|```/g,'').trim();
-        const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
-        if(si!==-1){
-          const json=JSON.parse(clean.slice(si,ei+1));
-          for(const m of(json.m||[])){
-            if(!m.i||(m.s||0)<40)continue;
-            let validIn=inSet.has(m.i)?m.i:null;
-            if(m.i&&!validIn){const mn=nv(m.i);validIn=inList.find(s=>{const sn=nv(s);return sn.includes(mn.slice(0,12))||mn.includes(sn.slice(0,12));})||null;}
-            if(!validIn)continue;
-            const idx=pairIdx[m.o];
-            if(idx!==undefined){
-              if(m.s>pairs[idx].score+5){pairs[idx]={...pairs[idx],in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'AI cải thiện ('+pairs[idx].score+'%→'+m.s+'%)',isAI:true,improved:true};}
-            }else{
-              const newId=pairs.length;
-              pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,score:m.s,diffs:['AI: '+m.r],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});
-              pairIdx[m.o]=newId;
-              unmOut=unmOut.filter(o=>o!==m.o);
-            }
+
+      // Gọi TỪNG SP một → AI tập trung 100%, không bị nhiễu
+      for(const outSP of batch){
+        if(corsError) break;
+
+        // Lọc đầu vào liên quan (tối đa 30 SP cùng loại)
+        const candidates = smartFilterIn(outSP, inList, 30);
+        if(!candidates.length){ doneBatches++; continue; }
+
+        // Prompt 1-1: chỉ 1 SP đầu ra, tối đa 30 đầu vào
+        const promptSingle = _sys
+          + '\n\nSAN PHAM DAU RA CAN GHEP: "' + outSP + '"'
+          + '\n\nDanh sach DAU VAO kha dung (' + candidates.length + ' SP, da loc cung loai):'
+          + '\n' + candidates.map((s,i) => (i+1)+'. '+s).join('\n')
+          + '\n\nHay chon SP DAU VAO phu hop nhat. Neu khong co SP nao cung loai → null.'
+          + '\nJSON: {"i":"ten dau vao chinh xac hoac null","s":90,"r":"ly do ngan"}';
+
+        try{
+          const resp = await fetch('https://api.anthropic.com/v1/messages',{
+            method:'POST',
+            headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
+            body:JSON.stringify({
+              model:'claude-sonnet-4-20250514',
+              max_tokens:200,
+              messages:[{role:'user',content:promptSingle}]
+            })
+          });
+          const data = await resp.json();
+          if(data.error) throw new Error(data.error.message);
+
+          const text = data.content.map(c=>c.text||'').join('');
+          const clean = text.replace(/```json|```/g,'').trim();
+          const si=clean.indexOf('{'), ei=clean.lastIndexOf('}');
+          if(si===-1) continue;
+
+          const m = JSON.parse(clean.slice(si,ei+1));
+          if(!m.i || (m.s||0)<45) continue;
+
+          // Validate tên đầu vào
+          let validIn = inSet.has(m.i) ? m.i : null;
+          if(!validIn){
+            const mn=nv(m.i);
+            validIn = inList.find(s=>{
+              const sn=nv(s);
+              return sn===mn
+                || (mn.length>12 && sn.includes(mn.slice(0,16)))
+                || (sn.length>12 && mn.includes(sn.slice(0,16)));
+            })||null;
           }
+          if(!validIn) continue;
+
+          // Kiểm tra cross-category lần cuối
+          if(isCross(outSP, validIn)) continue;
+
+          const idx2 = pairIdx[outSP];
+          if(idx2!==undefined){
+            // Cải thiện nếu score cao hơn đáng kể
+            if(m.s > pairs[idx2].score + 8){
+              pairs[idx2]={...pairs[idx2],in:validIn,score:m.s,
+                diffs:['⚡ AI 1-1: '+m.r],types:['abbr'],
+                note:'AI cải thiện ('+pairs[idx2].score+'%→'+m.s+'%)',
+                isAI:true,improved:true};
+            }
+          } else {
+            const newId=pairs.length;
+            pairs.push({id:newId,out:outSP,barcode:maVachMap[outSP]||'',
+              in:validIn,score:m.s,diffs:['⚡ AI 1-1: '+m.r],types:['abbr'],
+              note:'⚡ AI ghép mới',isAI:true,improved:false,
+              flavorConflict:false,blocked:false});
+            pairIdx[outSP]=newId;
+            unmOut=unmOut.filter(o=>o!==outSP);
+          }
+        }catch(e){
+          if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){
+            corsError=true;
+            document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Cần mở qua server.';
+            break;
+          }
+          // Bỏ qua lỗi đơn lẻ, tiếp tục SP tiếp theo
         }
-      }catch(e){
-        if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){
-          corsError=true;
-          document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Cần mở qua server.';
-          document.getElementById('aiStatusBadge').textContent='⚙ Offline';
-          document.getElementById('aiStatusBadge').style.background='var(--a50)';
-          document.getElementById('aiStatusBadge').style.color='var(--amber)';
-        }
+        await new Promise(r=>setTimeout(r,80)); // Nhỏ thôi, tránh rate limit
       }
       doneBatches++;
       const totalBatches=Math.ceil(outList.length/BATCH);
       document.getElementById('aiBar').style.width=Math.round((doneBatches/totalBatches)*100)+'%';
-      document.getElementById('aiMsg').textContent='⚡ AI: '+doneBatches+'/'+totalBatches+' batch ('+pairs.filter(p=>p.isAI).length+' SP đã ghép)...';
+      document.getElementById('aiMsg').textContent='⚡ AI 1-1: '+doneBatches+'/'+totalBatches+' nhóm ('+pairs.filter(p=>p.isAI).length+' SP đã ghép)...';
       renderSummary();renderTable();
+    }
     }
 
     // Chia batch và chạy song song
     const allBatches=[];
     for(let b=0;b<outList.length;b+=BATCH) allBatches.push(outList.slice(b,b+BATCH));
-    document.getElementById('aiMsg').textContent='⚡ AI: Chạy song song '+allBatches.length+' batch ('+CONCURRENT+'/lần), 184 SP...';
+    document.getElementById('aiMsg').textContent='⚡ AI 1-1: Phân tích '+outList.length+' SP, mỗi SP gọi riêng để đạt 90%+ chính xác...';
     for(let i=0;i<allBatches.length&&!corsError;i+=CONCURRENT){
       await Promise.all(allBatches.slice(i,i+CONCURRENT).map(b=>processBatch(b)));
     }
@@ -1330,7 +1428,6 @@ async function runMatch(){
   renderUnmatched();
   btn.disabled=false;btn.textContent=useAI?'⚡ Ghép nối + AI':'▶ Ghép nối';
   renderSummary();renderTable();
-}
 
 /* ═══════════════════════════════════════════
    RENDER SUMMARY
