@@ -1316,26 +1316,29 @@ async function runMatch(){
     const inSet=new Set(inList);
     let corsError=false, doneBatches=0;
 
-    async function processBatch(batch){
-      if(corsError) return;
+    // Prompt ngắn gọn cho AI ghép nhanh
+const _sys='Kho tap hoa VICOMART. Ghep DAU RA voi DAU VAO cung loai.\n'
+  +'VIET TAT: STTT=Sua Tuoi TT|SCA=Sua Chua An|SCUTT=Sua Chua Uong TT|NPC=Poca|BVS=Bang Ve Sinh|LNM=Lan Ngam Mui Nivea|XNM=Xit Ngam Mui Nivea|SUDD GP=Sua Uong DD Grow Plus|VS GP=Vang Sua Grow Plus.\n'
+  +'KHONG GHEP KHAC NHOM: Sua chua≠ngu coc|Ca hop≠tuong ca|Banh bao≠vien dong lanh|Bot ngot≠bot chien≠mayo Aji|Lan≠SRM≠Kem Nivea|Nuoc tay≠nuoc rua chen|Mi≠Chao|Kem lanh≠Sua chua deo|Fristi≠Yomost≠Fino|Chocopie≠Custas≠Opera|Downy≠Rejoice≠Gillette.\n'
+  +'Chi ghep null neu khong co SP cung loai.';
 
-      // Lọc candidates gộp chung cho cả batch
+async function processBatch(batch){
+      if(corsError) return;
       const candSet=new Set();
-      batch.forEach(o=>{ smartFilterIn(o,inList,20).forEach(c=>candSet.add(c)); });
-      const cands=[...candSet].slice(0,50);
+      batch.forEach(o=>{smartFilterIn(o,inList,15).forEach(c=>candSet.add(c));});
+      const cands=[...candSet].slice(0,40);
       if(!cands.length){doneBatches++;return;}
 
       const prompt=_sys
-        +'\nGHEP: Moi so [N] la chi so 0-based cua DAU RA.'
         +'\nDAU RA:\n'+batch.map((o,i)=>'['+i+'] '+o).join('\n')
-        +'\nDAU VAO (da loc cung loai):\n'+cands.map((s,i)=>(i+1)+'. '+s).join('\n')
-        +'\nJSON: {"m":[{"i":0,"o":"ten dau vao dung hoac null","s":85},...]}';
+        +'\nDAU VAO:\n'+cands.map((s,i)=>(i+1)+'. '+s).join('\n')
+        +'\nJSON: {"m":[{"i":0,"o":"ten dau vao hoac null","s":85},{"i":1,...}]}';
 
       try{
         const resp=await fetch('https://api.anthropic.com/v1/messages',{
           method:'POST',
           headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
             messages:[{role:'user',content:prompt}]})
         });
         const data=await resp.json();
@@ -1345,15 +1348,15 @@ async function runMatch(){
         const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
         if(si===-1){doneBatches++;return;}
         const json=JSON.parse(clean.slice(si,ei+1));
-        for(const m of (json.m||[])){
+        for(const m of(json.m||[])){
           if(!m.o||(m.s||0)<45)continue;
-          const outSP=batch[m.i]; if(!outSP)continue;
-          let validIn=inSet.has(m.o)?m.o:null;
-          if(!validIn){const mn=nv(m.o);validIn=inList.find(s=>{const sn=nv(s);return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));})||null;}
-          if(!validIn||isCross(outSP,validIn))continue;
-          const eIdx=pairIdx[outSP];
-          if(eIdx!==undefined){if(m.s>pairs[eIdx].score+8)pairs[eIdx]={...pairs[eIdx],in:validIn,score:m.s,diffs:['⚡ AI: '+m.s+'%'],types:['abbr'],note:'AI cải thiện',isAI:true,improved:true};}
-          else{const nId=pairs.length;pairs.push({id:nId,out:outSP,barcode:maVachMap[outSP]||'',in:validIn,score:m.s,diffs:['⚡ AI: '+m.s+'%'],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});pairIdx[outSP]=nId;unmOut=unmOut.filter(o=>o!==outSP);}
+          const outSP=batch[m.i];if(!outSP)continue;
+          let vIn=inSet.has(m.o)?m.o:null;
+          if(!vIn){const mn=nv(m.o);vIn=inList.find(s=>{const sn=nv(s);return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));})||null;}
+          if(!vIn||isCross(outSP,vIn))continue;
+          const eI=pairIdx[outSP];
+          if(eI!==undefined){if(m.s>pairs[eI].score+8)pairs[eI]={...pairs[eI],in:vIn,score:m.s,diffs:['AI: '+m.s+'%'],types:['abbr'],note:'AI cải thiện',isAI:true,improved:true};}
+          else{const nI=pairs.length;pairs.push({id:nI,out:outSP,barcode:maVachMap[outSP]||'',in:vIn,score:m.s,diffs:['AI: '+m.s+'%'],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});pairIdx[outSP]=nI;unmOut=unmOut.filter(o=>o!==outSP);}
         }
       }catch(e){
         if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){corsError=true;document.getElementById('aiMsg').textContent='⚠ AI không khả dụng.';return;}
@@ -1361,8 +1364,9 @@ async function runMatch(){
       doneBatches++;
       const tot=Math.ceil(outList.length/BATCH);
       document.getElementById('aiBar').style.width=Math.round((doneBatches/tot)*100)+'%';
-      document.getElementById('aiMsg').textContent='⚡ AI: '+doneBatches+'/'+tot+' batch · '+pairs.filter(p=>p.isAI).length+' đã ghép...';
+      document.getElementById('aiMsg').textContent='⚡ AI: '+doneBatches+'/'+tot+' ('+pairs.filter(p=>p.isAI).length+' ghép)';
       renderSummary();renderTable();
+    }
     }
 
     // Chia batch và chạy song song
@@ -1832,7 +1836,7 @@ function getRoundConfig(n) {
   switch(n) {
     case 2: return {
       wt: Math.min(45, base_wt+15), min: Math.max(25, base_min-10),
-      strict: false, crossCheck: true, aiMin: 35, batch: 10, label: 'lần 2',
+      strict: false, crossCheck: true, aiMin: 35, batch: 15, label: 'lần 2',
       aiPromptExtra: 'Yeu cau: cung loai SP (sua chua=sua chua, ca hop=ca hop, banh bao=banh bao). Bo qua khac biet vi/huong. Trong luong chenh +-45% ok.'
     };
     case 3: return {
@@ -1909,69 +1913,58 @@ async function runRound(n) {
     const pairIdx={};
     pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
     const inSet=new Set(allIn);
-    const BATCH=cfg.batch;
+    const BATCH=cfg.batch||15; const CONC=6;
+    const inSet2=new Set(allIn);
+    let doneB2=0, corsErr2=false;
 
-    for(let b=0;b<unmOut.length;b+=BATCH){
-      const batch=unmOut.slice(b,b+BATCH);
-      const pct=40+Math.round((b/Math.max(unmOut.length,1))*58);
-      document.getElementById('aiBar').style.width=pct+'%';
-      document.getElementById('aiMsg').textContent=
-        `⚡ AI ${cfg.label}: ${b+1}–${Math.min(b+BATCH,unmOut.length)} / ${unmOut.length}`;
-
-      // LUÔN dùng smartFilterIn - giữ cross-category
-      const candidateSet = new Set();
-      batch.forEach(o=>{
-        smartFilterIn(o, allIn, 50).forEach(c=>candidateSet.add(c));
-      });
-      const candidates = [...candidateSet].slice(0, 70);
-      // Nếu không có candidate cùng loại → bỏ qua batch này
-      if(candidates.length === 0) { doneBatches++; continue; }
-
-      const _sysR='Ban la CHUYEN GIA TAP HOA. Day la LAN '+n+' ghep noi - SP chua ghep duoc lan truoc.\nLUAT: '+(cfg.aiPromptExtra||'Cung loai SP, trong luong +-45% ok.')+'\nTUYET DOI KHONG GHEP KHAC NHOM: Sua chua!=ngu coc; Ca hop Seaspimex!=tuong ca/gia vi; Banh bao Lacusina!=vien dong lanh; Dui ga!=ca vien; Bot ngot Aji!=bot chien Aji-Quick!=mayo Aji; Lan Nivea!=SRM Nivea; Nuoc tay!=nuoc rua chen; Mi Gau Do!=chao Gau Do; Kem lanh Celano!=sua chua deo Merino; Nuoc hoa!=xit phong; Pin!=bat lua; Duong Isomalt!=duong thuong.\nVIET TAT: STTT=Sua Tuoi TT | NPC=Poca snack | SCA=Sua Chua An | LC=Lacusina | SRM=Sua Rua Mat | BVS=Bang Ve Sinh.\nTra ve null neu khong co SP cung nhom.'
-      const prompt=_sysR+'\nDAU RA CAN GHEP (lan '+n+'):\n'+batch.map((o,i)=>(i+1)+'. '+o).join('\n')+'\nDAU VAO KHO (da loc cung loai SP):\n'+candidates.map((s,i)=>(i+1)+'. '+s).join('\n')+'\nJSON only: {"m":[{"o":"ten dau ra nguyen van","i":"ten dau vao nguyen van hoac null","s":80,"r":"ly do"}]}';
-      
+    async function runBatch2(batch2){
+      if(corsErr2)return;
+      const cs2=new Set();
+      batch2.forEach(o=>{smartFilterIn(o,allIn,15).forEach(c=>cs2.add(c));});
+      const cd2=[...cs2].slice(0,40);
+      if(!cd2.length){doneB2++;return;}
+      const p2=_sysR+'\nDAU RA:\n'+batch2.map((o,i)=>'['+i+'] '+o).join('\n')
+        +'\nDAU VAO:\n'+cd2.map((s,i)=>(i+1)+'. '+s).join('\n')
+        +'\nJSON:{"m":[{"i":0,"o":"ten dau vao hoac null","s":85},...]}';
       try{
-        const resp=await fetch('https://api.anthropic.com/v1/messages',{
+        const resp2=await fetch('https://api.anthropic.com/v1/messages',{
           method:'POST',
           headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:1500,messages:[{role:'user',content:prompt}]})
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:500,
+            messages:[{role:'user',content:p2}]})
         });
-        const data=await resp.json();
-        if(data.error)throw new Error(data.error.message);
-        const text=data.content.map(c=>c.text||'').join('');
-        const clean=text.replace(/```json|```/g,'').trim();
-        const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
-        if(si===-1)throw new Error('no JSON');
-        const json=JSON.parse(clean.slice(si,ei+1));
-        for(const m of(json.m||[])){
-          if(!m.i||(m.s||0)<cfg.aiMin) continue;
-          let validIn=inSet.has(m.i)?m.i:null;
-          if(m.i&&!validIn){
-            const mn=nv(m.i);
-            validIn=allIn.find(s=>{const sn=nv(s);return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));  })||null;
-          }
-          if(!validIn) continue;
-          if(cfg.crossCheck && isCross(m.o,validIn)) continue;
-          const newId=pairs.length;
-          pairs.push({id:newId,out:m.o,barcode:maVachMap[m.o]||'',in:validIn,
-            score:m.s,diffs:[`AI ${cfg.label}: ${m.r}`],types:['abbr'],
-            note:`⚡ AI ${cfg.label}`,isAI:true,improved:false,
-            flavorConflict:false,blocked:false,round:n});
-          pairIdx[m.o]=newId;
-          unmOut=unmOut.filter(o=>o!==m.o);
+        const d2=await resp2.json();
+        if(d2.error)throw new Error(d2.error.message);
+        const t2=d2.content.map(c=>c.text||'').join('');
+        const cl2=t2.replace(/```json|```/g,'').trim();
+        const s2=cl2.indexOf('{'),e2=cl2.lastIndexOf('}');
+        if(s2===-1){doneB2++;return;}
+        const j2=JSON.parse(cl2.slice(s2,e2+1));
+        for(const m2 of(j2.m||[])){
+          if(!m2.o||(m2.s||0)<cfg.aiMin)continue;
+          const oSP=batch2[m2.i];if(!oSP)continue;
+          let vIn=inSet2.has(m2.o)?m2.o:null;
+          if(!vIn){const mn=nv(m2.o);vIn=allIn.find(s=>{const sn=nv(s);return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));})||null;}
+          if(!vIn||isCross(oSP,vIn))continue;
+          const eI=pairs.findIndex(p=>p.out===oSP);
+          if(eI!==-1){if(m2.s>pairs[eI].score+8)pairs[eI]={...pairs[eI],in:vIn,score:m2.s,diffs:['AI lần '+n+': '+m2.s+'%'],types:['abbr'],note:'AI cải thiện lần '+n,isAI:true,improved:true};}
+          else{pairs.push({id:pairs.length,out:oSP,barcode:maVachMap[oSP]||'',in:vIn,score:m2.s,diffs:['AI lần '+n],types:['abbr'],note:'⚡ AI lần '+n,isAI:true,improved:false,flavorConflict:false,blocked:false,round:n});unmOut=unmOut.filter(o=>o!==oSP);}
         }
-        renderSummary(); renderTable();
-      }catch(e){
-        if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){
-          document.getElementById('aiMsg').textContent='⚠ Lỗi kết nối API.';
-          break;
-        }
-        await new Promise(r=>setTimeout(r,600));
+      }catch(e2){
+        if(e2.message&&(e2.message.includes('Failed to fetch')||e2.message.includes('CORS'))){corsErr2=true;return;}
       }
-      await new Promise(r=>setTimeout(r,150));
+      doneB2++;
+      const tot2=Math.ceil(unmOut.length/BATCH)||1;
+      document.getElementById('aiBar').style.width=(40+Math.round((doneB2/tot2)*58))+'%';
+      document.getElementById('aiMsg').textContent='⚡ AI lần '+n+': '+doneB2+'/'+Math.ceil(unmOut.length/BATCH||1)+' batch ('+pairs.filter(p=>p.round===n&&p.isAI).length+' ghép)';
+      renderSummary();renderTable();
     }
-  }
 
+    const batches2=[];
+    for(let b=0;b<unmOut.length;b+=BATCH)batches2.push(unmOut.slice(b,b+BATCH));
+    for(let i=0;i<batches2.length&&!corsErr2;i+=CONC){
+      await Promise.all(batches2.slice(i,i+CONC).map(b=>runBatch2(b)));
+    }
   document.getElementById('aiBar').style.width='100%';
   const roundCount=pairs.filter(p=>p.round===n).length;
   document.getElementById('aiMsg').textContent=
@@ -2195,7 +2188,6 @@ function clearAllFiles(){
   renderFileList();
 }
 
-} // end runMatch
 
 /* ── Override exportCSV để thêm cột giá ── */
 const _origExportCSV = exportCSV;
@@ -2214,6 +2206,7 @@ initStt();
 initApiKey();
 syncDonGia();
 updateFileCount();
+}
 </script>
 </body>
 </html>
