@@ -1327,12 +1327,12 @@ async function runMatch(){
     for(let gi=0; gi<_batches.length&&!_corsErr; gi+=_C){
       await Promise.all(
         _batches.slice(gi,gi+_C).map(async (batch)=>{
-          if(_corsErr){_done++;return;}
           try{
+            if(_corsErr) return;
             const cs=new Set();
             batch.forEach(o=>smartFilterIn(o,inList,15).forEach(c=>cs.add(c)));
             const cands=[...cs].slice(0,40);
-            if(!cands.length){_done++;return;}
+            if(!cands.length) return;
 
             const prompt=_sys2
               +'\nDAU RA:\n'+batch.map((o,i)=>'['+i+'] '+o).join('\n')
