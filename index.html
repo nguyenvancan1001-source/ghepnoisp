@@ -1310,7 +1310,7 @@ async function runMatch(){
     document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
     document.getElementById('aiProg').classList.add('show');
     // ── Song song CONCURRENT=4 batch cùng lúc → nhanh ~4x ──
-    const BATCH=6, CONCURRENT=3; // Mỗi batch=6 SP, gọi song song 3 nhóm
+    const BATCH=10, CONCURRENT=5;
     const pairIdx={};
     pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
     const inSet=new Set(inList);
@@ -1318,100 +1318,57 @@ async function runMatch(){
 
     async function processBatch(batch){
       if(corsError) return;
+      const allCands=[]; const candSet=new Set();
+      batch.forEach(o=>{
+        smartFilterIn(o,inList,25).forEach(c=>{if(!candSet.has(c)){candSet.add(c);allCands.push(c);}});
+      });
+      const candList=allCands.slice(0,55);
+      if(!candList.length){doneBatches++;return;}
 
-      // Gọi TỪNG SP một → AI tập trung 100%, không bị nhiễu
-      for(const outSP of batch){
-        if(corsError) break;
+      const prompt=_sys
+        +'\n\nGHEP TUNG CAP - Moi dong DAU RA chon 1 DAU VAO phu hop nhat (null neu khong co):'
+        +'\nDAU RA:\n'+batch.map((o,i)=>(i+1)+'.['+i+'] '+o).join('\n')
+        +'\nDAU VAO (da loc cung loai):\n'+candList.map((s,i)=>(i+1)+'. '+s).join('\n')
+        +'\nJSON: {"m":[{"idx":0,"i":"ten dau vao hoac null","s":85,"r":"ly do"},{"idx":1,...}]}';
 
-        // Lọc đầu vào liên quan (tối đa 30 SP cùng loại)
-        const candidates = smartFilterIn(outSP, inList, 30);
-        if(!candidates.length){ doneBatches++; continue; }
-
-        // Prompt 1-1: chỉ 1 SP đầu ra, tối đa 30 đầu vào
-        const promptSingle = _sys
-          + '\n\nSAN PHAM DAU RA CAN GHEP: "' + outSP + '"'
-          + '\n\nDanh sach DAU VAO kha dung (' + candidates.length + ' SP, da loc cung loai):'
-          + '\n' + candidates.map((s,i) => (i+1)+'. '+s).join('\n')
-          + '\n\nHay chon SP DAU VAO phu hop nhat. Neu khong co SP nao cung loai → null.'
-          + '\nJSON: {"i":"ten dau vao chinh xac hoac null","s":90,"r":"ly do ngan"}';
-
-        try{
-          const resp = await fetch('https://api.anthropic.com/v1/messages',{
-            method:'POST',
-            headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
-            body:JSON.stringify({
-              model:'claude-sonnet-4-20250514',
-              max_tokens:200,
-              messages:[{role:'user',content:promptSingle}]
-            })
-          });
-          const data = await resp.json();
-          if(data.error) throw new Error(data.error.message);
-
-          const text = data.content.map(c=>c.text||'').join('');
-          const clean = text.replace(/```json|```/g,'').trim();
-          const si=clean.indexOf('{'), ei=clean.lastIndexOf('}');
-          if(si===-1) continue;
-
-          const m = JSON.parse(clean.slice(si,ei+1));
-          if(!m.i || (m.s||0)<45) continue;
-
-          // Validate tên đầu vào
-          let validIn = inSet.has(m.i) ? m.i : null;
-          if(!validIn){
-            const mn=nv(m.i);
-            validIn = inList.find(s=>{
-              const sn=nv(s);
-              return sn===mn
-                || (mn.length>12 && sn.includes(mn.slice(0,16)))
-                || (sn.length>12 && mn.includes(sn.slice(0,16)));
-            })||null;
-          }
-          if(!validIn) continue;
-
-          // Kiểm tra cross-category lần cuối
-          if(isCross(outSP, validIn)) continue;
-
-          const idx2 = pairIdx[outSP];
-          if(idx2!==undefined){
-            // Cải thiện nếu score cao hơn đáng kể
-            if(m.s > pairs[idx2].score + 8){
-              pairs[idx2]={...pairs[idx2],in:validIn,score:m.s,
-                diffs:['⚡ AI 1-1: '+m.r],types:['abbr'],
-                note:'AI cải thiện ('+pairs[idx2].score+'%→'+m.s+'%)',
-                isAI:true,improved:true};
-            }
-          } else {
-            const newId=pairs.length;
-            pairs.push({id:newId,out:outSP,barcode:maVachMap[outSP]||'',
-              in:validIn,score:m.s,diffs:['⚡ AI 1-1: '+m.r],types:['abbr'],
-              note:'⚡ AI ghép mới',isAI:true,improved:false,
-              flavorConflict:false,blocked:false});
-            pairIdx[outSP]=newId;
-            unmOut=unmOut.filter(o=>o!==outSP);
-          }
-        }catch(e){
-          if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){
-            corsError=true;
-            document.getElementById('aiMsg').textContent='⚠ AI không khả dụng (file://). Cần mở qua server.';
-            break;
-          }
-          // Bỏ qua lỗi đơn lẻ, tiếp tục SP tiếp theo
+      try{
+        const resp=await fetch('https://api.anthropic.com/v1/messages',{
+          method:'POST',
+          headers:{'Content-Type':'application/json',...(_apiKey?{'x-api-key':_apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'}:{})},
+          body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:800,
+            messages:[{role:'user',content:prompt}]})
+        });
+        const data=await resp.json();
+        if(data.error)throw new Error(data.error.message);
+        const text=data.content.map(c=>c.text||'').join('');
+        const clean=text.replace(/```json|```/g,'').trim();
+        const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
+        if(si===-1){doneBatches++;return;}
+        const json=JSON.parse(clean.slice(si,ei+1));
+        for(const m of (json.m||[])){
+          if(!m.i||(m.s||0)<45)continue;
+          const outSP=batch[m.idx]; if(!outSP)continue;
+          let validIn=inSet.has(m.i)?m.i:null;
+          if(!validIn){const mn=nv(m.i);validIn=inList.find(s=>{const sn=nv(s);return sn===mn||(mn.length>12&&sn.includes(mn.slice(0,16)))||(sn.length>12&&mn.includes(sn.slice(0,16)));})||null;}
+          if(!validIn||isCross(outSP,validIn))continue;
+          const eIdx=pairIdx[outSP];
+          if(eIdx!==undefined){if(m.s>pairs[eIdx].score+8)pairs[eIdx]={...pairs[eIdx],in:validIn,score:m.s,diffs:['⚡ AI: '+m.r],types:['abbr'],note:'AI cải thiện ('+pairs[eIdx].score+'%→'+m.s+'%)',isAI:true,improved:true};}
+          else{const nId=pairs.length;pairs.push({id:nId,out:outSP,barcode:maVachMap[outSP]||'',in:validIn,score:m.s,diffs:['⚡ AI: '+m.r],types:['abbr'],note:'⚡ AI ghép mới',isAI:true,improved:false,flavorConflict:false,blocked:false});pairIdx[outSP]=nId;unmOut=unmOut.filter(o=>o!==outSP);}
         }
-        await new Promise(r=>setTimeout(r,80)); // Nhỏ thôi, tránh rate limit
+      }catch(e){
+        if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS')||e.message.includes('NetworkError'))){corsError=true;document.getElementById('aiMsg').textContent='⚠ AI không khả dụng.';return;}
       }
       doneBatches++;
-      const totalBatches=Math.ceil(outList.length/BATCH);
-      document.getElementById('aiBar').style.width=Math.round((doneBatches/totalBatches)*100)+'%';
-      document.getElementById('aiMsg').textContent='⚡ AI 1-1: '+doneBatches+'/'+totalBatches+' nhóm ('+pairs.filter(p=>p.isAI).length+' SP đã ghép)...';
+      const tot=Math.ceil(outList.length/BATCH);
+      document.getElementById('aiBar').style.width=Math.round((doneBatches/tot)*100)+'%';
+      document.getElementById('aiMsg').textContent='⚡ AI: '+doneBatches+'/'+tot+' batch ('+pairs.filter(p=>p.isAI).length+' SP đã ghép)...';
       renderSummary();renderTable();
-    }
     }
 
     // Chia batch và chạy song song
     const allBatches=[];
     for(let b=0;b<outList.length;b+=BATCH) allBatches.push(outList.slice(b,b+BATCH));
-    document.getElementById('aiMsg').textContent='⚡ AI 1-1: Phân tích '+outList.length+' SP, mỗi SP gọi riêng để đạt 90%+ chính xác...';
+    document.getElementById('aiMsg').textContent='⚡ AI: '+outList.length+' SP → '+Math.ceil(outList.length/BATCH)+' batch × '+CONCURRENT+' song song...';
     for(let i=0;i<allBatches.length&&!corsError;i+=CONCURRENT){
       await Promise.all(allBatches.slice(i,i+CONCURRENT).map(b=>processBatch(b)));
     }
@@ -2237,6 +2194,8 @@ function clearAllFiles(){
   updateFileCount();
   renderFileList();
 }
+
+} // end runMatch
 
 /* ── Override exportCSV để thêm cột giá ── */
 const _origExportCSV = exportCSV;
