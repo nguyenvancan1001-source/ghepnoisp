@@ -1303,112 +1303,96 @@ async function runMatch(){
   if(inputOpen)toggleInput();
   document.getElementById('btnSave').style.display='inline-flex';
 
-  if(useAI){
+  if(useAI && _apiKey){
     document.getElementById('aiStatusBadge').textContent='⚡ AI đang chạy...';
     document.getElementById('aiStatusBadge').style.background='#EDE9FE';
     document.getElementById('aiStatusBadge').style.color='#5B21B6';
-    document.getElementById('aiStatusBadge').style.borderColor='#C4B5FD';
     document.getElementById('aiProg').classList.add('show');
-    // ── Song song CONCURRENT=4 batch cùng lúc → nhanh ~4x ──
-    const inSet=new Set(inList);
-    const pairIdx={};
-    pairs.forEach((p,i)=>{pairIdx[p.out]=i;});
-    let corsError=false, doneBatches=0;
 
-    const _aiSys='Kho tap hoa VICOMART. Ghep DAU RA voi DAU VAO cung loai.\n'
-      +'VIET TAT: STTT=Sua Tuoi TT|SCA=Sua Chua An|SCUTT=Sua Chua Uong TT|NPC=Poca|BVS=Bang Ve Sinh|LNM=Lan Ngam Mui|XNM=Xit Ngam Mui|SUDD GP=Sua Uong DD Grow Plus.\n'
-      +'KHONG GHEP KHAC NHOM: Sua chua!=ngu coc|Ca hop!=tuong ca|Banh bao!=vien dong lanh|Bot ngot!=bot chien!=mayo Aji|Lan!=SRM!=Kem Nivea|Nuoc tay!=nuoc rua chen|Mi!=Chao|Kem lanh!=Sua chua deo|Fristi!=Yomost!=Fino|Chocopie!=Custas|Downy!=Rejoice!=Gillette.\n'
+    const _inSet=new Set(inList);
+    const _pidx={}; pairs.forEach((p,i)=>{_pidx[p.out]=i;});
+    let _corsErr=false, _done=0;
+
+    const _sys2='Kho VICOMART. Ghep DAU RA voi DAU VAO cung loai. '
+      +'VIET TAT: STTT=Sua Tuoi TT|SCA=Sua Chua An|SCUTT=Sua Chua Uong TT|NPC=Poca|BVS=Bang Ve Sinh|LNM=Lan Nivea|XNM=Xit Nivea. '
+      +'KHONG GHEP KHAC NHOM: Sua chua!=ngu coc|Ca hop!=tuong ca|Banh bao!=vien dong lanh|Mi!=Chao|Kem lanh!=Sua chua deo|Fristi!=Yomost!=Fino|Chocopie!=Custas|Downy!=Rejoice!=Gillette. '
       +'Tra ve null neu khong co SP cung loai.';
 
-    const BATCH=15, CONCURRENT=6;
-    const allBatches=[];
-    for(let b=0;b<outList.length;b+=BATCH) allBatches.push(outList.slice(b,b+BATCH));
-    const totalBatches=allBatches.length;
+    const _B=15, _C=6;
+    const _batches=[];
+    for(let b=0;b<outList.length;b+=_B) _batches.push(outList.slice(b,b+_B));
+    const _tot=_batches.length;
+    document.getElementById('aiMsg').textContent='⚡ AI: '+_tot+' batch × '+_C+' song song (~'+Math.ceil(_tot/_C)*2+'s)';
 
-    document.getElementById('aiMsg').textContent=
-      '⚡ AI: '+totalBatches+' batch × '+CONCURRENT+' song song...';
-
-    for(let gi=0; gi<allBatches.length&&!corsError; gi+=CONCURRENT){
+    for(let gi=0; gi<_batches.length&&!_corsErr; gi+=_C){
       await Promise.all(
-        allBatches.slice(gi, gi+CONCURRENT).map(async (batch)=>{
-          if(corsError) return;
-          const cs=new Set();
-          batch.forEach(o=>{ smartFilterIn(o,inList,15).forEach(c=>cs.add(c)); });
-          const cands=[...cs].slice(0,40);
-          if(!cands.length){ doneBatches++; return; }
-
-          const prompt=_aiSys
-            +'\nDAU RA:\n'+batch.map((o,i)=>'['+i+'] '+o).join('\n')
-            +'\nDAU VAO:\n'+cands.map((s,i)=>(i+1)+'. '+s).join('\n')
-            +'\nJSON:{"m":[{"i":0,"o":"ten dau vao hoac null","s":85},{"i":1,"o":...}]}';
-
+        _batches.slice(gi,gi+_C).map(async (batch)=>{
+          if(_corsErr){_done++;return;}
           try{
+            const cs=new Set();
+            batch.forEach(o=>smartFilterIn(o,inList,15).forEach(c=>cs.add(c)));
+            const cands=[...cs].slice(0,40);
+            if(!cands.length){_done++;return;}
+
+            const prompt=_sys2
+              +'\nDAU RA:\n'+batch.map((o,i)=>'['+i+'] '+o).join('\n')
+              +'\nDAU VAO:\n'+cands.map((s,i)=>(i+1)+'. '+s).join('\n')
+              +'\nJSON:{"m":[{"i":0,"o":"ten dau vao chinh xac hoac null","s":85},{"i":1,"o":"..."},...]}';
+
             const resp=await fetch('https://api.anthropic.com/v1/messages',{
               method:'POST',
-              headers:{'Content-Type':'application/json',...(_apiKey?{
-                'x-api-key':_apiKey,
-                'anthropic-version':'2023-06-01',
-                'anthropic-dangerous-direct-browser-access':'true'
-              }:{})},
-              body:JSON.stringify({
-                model:'claude-sonnet-4-20250514',
-                max_tokens:500,
-                messages:[{role:'user',content:prompt}]
-              })
+              headers:{'Content-Type':'application/json',
+                'x-api-key':_apiKey,'anthropic-version':'2023-06-01',
+                'anthropic-dangerous-direct-browser-access':'true'},
+              body:JSON.stringify({model:'claude-sonnet-4-20250514',
+                max_tokens:500,messages:[{role:'user',content:prompt}]})
             });
             const data=await resp.json();
             if(data.error) throw new Error(data.error.message);
             const txt=data.content.map(c=>c.text||'').join('');
             const clean=txt.replace(/```json|```/g,'').trim();
-            const si=clean.indexOf('{'), ei=clean.lastIndexOf('}');
-            if(si===-1){ doneBatches++; return; }
-            const json=JSON.parse(clean.slice(si,ei+1));
-            for(const m of (json.m||[])){
-              if(!m.o||(m.s||0)<45) continue;
-              const outSP=batch[m.i]; if(!outSP) continue;
-              let vIn=inSet.has(m.o)?m.o:null;
-              if(!vIn){
-                const mn=nv(m.o);
-                vIn=inList.find(s=>{
-                  const sn=nv(s);
-                  return sn===mn
-                    ||(mn.length>10&&sn.includes(mn.slice(0,14)))
-                    ||(sn.length>10&&mn.includes(sn.slice(0,14)));
-                })||null;
-              }
-              if(!vIn||isCross(outSP,vIn)) continue;
-              const eI=pairIdx[outSP];
-              if(eI!==undefined){
-                if(m.s>pairs[eI].score+8){
-                  pairs[eI]={...pairs[eI],in:vIn,score:m.s,
-                    diffs:['⚡ AI: '+m.s+'%'],types:['abbr'],
-                    note:'AI cải thiện',isAI:true,improved:true};
+            const si=clean.indexOf('{'),ei=clean.lastIndexOf('}');
+            if(si!==-1){
+              const json=JSON.parse(clean.slice(si,ei+1));
+              for(const m of(json.m||[])){
+                if(!m.o||(m.s||0)<45) continue;
+                const oSP=batch[m.i]; if(!oSP) continue;
+                let vIn=_inSet.has(m.o)?m.o:null;
+                if(!vIn){
+                  const mn=nv(m.o);
+                  vIn=inList.find(s=>{const sn=nv(s);
+                    return sn===mn||(mn.length>10&&sn.includes(mn.slice(0,14)))||(sn.length>10&&mn.includes(sn.slice(0,14)));
+                  })||null;
                 }
-              } else {
-                const nI=pairs.length;
-                pairs.push({id:nI,out:outSP,barcode:maVachMap[outSP]||'',
-                  in:vIn,score:m.s,diffs:['⚡ AI: '+m.s+'%'],types:['abbr'],
-                  note:'⚡ AI ghép mới',isAI:true,improved:false,
-                  flavorConflict:false,blocked:false});
-                pairIdx[outSP]=nI;
-                unmOut=unmOut.filter(o=>o!==outSP);
+                if(!vIn||isCross(oSP,vIn)) continue;
+                const eI=_pidx[oSP];
+                if(eI!==undefined){
+                  if(m.s>pairs[eI].score+8)
+                    pairs[eI]={...pairs[eI],in:vIn,score:m.s,diffs:['⚡ AI'],types:['abbr'],note:'AI cải thiện',isAI:true,improved:true};
+                }else{
+                  const nI=pairs.length;
+                  pairs.push({id:nI,out:oSP,barcode:maVachMap[oSP]||'',in:vIn,
+                    score:m.s,diffs:['⚡ AI'],types:['abbr'],note:'⚡ AI ghép mới',
+                    isAI:true,improved:false,flavorConflict:false,blocked:false});
+                  _pidx[oSP]=nI;
+                  unmOut=unmOut.filter(o=>o!==oSP);
+                }
               }
             }
-          } catch(e){
-            if(e.message&&(e.message.includes('Failed to fetch')||
-               e.message.includes('CORS')||e.message.includes('NetworkError'))){
-              corsError=true;
-              document.getElementById('aiMsg').textContent='⚠ AI không khả dụng.';
+          }catch(e){
+            if(e.message&&(e.message.includes('Failed to fetch')||e.message.includes('CORS'))){
+              _corsErr=true;
+              document.getElementById('aiMsg').textContent='⚠ AI không khả dụng - chạy thuật toán thôi.';
               document.getElementById('aiStatusBadge').textContent='⚙ Offline';
             }
+            // Mọi lỗi khác (JSON parse, timeout...) → bỏ qua batch, tiếp tục
+          }finally{
+            // LUÔN tăng _done dù thành công hay thất bại
+            _done++;
+            document.getElementById('aiBar').style.width=Math.round((_done/_tot)*100)+'%';
+            document.getElementById('aiMsg').textContent='⚡ AI: '+_done+'/'+_tot+' · '+pairs.filter(p=>p.isAI).length+' ghép';
+            renderSummary();renderTable();
           }
-          doneBatches++;
-          document.getElementById('aiBar').style.width=
-            Math.round((doneBatches/totalBatches)*100)+'%';
-          document.getElementById('aiMsg').textContent=
-            '⚡ AI: '+doneBatches+'/'+totalBatches+' batch · '
-            +pairs.filter(p=>p.isAI).length+' đã ghép';
-          renderSummary(); renderTable();
         })
       );
     }
